@@ -472,12 +472,12 @@ body {
 [data-theme="light"] body { background: var(--cream); color: #1a1a1a; }
 
 /* Fonds sombres → clairs (compatibilité esbuild : on échappe les crochets) */
-[data-theme="light"] .bg-\[#0d0d0d\]  { background-color: var(--cream) !important; }
-[data-theme="light"] .bg-\[#080808\]  { background-color: var(--cream) !important; }
-[data-theme="light"] .bg-\[#111\]     { background-color: var(--warm) !important; }
-[data-theme="light"] .bg-\[#1a1a1a\] { background-color: #e8e1d8 !important; }
-[data-theme="light"] .bg-\[#1c1c1c\] { background-color: #ddd8d0 !important; }
-[data-theme="light"] .bg-\[#0a0a0a\] { background-color: var(--cream) !important; }
+[data-theme="light"] .bg-\[\#0d0d0d\]  { background-color: var(--cream) !important; }
+[data-theme="light"] .bg-\[\#080808\]  { background-color: var(--cream) !important; }
+[data-theme="light"] .bg-\[\#111\]     { background-color: var(--warm) !important; }
+[data-theme="light"] .bg-\[\#1a1a1a\] { background-color: #e8e1d8 !important; }
+[data-theme="light"] .bg-\[\#1c1c1c\] { background-color: #ddd8d0 !important; }
+[data-theme="light"] .bg-\[\#0a0a0a\] { background-color: var(--cream) !important; }
 [data-theme="light"] .text-white       { color: #1a1a1a !important; }
 [data-theme="light"] .text-white\/80   { color: rgba(20,20,20,.85) !important; }
 [data-theme="light"] .text-white\/70   { color: rgba(20,20,20,.75) !important; }

@@ -1,3 +1,5 @@
+@section('title','Fashion Program — MIA DREAMS & CO')
+@section('meta_description','Fashion Program par MIA DREAMS & CO — formation mode africaine, stylisme et personal branding au Sénégal.')
 @include('layouts.header')
 
 <!-- Section "Bannière" -->

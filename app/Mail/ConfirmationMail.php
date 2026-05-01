@@ -20,9 +20,10 @@ class ConfirmationMail extends Mailable
 
     public function build()
     {
-        return $this->from('votre_adresse@gmail.com')
-            ->subject('Confirmation de votre inscription')
-            ->view('emails.confirmation');    }
+        return $this->from(config('mail.from.address'), 'MIA DREAMS & CO')
+            ->subject('Bienvenue dans l\'univers MIA DREAMS & CO ✨')
+            ->view('mails.confirmation');
+    }
 
     /**
      * Get the message envelope.

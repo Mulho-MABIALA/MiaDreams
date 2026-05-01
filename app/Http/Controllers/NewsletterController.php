@@ -26,23 +26,22 @@ class NewsletterController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|email|unique:newsletters,email',
+        ], [
+            'email.required' => 'L\'adresse email est obligatoire.',
+            'email.email'    => 'L\'adresse email n\'est pas valide.',
+            'email.unique'   => 'Cette adresse email est déjà inscrite à notre newsletter.',
         ]);
+
         try {
-            // Enregistrer l'e-mail dans la base de données
-            $newsletter = Newsletter::create([
-                'email' => $request->email
-            ]);
+            Newsletter::create(['email' => $request->email]);
 
             // Envoyer l'e-mail de confirmation
             Mail::to($request->email)->send(new ConfirmationMail());
 
-            // Rediriger vers la page index avec un message de succès
-            return view('index')->with('success', 'Votre inscription à la newsletter a bien été enregistrée.')->with('closeModal', true);
-        }
-        catch (\Exception $e) {
-            // En cas d'erreur, rediriger avec un message d'erreur
-            return redirect()->back()->with('error', 'Une erreur est survenue lors de votre inscription à la newsletter.');
+            return redirect()->back()->with('newsletter_success', 'Merci ! Votre inscription à la newsletter a bien été enregistrée. 🎉');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('newsletter_error', 'Une erreur est survenue. Veuillez réessayer.');
         }
     }
 

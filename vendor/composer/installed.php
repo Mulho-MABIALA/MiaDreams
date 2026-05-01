@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'ba38f2c01cb5878ee7f0fc42bbb4a1ec9233c8cb',
+        'reference' => 'd497b9c279173a39ea7b721e2c37312cab527006',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -517,6 +517,15 @@
                 0 => 'v10.48.9',
             ),
         ),
+        'inertiajs/inertia-laravel' => array(
+            'pretty_version' => 'v2.0.24',
+            'version' => '2.0.24.0',
+            'reference' => 'ea345adad12f110edbbc4bef03b69c2374a535d4',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../inertiajs/inertia-laravel',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'kirschbaum-development/eloquent-power-joins' => array(
             'pretty_version' => '3.5.6',
             'version' => '3.5.6.0',
@@ -544,7 +553,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'ba38f2c01cb5878ee7f0fc42bbb4a1ec9233c8cb',
+            'reference' => 'd497b9c279173a39ea7b721e2c37312cab527006',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -982,8 +991,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '3.0.0',
-                1 => '1.0|2.0|3.0',
+                0 => '1.0|2.0|3.0',
+                1 => '3.0.0',
             ),
         ),
         'psr/simple-cache' => array(

@@ -1,0 +1,723 @@
+/* ════════════════════════════════════════════════════════════════
+   MIA DREAMS & CO — Design System v2.0
+   Direction : Mode · Luxe · Artisanat Africain
+   Auteur : MIA DREAMS Studio
+   Thèmes  : Clair (light) / Sombre (dark)
+════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens globaux ──────────────────────────────────────────── */
+:root {
+  --gold:       #C4A267;
+  --gold-h:     #b8944f;
+  --gold-10:    rgba(196,162,103,.10);
+  --gold-20:    rgba(196,162,103,.20);
+  --gold-30:    rgba(196,162,103,.30);
+  --gold-50:    rgba(196,162,103,.50);
+  --ease:       cubic-bezier(.4,0,.2,1);
+  --dur:        .35s;
+}
+
+/* ── LIGHT MODE ──────────────────────────────────────────────── */
+html[data-theme="light"] {
+  --md-bg:          #faf8f4;
+  --md-bg-alt:      #f0ebe0;
+  --md-surface:     #ffffff;
+  --md-surface-2:   #f7f3ed;
+  --md-dark:        #1d1a15;
+  --md-dark-2:      #252119;
+  --md-dark-card:   #2a261e;
+  --md-text:        #1a1714;
+  --md-text-2:      #65605a;
+  --md-text-3:      #a09890;
+  --md-text-on-dark:#f0ece4;
+  --md-text-on-dark-2:rgba(240,236,228,.55);
+  --md-border:      #e5dfd5;
+  --md-border-dark: rgba(196,162,103,.12);
+}
+
+/* ── DARK MODE ───────────────────────────────────────────────── */
+html[data-theme="dark"] {
+  --md-bg:          #0f0d0b;
+  --md-bg-alt:      #161310;
+  --md-surface:     #1c1916;
+  --md-surface-2:   #221f1b;
+  --md-dark:        #080604;
+  --md-dark-2:      #0c0a08;
+  --md-dark-card:   #1a1714;
+  --md-text:        #f0ece4;
+  --md-text-2:      #9b9185;
+  --md-text-3:      #635d56;
+  --md-text-on-dark:#f0ece4;
+  --md-text-on-dark-2:rgba(240,236,228,.55);
+  --md-border:      #2a251f;
+  --md-border-dark: rgba(196,162,103,.12);
+}
+
+/* ── Default (light si aucun attribut) ──────────────────────── */
+html:not([data-theme]) {
+  --md-bg:          #faf8f4;
+  --md-bg-alt:      #f0ebe0;
+  --md-surface:     #ffffff;
+  --md-surface-2:   #f7f3ed;
+  --md-dark:        #1d1a15;
+  --md-dark-2:      #252119;
+  --md-dark-card:   #2a261e;
+  --md-text:        #1a1714;
+  --md-text-2:      #65605a;
+  --md-text-3:      #a09890;
+  --md-text-on-dark:#f0ece4;
+  --md-text-on-dark-2:rgba(240,236,228,.55);
+  --md-border:      #e5dfd5;
+  --md-border-dark: rgba(196,162,103,.12);
+}
+
+/* ── Transitions de thème ────────────────────────────────────── */
+body,
+body *,
+body *::before,
+body *::after {
+  transition:
+    background-color .38s var(--ease),
+    color .28s var(--ease),
+    border-color .28s var(--ease),
+    box-shadow .28s var(--ease);
+}
+/* Sauf les images et animations */
+img, video, canvas, svg,
+[class*="hero-slide"],
+[class*="kbHero"] {
+  transition: none;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   OVERRIDES DARK MODE — sections blanches/crème deviennent sombres
+════════════════════════════════════════════════════════════════ */
+
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] section.bg-white,
+html[data-theme="dark"] div.bg-white {
+  background-color: var(--md-surface) !important;
+}
+
+html[data-theme="dark"] .bg-\[\#faf9f7\],
+html[data-theme="dark"] .bg-\[\#faf8f5\],
+html[data-theme="dark"] .bg-\[\#faf8f4\] {
+  background-color: var(--md-bg-alt) !important;
+}
+
+/* Textes sombres → clairs en dark mode */
+html[data-theme="dark"] .text-\[\#1a1a1a\] { color: var(--md-text) !important; }
+html[data-theme="dark"] .text-\[\#666\]    { color: var(--md-text-2) !important; }
+html[data-theme="dark"] .text-\[\#0d0d0d\] { color: var(--md-text) !important; }
+
+/* Fond blockquote light */
+html[data-theme="dark"] .bg-\[\#faf8f5\],
+html[data-theme="dark"] .bg-gold\/\[0\.05\] { background-color: rgba(196,162,103,.05) !important; }
+
+/* Cards dans sections claires → surface sombre */
+html[data-theme="dark"] .border-\[\#ede9e3\] { border-color: var(--md-border) !important; }
+
+/* ── Overrides LIGHT MODE ────────────────────────────────────── */
+/* Les sections foncées restent foncées mais dans une tonalité plus chaude */
+html[data-theme="light"] .bg-\[\#0d0d0d\] { background-color: var(--md-dark)   !important; }
+html[data-theme="light"] .bg-\[\#111\]    { background-color: var(--md-dark-2) !important; }
+html[data-theme="light"] .bg-\[\#1a1a1a\] { background-color: var(--md-dark-card) !important; }
+
+/* ════════════════════════════════════════════════════════════════
+   ANIMATIONS GLOBALES
+════════════════════════════════════════════════════════════════ */
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(22px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+
+@keyframes kbHero {
+  from { transform:scale(1.06); }
+  to   { transform:scale(1.01); }
+}
+
+/* ── Reveal au scroll ────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity .75s var(--ease),
+    transform .75s var(--ease) !important;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HERO CAROUSEL — amélioré
+════════════════════════════════════════════════════════════════ */
+
+.hero-carousel {
+  position: relative;
+  height: 100vh;
+  min-height: 620px;
+  overflow: hidden;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.4s cubic-bezier(.4,0,.2,1);
+}
+.hero-slide.active { opacity: 1; }
+
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-slide.active img {
+  animation: kbHero 14s ease forwards;
+}
+
+/* Overlay plus équilibré (moins sombre à droite) */
+.hero-slide .overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    rgba(10,8,6,.80) 0%,
+    rgba(10,8,6,.42) 45%,
+    rgba(10,8,6,.10) 75%,
+    transparent 100%
+  );
+}
+
+/* Flèches */
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 52px;
+  height: 52px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.22);
+  color: rgba(255,255,255,.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .3s var(--ease);
+  padding: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.hero-arrow:hover {
+  background: rgba(196,162,103,.14);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-50%) scale(1.06);
+}
+.hero-arrow-prev { left: 28px; }
+.hero-arrow-next { right: 28px; }
+
+/* Dots modernes (lignes) */
+.hero-dots {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.hero-dot {
+  width: 20px;
+  height: 2px;
+  background: rgba(255,255,255,.28);
+  cursor: pointer;
+  transition: all .4s var(--ease);
+  border-radius: 1px;
+}
+.hero-dot.active {
+  width: 52px;
+  background: var(--gold);
+}
+
+/* Scroll indicator vertical */
+.hero-scroll {
+  position: absolute;
+  bottom: 38px;
+  right: 44px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeIn 1s 2.2s ease forwards;
+  pointer-events: none;
+}
+.hero-scroll span {
+  writing-mode: vertical-rl;
+  font-size: 7px;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,.45);
+  text-transform: uppercase;
+}
+.hero-scroll-line {
+  width: 1px;
+  height: 52px;
+  background: rgba(255,255,255,.18);
+  position: relative;
+  overflow: hidden;
+}
+.hero-scroll-line::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: var(--gold);
+  animation: lineDown 2.2s ease infinite;
+}
+@keyframes lineDown {
+  0%   { top: -60%; }
+  100% { top: 110%; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BOUTON TOGGLE THÈME — flottant
+════════════════════════════════════════════════════════════════ */
+
+#theme-toggle {
+  position: fixed;
+  bottom: 32px;
+  right: 28px;
+  z-index: 9998;
+  width: 48px;
+  height: 48px;
+  background: var(--md-surface, #fff);
+  border: 1px solid var(--md-border, #e5dfd5);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,.12),
+    0 1px 6px rgba(0,0,0,.06);
+  transition:
+    transform .3s var(--ease),
+    box-shadow .3s var(--ease),
+    border-color .3s var(--ease),
+    background-color .3s var(--ease) !important;
+  color: var(--gold);
+  outline: none;
+}
+#theme-toggle:hover {
+  transform: scale(1.10);
+  box-shadow: 0 8px 28px rgba(0,0,0,.16);
+  border-color: var(--gold-30);
+}
+
+/* Icônes */
+#theme-toggle .icon-moon { display: block; }
+#theme-toggle .icon-sun  { display: none; }
+html[data-theme="dark"] #theme-toggle .icon-moon { display: none; }
+html[data-theme="dark"] #theme-toggle .icon-sun  { display: block; }
+
+#theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Tooltip */
+#theme-toggle::after {
+  content: attr(data-label);
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--md-dark, #1d1a15);
+  color: rgba(255,255,255,.8);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 2px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+#theme-toggle:hover::after { opacity: 1; }
+
+/* ════════════════════════════════════════════════════════════════
+   PRÉCHARGEUR
+════════════════════════════════════════════════════════════════ */
+
+#pl {
+  position: fixed;
+  inset: 0;
+  background: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  z-index: 99999;
+  transition: opacity .7s var(--ease);
+}
+#pl img {
+  height: 52px;
+  filter: brightness(0) invert(1);
+  opacity: .85;
+}
+#pl-bar {
+  width: 130px;
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+  border-radius: 1px;
+}
+#pl-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(to right, var(--gold), #e8d0a0);
+  animation: plLoad 1.8s var(--ease) forwards;
+}
+@keyframes plLoad {
+  0%   { width: 0%; }
+  60%  { width: 75%; }
+  100% { width: 100%; }
+}
+#pl-txt {
+  font-family: 'Lastica', 'Glacial Indifference', sans-serif;
+  font-size: 8px;
+  letter-spacing: 5px;
+  color: rgba(255,255,255,.25);
+  text-transform: uppercase;
+  margin: 0;
+}
+#pl.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CARDS & HOVER
+════════════════════════════════════════════════════════════════ */
+
+/* Zoom image au hover */
+.img-hover {
+  overflow: hidden;
+}
+.img-hover img {
+  transition: transform .9s cubic-bezier(.4,0,.2,1) !important;
+  will-change: transform;
+}
+.img-hover:hover img { transform: scale(1.06) !important; }
+
+/* Card hover générique */
+.card-hover {
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease) !important;
+}
+.card-hover:hover {
+  transform: translateY(-4px) !important;
+}
+
+/* Border hover */
+.border-hover {
+  transition: border-color .3s var(--ease) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SECTIONS THÉMATIQUES
+════════════════════════════════════════════════════════════════ */
+
+/* Section claire */
+.md-light {
+  background-color: var(--md-bg) !important;
+  color: var(--md-text) !important;
+}
+
+/* Surface blanche/card */
+.md-surface {
+  background-color: var(--md-surface) !important;
+  color: var(--md-text) !important;
+}
+
+/* Section alternative (crème) */
+.md-alt {
+  background-color: var(--md-bg-alt) !important;
+  color: var(--md-text) !important;
+}
+
+/* ── Textes adaptatifs dans les sections md-* ── */
+.md-light h1, .md-light h2, .md-light h3,
+.md-surface h1, .md-surface h2, .md-surface h3,
+.md-alt h1, .md-alt h2, .md-alt h3 {
+  color: var(--md-text) !important;
+}
+.md-light p, .md-surface p, .md-alt p { color: var(--md-text-2) !important; }
+
+/* ════════════════════════════════════════════════════════════════
+   NEWSLETTER MODAL — dark mode
+════════════════════════════════════════════════════════════════ */
+
+html[data-theme="dark"] #newsletter-modal .modal-content {
+  background: var(--md-surface) !important;
+  border: 1px solid var(--md-border) !important;
+  color: var(--md-text) !important;
+}
+html[data-theme="dark"] #newsletter-modal h4,
+html[data-theme="dark"] #newsletter-modal label {
+  color: var(--md-text) !important;
+}
+html[data-theme="dark"] #newsletter-modal input[type="email"] {
+  background: var(--md-bg) !important;
+  border-color: var(--md-border) !important;
+  color: var(--md-text) !important;
+}
+html[data-theme="dark"] #newsletter-modal .modal-header,
+html[data-theme="dark"] #newsletter-modal .modal-footer {
+  border-color: var(--md-border) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SECTION MADE IN AFRICA — border
+════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"] .border-t.border-\[\#ede9e3\] {
+  border-color: var(--md-border) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   NOS UNIVERS — cards images hover amélioré
+════════════════════════════════════════════════════════════════ */
+.univers-card {
+  transition: transform .5s var(--ease), box-shadow .5s var(--ease) !important;
+}
+.univers-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 32px 60px rgba(0,0,0,.25) !important;
+}
+.univers-card .underline-gold {
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width .5s var(--ease) !important;
+}
+.univers-card:hover .underline-gold { width: 40px; }
+
+/* ════════════════════════════════════════════════════════════════
+   PERSONAL BRANDING PAGE — overrides Bootstrap
+════════════════════════════════════════════════════════════════ */
+
+/* Dark mode: bg-beige */
+html[data-theme="dark"] .bg-beige {
+  background-color: var(--md-dark-2) !important;
+}
+html[data-theme="dark"] .bg-beige p,
+html[data-theme="dark"] .bg-beige span { color: var(--md-text-2) !important; }
+
+/* Boutons PB */
+html[data-theme="dark"] .pb-btn {
+  color: var(--gold) !important;
+  border-color: var(--gold-50) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TYPOGRAPHIE DISPLAY — Cormorant Garamond
+════════════════════════════════════════════════════════════════ */
+
+.font-display {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-weight: 300;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BOUTONS — améliorations micro-interactions
+════════════════════════════════════════════════════════════════ */
+
+/* Tous les boutons outline-gold */
+a[class*="border-gold"],
+a[class*="border border-gold"] {
+  position: relative;
+  overflow: hidden;
+}
+a[class*="border-gold"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .35s var(--ease);
+  z-index: -1;
+}
+a[class*="border-gold"]:hover::before { transform: scaleX(1); }
+
+/* ════════════════════════════════════════════════════════════════
+   TIMELINE a-propos — amélioration
+════════════════════════════════════════════════════════════════ */
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 4px solid var(--md-dark-2, #252119);
+  flex-shrink: 0;
+  margin-top: 4px;
+  position: relative;
+  z-index: 10;
+  transition: box-shadow .3s !important;
+}
+.reveal.visible .timeline-dot {
+  box-shadow: 0 0 0 6px var(--gold-10);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TAGS / PILLS
+════════════════════════════════════════════════════════════════ */
+
+.md-tag {
+  display: inline-block;
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold-30);
+  padding: 7px 14px;
+  transition: all .25s var(--ease) !important;
+}
+.md-tag:hover {
+  background: var(--gold);
+  color: #0d0d0d;
+  border-color: var(--gold);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .hero-scroll { display: none; }
+}
+
+@media (max-width: 768px) {
+  #theme-toggle {
+    bottom: 20px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+  #theme-toggle::after { display: none; }
+  .hero-arrow { width: 44px; height: 44px; }
+  .hero-arrow-prev { left: 14px; }
+  .hero-arrow-next { right: 14px; }
+}
+
+@media (max-width: 640px) {
+  .hero-carousel { min-height: 560px; }
+  .hero-dots { bottom: 20px; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SECTIONS IMPACT — dark mode cards
+════════════════════════════════════════════════════════════════ */
+
+html[data-theme="dark"] .bg-\[\#1a1a1a\] {
+  background-color: var(--md-surface-2, #221f1b) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FOOTER — dark mode
+════════════════════════════════════════════════════════════════ */
+
+html[data-theme="light"] footer,
+html[data-theme="light"] .footer,
+html[data-theme="light"] [class*="footer"] {
+  /* Footer stays dark by design */
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SECTION SERVICES — cards hover amélioré
+════════════════════════════════════════════════════════════════ */
+
+.service-card {
+  transition:
+    border-color .3s var(--ease),
+    transform .4s var(--ease),
+    box-shadow .4s var(--ease) !important;
+}
+.service-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 24px 48px rgba(0,0,0,.28) !important;
+  border-color: rgba(196,162,103,.35) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   GALERIE & IMAGES — lightbox-ready
+════════════════════════════════════════════════════════════════ */
+
+.gallery-item {
+  overflow: hidden;
+  position: relative;
+}
+.gallery-item img {
+  transition: transform .8s cubic-bezier(.4,0,.2,1) !important;
+}
+.gallery-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(196,162,103,.0);
+  transition: background .4s !important;
+}
+.gallery-item:hover img { transform: scale(1.08) !important; }
+.gallery-item:hover::after { background: rgba(196,162,103,.08); }
+
+/* ════════════════════════════════════════════════════════════════
+   SCROLL TO TOP — bouton optionnel
+════════════════════════════════════════════════════════════════ */
+
+#scroll-top {
+  position: fixed;
+  bottom: 92px;
+  right: 28px;
+  z-index: 9997;
+  width: 40px;
+  height: 40px;
+  background: var(--md-dark, #1d1a15);
+  border: 1px solid var(--md-border-dark);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all .35s var(--ease) !important;
+  border-radius: 2px;
+}
+#scroll-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+#scroll-top:hover {
+  background: var(--gold);
+  color: #0d0d0d;
+}
+
+@media (max-width: 768px) {
+  #scroll-top { bottom: 76px; right: 16px; width: 36px; height: 36px; }
+}

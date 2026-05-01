@@ -1,3 +1,5 @@
+@section('title','MPREW — MIA DREAMS & CO')
+@section('meta_description','MPREW par MIA DREAMS & CO — prêt-à-porter africain contemporain, collections en série limitée.')
 @include('layouts.header')
 
 <div class="container-fluid mprew-container-1 ">

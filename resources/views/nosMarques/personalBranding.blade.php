@@ -1,3 +1,5 @@
+@section('title','Personal Branding — MIA DREAMS & CO')
+@section('meta_description','Personal Branding & Étiquette par MIA DREAMS & CO — construisez une image forte, élaborez votre garde-robe stratégique au Sénégal.')
 @include('layouts.header')
 <section>
     <div class="pb-bg  p-md-none">

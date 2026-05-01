@@ -19,4 +19,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-".claude/" 
+.claude/
+dist/
+
+
+
+

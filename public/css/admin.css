@@ -54,6 +54,10 @@
 html, body, .fi-body { color-scheme: light !important; }
 .dark, [data-theme="dark"] { color-scheme: light !important; }
 
+[x-cloak] {
+    display: none !important;
+}
+
 /* ── Base body ──────────────────────────────────────────────────── */
 body, .fi-body {
     background: var(--bg) !important;
@@ -1004,6 +1008,26 @@ input[type="radio"] {
     border-radius: var(--radius-xl) !important;
     box-shadow: var(--shadow-xl) !important;
     overflow: hidden !important;
+}
+
+.fi-modal-window.hidden,
+.fi-modal-window[hidden],
+.fi-modal [x-cloak],
+.fi-modal [style*="display: none"] {
+    display: none !important;
+}
+
+.fi-modal-window:not(:has(.fi-modal-header, .fi-modal-content, .fi-modal-footer)) {
+    display: none !important;
+}
+
+body:has(.fi-dashboard-page) .fi-modal,
+body:has(.fi-dashboard-page) [aria-modal="true"],
+body:has(.fi-dashboard-page) form[wire\:submit*="callMountedAction"],
+body:has(.fi-dashboard-page) form[wire\:submit\.prevent*="callMountedAction"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 .fi-modal-header {

@@ -41,7 +41,7 @@ COPY . .
 RUN set -eux; \
     composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts; \
     php artisan package:discover --ansi; \
-    npm ci; \
+    npm install --include=dev; \
     npm run build; \
     mkdir -p \
         bootstrap/cache \

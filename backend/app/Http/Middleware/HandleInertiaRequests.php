@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Inertia\Middleware;
 use App\Models\Brand;
 use App\Models\Catalogue;
@@ -42,5 +43,17 @@ class HandleInertiaRequests extends Middleware
                 'testimonial_success' => fn () => $request->session()->get('testimonial_success'),
             ],
         ]);
+    }
+
+    public function handle(Request $request, \Closure $next)
+    {
+        $response = parent::handle($request, $next);
+
+        if ($request->header('X-Inertia') && $response instanceof JsonResponse) {
+            $response->headers->set('X-Inertia', 'true');
+            $response->headers->set('Vary', 'X-Inertia');
+        }
+
+        return $response;
     }
 }

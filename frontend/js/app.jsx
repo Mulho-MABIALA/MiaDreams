@@ -12,6 +12,17 @@ const pages = import.meta.glob('./Pages/**/*.jsx', { eager: true });
 const appEl = document.getElementById('app');
 const initialPage = appEl?.dataset?.page ? JSON.parse(appEl.dataset.page) : null;
 
+document.addEventListener('inertia:httpException', event => {
+    const page = event.detail?.response?.data;
+
+    if (!page?.component || !page?.url) {
+        return;
+    }
+
+    event.preventDefault();
+    window.location.href = page.url;
+});
+
 createInertiaApp({
     page: initialPage,
 

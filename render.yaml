@@ -18,6 +18,8 @@ services:
         sync: false
       - key: APP_URL
         value: https://mia-dreams.onrender.com
+      - key: ASSET_URL
+        value: https://mia-dreams.onrender.com
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
@@ -36,6 +38,8 @@ services:
         value: sync
       - key: SESSION_DRIVER
         value: database
+      - key: SESSION_SECURE_COOKIE
+        value: true
       - key: ADMIN_NAME
         value: Admin MiaDreams
       - key: ADMIN_EMAIL

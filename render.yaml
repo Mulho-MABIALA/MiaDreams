@@ -8,51 +8,27 @@ services:
     dockerContext: .
     healthCheckPath: /
     envVars:
-      - key: APP_NAME
-        value: MIA DREAMS
-      - key: APP_ENV
+      - key: NODE_ENV
         value: production
-      - key: APP_DEBUG
-        value: false
-      - key: APP_KEY
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
         sync: false
-      - key: APP_URL
+      - key: FRONTEND_URL
         value: https://mia-dreams.onrender.com
-      - key: ASSET_URL
-        value: https://mia-dreams.onrender.com
-      - key: LOG_CHANNEL
-        value: stderr
-      - key: LOG_LEVEL
-        value: error
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DATABASE_URL
-        fromDatabase:
-          name: mia-dreams-db
-          property: connectionString
-      - key: CACHE_DRIVER
-        value: file
-      - key: FILESYSTEM_DISK
-        value: public
-      - key: QUEUE_CONNECTION
-        value: sync
-      - key: SESSION_DRIVER
-        value: database
-      - key: SESSION_SECURE_COOKIE
-        value: true
       - key: ADMIN_NAME
         value: Admin MiaDreams
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
-      - key: MAIL_MAILER
-        value: log
-
-databases:
-  - name: mia-dreams-db
-    plan: free
-    region: frankfurt
-    databaseName: miadreams
-    user: miadreams
-    postgresMajorVersion: "17"
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USER
+        sync: false
+      - key: MAIL_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false

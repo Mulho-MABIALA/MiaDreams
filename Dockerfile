@@ -1,57 +1,19 @@
-FROM php:8.3-cli-bookworm
+FROM node:20-slim
 
-RUN set -eux; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        git \
-        libcurl4-openssl-dev \
-        libfreetype6-dev \
-        libicu-dev \
-        libjpeg62-turbo-dev \
-        libonig-dev \
-        libpng-dev \
-        libpq-dev \
-        libzip-dev \
-        nodejs \
-        npm \
-        unzip; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg; \
-    docker-php-ext-install -j"$(nproc)" \
-        bcmath \
-        curl \
-        gd \
-        intl \
-        mbstring \
-        opcache \
-        pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        zip; \
-    apt-get clean; \
-    rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install backend dependencies
+COPY backend/package*.json ./backend/
+RUN cd backend && npm install --omit=dev
 
-WORKDIR /var/www/html
+# Install frontend dependencies and build
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm install
 
 COPY . .
 
-RUN set -eux; \
-    composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts; \
-    php artisan package:discover --ansi; \
-    npm install --include=dev; \
-    npm run build; \
-    mkdir -p \
-        bootstrap/cache \
-        storage/app/public \
-        storage/framework/cache/data \
-        storage/framework/sessions \
-        storage/framework/views \
-        storage/logs; \
-    chmod -R 775 bootstrap/cache storage
+RUN cd frontend && npm run build
 
-EXPOSE 10000
+EXPOSE 5000
 
-CMD ["sh", "docker/start.sh"]
+CMD ["node", "backend/src/server.js"]

@@ -1,27 +1,20 @@
-/.phpunit.cache
-/node_modules
-/vendor
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/logs/*
-
+node_modules/
 .env
 .env.*
 !.env.example
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
+
+# Build outputs
+frontend/dist/
+uploads/
+
+# Logs
+*.log
 npm-debug.log
-yarn-error.log
-/.fleet
-/.idea
+
+# Editor
 /.vscode
+/.idea
+/.fleet
+
+# Claude
 .claude/
-dist/
-
-
-
-

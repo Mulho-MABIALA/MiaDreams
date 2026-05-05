@@ -1,0 +1,14 @@
+const mongoose = require('mongoose');
+
+const sectionSchema = new mongoose.Schema({
+    title:     String,
+    subtitle:  String,
+    content:   String,
+    image:     String,
+    page:      { type: String, required: true },
+    type:      String,
+    order:     { type: Number, default: 0 },
+    is_active: { type: Boolean, default: true },
+}, { timestamps: true });
+
+module.exports = mongoose.model('Section', sectionSchema);

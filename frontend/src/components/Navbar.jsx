@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useCart } from '../context/CartContext';
 
 function useTheme() {
     const [theme, setTheme] = useState(() => localStorage.getItem('mia_theme') || 'dark');
@@ -13,6 +14,7 @@ function useTheme() {
 
 export default function Navbar() {
     const { navBrands } = useApp();
+    const { count: cartCount } = useCart();
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -111,8 +113,25 @@ export default function Navbar() {
                         </div>
                     </li>
 
+                    <li><Link to="/boutique"    className={`nav-link ${isActive('/boutique')    ? 'active text-gold' : 'text-white/55'}`}>BOUTIQUE</Link></li>
                     <li><Link to="/impact"     className={`nav-link ${isActive('/impact')     ? 'active text-gold' : 'text-white/55'}`}>IMPACT</Link></li>
                     <li><Link to="/reservation" className={`nav-link ${isActive('/reservation') ? 'active text-gold' : 'text-white/55'}`}>RÉSERVER</Link></li>
+
+                    {/* Panier */}
+                    <li>
+                        <Link to="/panier" aria-label="Panier"
+                              className="nav-link text-white/45 hover:text-gold transition-colors flex items-center relative">
+                            <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                            </svg>
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center font-lastica text-[8px] leading-none"
+                                      style={{ background: '#C9A84C', color: '#050505' }}>
+                                    {cartCount > 9 ? '9+' : cartCount}
+                                </span>
+                            )}
+                        </Link>
+                    </li>
 
                     {/* Recherche */}
                     <li>
@@ -142,6 +161,17 @@ export default function Navbar() {
 
                 {/* Mobile icons */}
                 <div className="lg:hidden flex items-center gap-1">
+                    <Link to="/panier" className="relative p-2.5 text-white/50 hover:text-gold transition-colors">
+                        <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        {cartCount > 0 && (
+                            <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center font-lastica text-[7px] leading-none"
+                                  style={{ background: '#C9A84C', color: '#050505' }}>
+                                {cartCount}
+                            </span>
+                        )}
+                    </Link>
                     <button onClick={() => setSearchOpen(o => !o)} className="text-white/50 hover:text-gold p-2.5 transition-colors">
                         <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                     </button>
@@ -189,6 +219,7 @@ export default function Navbar() {
                 <ul className="py-5 px-6 flex flex-col">
                     {[
                         { to: '/', label: 'HOME' },
+                        { to: '/boutique', label: 'BOUTIQUE' },
                         { to: '/catalogues', label: 'CATALOGUES' },
                         { to: '/galerie', label: 'GALERIE' },
                         { to: '/impact', label: 'IMPACT' },

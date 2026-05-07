@@ -4,6 +4,7 @@ const slugify = require('slugify');
 const brandSchema = new mongoose.Schema({
     name:         { type: String, required: true },
     slug:         { type: String, unique: true },
+    href:         String,   // lien personnalisé ex: /miaDreams (si vide → /marque/slug)
     header_title: String,
     description:  String,
     youtube_id:   String,

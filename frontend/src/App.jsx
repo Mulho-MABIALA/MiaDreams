@@ -1,6 +1,26 @@
 import { Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+
+function Preloader() {
+    const ref = useRef(null);
+    useEffect(() => {
+        // Se cache définitivement une seule fois au démarrage de l'app
+        const el = ref.current;
+        if (!el) return;
+        const hide = () => { el.style.display = 'none'; };
+        // Écoute la fin de l'animation CSS plFade
+        el.addEventListener('animationend', hide);
+        return () => el.removeEventListener('animationend', hide);
+    }, []);
+    return (
+        <div id="pl" ref={ref}>
+            <img src="/img/logo_MIA.png" alt="MIA DREAMS" />
+            <div id="pl-bar"><span /></div>
+            <p id="pl-txt">Chargement…</p>
+        </div>
+    );
+}
 
 import Home from './pages/Home';
 import APropos from './pages/APropos';
@@ -17,6 +37,14 @@ import Brand from './pages/Brands/Brand';
 import Gallery from './pages/Gallery';
 import Catalogues from './pages/Catalogues';
 import Search from './pages/Search';
+import Login from './pages/Login';
+import Admin from './pages/Admin/index';
+import BoutiqueIndex from './pages/Boutique/Index';
+import BoutiqueProduct from './pages/Boutique/Product';
+import Panier from './pages/Panier';
+import Commande from './pages/Commande';
+import CommandeSucces from './pages/CommandeSucces';
+import MesCommandes from './pages/MesCommandes';
 import NotFound from './pages/NotFound';
 
 function ScrollToTop() {
@@ -28,6 +56,7 @@ function ScrollToTop() {
 export default function App() {
     return (
         <>
+            <Preloader />
             <ScrollToTop />
             <Routes>
                 <Route path="/"                 element={<Home />} />
@@ -45,6 +74,15 @@ export default function App() {
                 <Route path="/galerie"          element={<Gallery />} />
                 <Route path="/catalogues"       element={<Catalogues />} />
                 <Route path="/recherche"        element={<Search />} />
+                <Route path="/boutique"             element={<BoutiqueIndex />} />
+                <Route path="/boutique/:slug"    element={<BoutiqueProduct />} />
+                <Route path="/panier"            element={<Panier />} />
+                <Route path="/commande"          element={<Commande />} />
+                <Route path="/commande/succes/:id"  element={<CommandeSucces />} />
+                <Route path="/commande/erreur/:id"  element={<CommandeSucces />} />
+                <Route path="/mes-commandes"     element={<MesCommandes />} />
+                <Route path="/login"             element={<Login />} />
+                <Route path="/admin/*"           element={<Admin />} />
                 <Route path="*"                 element={<NotFound />} />
             </Routes>
         </>

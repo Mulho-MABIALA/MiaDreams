@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import { useCart } from '../context/CartContext';
 
 export default function Search() {
     const [searchParams] = useSearchParams();
@@ -21,6 +22,7 @@ export default function Search() {
         if (input.trim().length >= 2) navigate(`/recherche?q=${encodeURIComponent(input.trim())}`);
     };
 
+    const { addItem } = useCart();
     const total = data.posts.length + data.brands.length + data.products.length;
 
     return (
@@ -96,18 +98,47 @@ export default function Search() {
                     {data.products.length > 0 && (
                         <div className="mb-16">
                             <div className="flex items-center gap-5 mb-8">
-                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">Produits</span>
+                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">Produits boutique</span>
                                 <div className="flex-1 h-px bg-gold/8" />
                                 <span className="font-lastica text-[7px] tracking-[3px] text-white/20">{data.products.length}</span>
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {data.products.map((prod, i) => (
-                                    <div key={prod._id} className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 overflow-hidden transition-colors" style={{ transitionDelay: `${i * 0.08}s` }}>
-                                        {prod.image && <img src={`/uploads/${prod.image}`} className="w-full h-[180px] object-cover transition-transform duration-700 group-hover:scale-105" alt={prod.name} loading="lazy" />}
-                                        <div className="p-4">
-                                            <h4 className="font-glacial text-xs text-white uppercase tracking-[2px] group-hover:text-gold transition-colors">{prod.name}</h4>
+                                    <Link key={prod._id} to={`/boutique/${prod.slug}`}
+                                        className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 overflow-hidden transition-colors block"
+                                        style={{ transitionDelay: `${i * 0.08}s` }}>
+                                        <div className="relative overflow-hidden">
+                                            {prod.image
+                                                ? <img src={`/uploads/${prod.image}`} className="w-full h-[180px] object-cover transition-transform duration-700 group-hover:scale-105" alt={prod.name} loading="lazy" />
+                                                : <div className="w-full h-[180px] bg-[#161616]" />
+                                            }
+                                            {prod.stock === 0 && (
+                                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                                    <span className="font-lastica text-[7px] tracking-[2px] text-white/40">Épuisé</span>
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
+                                        <div className="p-4">
+                                            <h4 className="font-glacial text-xs text-white uppercase tracking-[2px] group-hover:text-gold transition-colors mb-2">{prod.name}</h4>
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="font-glacial text-sm" style={{ color: '#C9A84C' }}>
+                                                    {(prod.price || 0).toLocaleString('fr-FR')} FCFA
+                                                </span>
+                                                {prod.compare_price > prod.price && (
+                                                    <span className="font-glacial text-[10px] text-white/20 line-through">
+                                                        {prod.compare_price.toLocaleString('fr-FR')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {prod.stock > 0 && (
+                                                <button
+                                                    onClick={e => { e.preventDefault(); addItem(prod, 1); }}
+                                                    className="mt-3 w-full py-1.5 font-lastica text-[7px] tracking-[2px] text-center border border-white/10 text-white/30 hover:border-gold/40 hover:text-gold transition-all">
+                                                    + PANIER
+                                                </button>
+                                            )}
+                                        </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>

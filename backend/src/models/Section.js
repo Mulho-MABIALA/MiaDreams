@@ -5,8 +5,10 @@ const sectionSchema = new mongoose.Schema({
     subtitle:  String,
     content:   String,
     image:     String,
-    page:      { type: String, required: true },
-    type:      String,
+    page:      { type: String, required: true, index: true }, // 'home' | 'apropos' | ...
+    type:      { type: String, index: true },                 // 'hero_slide' | 'tagline' | 'intro' | 'univers' | 'histoire' | 'stat' | 'valeur' | ...
+    cta_label: String,
+    cta_href:  String,
     order:     { type: Number, default: 0 },
     is_active: { type: Boolean, default: true },
 }, { timestamps: true });

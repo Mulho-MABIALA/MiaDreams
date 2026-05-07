@@ -1,12 +1,13 @@
 services:
   - type: web
-    name: mia-dreams
-    runtime: docker
-    plan: free
+    name: miadreams-backend
+    env: node
     region: frankfurt
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    healthCheckPath: /
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/settings/company-info
+
     envVars:
       - key: NODE_ENV
         value: production
@@ -14,21 +15,25 @@ services:
         value: 5000
       - key: MONGODB_URI
         sync: false
+      - key: JWT_SECRET
+        sync: false
       - key: FRONTEND_URL
-        value: https://mia-dreams.onrender.com
+        sync: false
       - key: ADMIN_NAME
-        value: Admin MiaDreams
+        sync: false
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
       - key: MAIL_HOST
-        sync: false
+        value: smtp.gmail.com
       - key: MAIL_PORT
-        value: "587"
+        value: 587
       - key: MAIL_USER
         sync: false
       - key: MAIL_PASS
         sync: false
       - key: MAIL_FROM
+        sync: false
+      - key: BACKEND_URL
         sync: false

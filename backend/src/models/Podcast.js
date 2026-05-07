@@ -12,7 +12,7 @@ const podcastSchema = new mongoose.Schema({
     apple_url:      String,
     youtube_url:    String,
     guest:          String,
-    is_published:   { type: Boolean, default: false },
+    is_published:   { type: Boolean, default: true },
     published_at:   Date,
 }, { timestamps: true });
 

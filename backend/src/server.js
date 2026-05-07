@@ -23,13 +23,13 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Autoriser les requêtes sans origin (Postman, mobile, etc.)
+        // Autoriser les requêtes sans origin (Postman, mobile, SSR, etc.)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.some(o => origin.startsWith(o))) {
-            callback(null, true);
-        } else {
-            callback(new Error(`CORS bloqué pour l'origine : ${origin}`));
+        // Autoriser tous les sous-domaines vercel.app en développement/preview
+        if (origin.endsWith('.vercel.app') || allowedOrigins.some(o => origin.startsWith(o))) {
+            return callback(null, true);
         }
+        callback(new Error(`CORS bloqué pour l'origine : ${origin}`));
     },
     credentials: true,
 }));

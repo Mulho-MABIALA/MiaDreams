@@ -1,0 +1,15 @@
+{
+  "frontend/css/app.css": {
+    "file": "assets/app-D9msn2-5.css",
+    "src": "frontend/js/app.jsx"
+  },
+  "frontend/js/app.jsx": {
+    "file": "assets/app-CPfdKvpS.js",
+    "name": "app",
+    "src": "frontend/js/app.jsx",
+    "isEntry": true,
+    "css": [
+      "assets/app-D9msn2-5.css"
+    ]
+  }
+}

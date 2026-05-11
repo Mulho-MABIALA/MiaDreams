@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/auth');
+const seedAdmin = require('./seed');
 
 const app = express();
 
@@ -12,7 +13,7 @@ const app = express();
 const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-connectDB();
+connectDB().then(() => seedAdmin());
 
 const allowedOrigins = [
     process.env.FRONTEND_URL,

@@ -1,6 +1,7 @@
 const express = require('express');
-const router = express.Router();
-const jwt = require('jsonwebtoken');
+const router  = express.Router();
+const jwt     = require('jsonwebtoken');
+const Admin   = require('../models/Admin');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'miadreams_secret_2024';
 
@@ -8,30 +9,32 @@ const JWT_SECRET = process.env.JWT_SECRET || 'miadreams_secret_2024';
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
-    const adminEmail    = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    const adminName     = process.env.ADMIN_NAME || 'Admin';
-
     if (!email || !password)
         return res.status(400).json({ message: 'Email et mot de passe requis' });
 
-    if (email !== adminEmail)
-        return res.status(401).json({ message: 'Identifiants incorrects' });
+    try {
+        const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
+        if (!admin)
+            return res.status(401).json({ message: 'Identifiants incorrects' });
 
-    const valid = password === adminPassword;
-    if (!valid)
-        return res.status(401).json({ message: 'Identifiants incorrects' });
+        const valid = await admin.checkPassword(password);
+        if (!valid)
+            return res.status(401).json({ message: 'Identifiants incorrects' });
 
-    const token = jwt.sign(
-        { email: adminEmail, name: adminName, role: 'admin' },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-    );
+        const token = jwt.sign(
+            { id: admin._id, email: admin.email, name: admin.name, role: 'admin' },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+        );
 
-    res.json({ token, user: { email: adminEmail, name: adminName, role: 'admin' } });
+        res.json({ token, user: { email: admin.email, name: admin.name, role: 'admin' } });
+    } catch (err) {
+        console.error('Erreur login :', err);
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
 });
 
-// GET /api/auth/me  (vérifie le token)
+// GET /api/auth/me
 router.get('/me', (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ message: 'Token manquant' });
@@ -42,6 +45,29 @@ router.get('/me', (req, res) => {
         res.json({ user });
     } catch {
         res.status(401).json({ message: 'Token invalide' });
+    }
+});
+
+// POST /api/auth/change-password  (authentifié)
+router.post('/change-password', async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: 'Non autorisé' });
+
+    try {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const admin = await Admin.findById(decoded.id);
+        if (!admin) return res.status(404).json({ message: 'Admin introuvable' });
+
+        const valid = await admin.checkPassword(currentPassword);
+        if (!valid) return res.status(401).json({ message: 'Mot de passe actuel incorrect' });
+
+        admin.password = newPassword;
+        await admin.save();
+        res.json({ message: 'Mot de passe modifié avec succès' });
+    } catch (err) {
+        res.status(500).json({ message: 'Erreur serveur' });
     }
 });
 

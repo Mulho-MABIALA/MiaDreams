@@ -27,6 +27,11 @@ app.options('*', cors()); // pré-vol OPTIONS sur toutes les routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check en premier — Render pingue cette URL pour savoir si le service est up
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Servir les fichiers uploadés
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 // Servir les assets publics (images, polices, etc.)
@@ -71,11 +76,6 @@ try {
 } catch (e) {
     console.error('❌ Erreur route /api/admin :', e.message);
 }
-
-// Health check — utilisé pour garder le serveur éveillé (cron ping)
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 // Gestion des 404 API
 app.use('/api/*', (req, res) => {

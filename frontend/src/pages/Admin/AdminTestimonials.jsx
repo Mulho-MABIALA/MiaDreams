@@ -163,7 +163,7 @@ export default function AdminTestimonials() {
                             {/* Avatar */}
                             <div className="w-11 h-11 rounded-full flex-shrink-0 flex items-center justify-center border-2 border-[#E5E7EB] overflow-hidden bg-[#F9FAFB]">
                                 {t.photo
-                                    ? <img src={`/uploads/${t.photo}`} className="w-full h-full object-cover" alt="" />
+                                    ? <img src={t.photo?.startsWith('http') ? t.photo : `/uploads/${t.photo}`} className="w-full h-full object-cover" alt="" />
                                     : <span className="text-sm font-bold text-[#C9A84C]">{t.name?.[0]?.toUpperCase()}</span>
                                 }
                             </div>

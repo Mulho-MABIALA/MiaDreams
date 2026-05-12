@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-const imgSrc = (img) => img ? (img.startsWith('/') ? img : `/uploads/${img}`) : null;
+const imgSrc = (img) => img ? (img.startsWith('http') || img.startsWith('/') ? img : `/uploads/${img}`) : null;
 
 const inputCls = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
 

@@ -3,6 +3,13 @@ import axios from 'axios';
 
 const GOLD = '#C9A84C';
 
+// Gère URLs Cloudinary (https://...) ET anciens noms de fichiers locaux
+const imgSrc = (val) => {
+    if (!val) return '';
+    if (val.startsWith('http') || val.startsWith('/')) return val;
+    return `/uploads/${val}`;
+};
+
 function Spinner() {
     return (
         <svg className="animate-spin w-4 h-4 text-[#C9A84C]" viewBox="0 0 24 24" fill="none">
@@ -27,7 +34,7 @@ function CollectionForm({ collection, brands, onSave, onCancel }) {
     });
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(
-        collection?.image ? (collection.image.startsWith('/') ? collection.image : `/uploads/${collection.image}`) : null
+        collection?.image ? imgSrc(collection.image) : null
     );
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
@@ -302,9 +309,9 @@ export default function AdminCollections() {
                 <div className="space-y-8">
                     {Object.entries(grouped).map(([brandId, group]) => (
                         <div key={brandId}>
-                            {/* Nom de la marque */}
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="text-sm font-bold text-[#111827] uppercase tracking-wider">{group.name}</span>
+                            {/* Séparateur marque */}
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="text-xs font-bold text-[#111827] uppercase tracking-widest">{group.name}</span>
                                 {group.href && (
                                     <a href={group.href} target="_blank" rel="noreferrer"
                                         className="flex items-center gap-1 text-xs text-[#C9A84C] hover:text-[#B8973B] transition-colors">
@@ -319,66 +326,100 @@ export default function AdminCollections() {
                                 <span className="text-xs text-[#9CA3AF]">{group.items.length} collection{group.items.length !== 1 ? 's' : ''}</span>
                             </div>
 
-                            {/* Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {group.items.map(col => (
-                                    <div key={col._id}
-                                        className={`bg-white rounded-xl border shadow-sm overflow-hidden transition-all hover:shadow-md ${
-                                            !col.is_active ? 'opacity-50' : ''
-                                        } ${saved === col._id ? 'border-[#C9A84C]/50 ring-2 ring-[#C9A84C]/20' : 'border-[#E5E7EB]'}`}>
+                            {/* Tableau */}
+                            <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+                                {/* ── Desktop table ── */}
+                                <table className="w-full hidden sm:table">
+                                    <thead>
+                                        <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]">
+                                            <th className="w-16 px-4 py-3" />
+                                            <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Collection</th>
+                                            <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider hidden md:table-cell">Description</th>
+                                            <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Statut</th>
+                                            <th className="text-right px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-48">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#F3F4F6]">
+                                        {group.items.map(col => (
+                                            <tr key={col._id}
+                                                className={`hover:bg-[#F9FAFB] transition-colors ${!col.is_active ? 'opacity-50' : ''} ${saved === col._id ? 'bg-[#FDF8EC]' : ''}`}>
+                                                {/* Image */}
+                                                <td className="px-4 py-3.5">
+                                                    {col.image
+                                                        ? <img src={imgSrc(col.image)} className="w-11 h-11 object-cover rounded-lg border border-[#E5E7EB]" alt={col.name} />
+                                                        : <div className="w-11 h-11 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                          </div>}
+                                                </td>
+                                                {/* Nom */}
+                                                <td className="px-4 py-3.5">
+                                                    <p className="text-sm font-semibold text-[#111827]">{col.name}</p>
+                                                    {col.order > 0 && <p className="text-xs text-[#9CA3AF] mt-0.5">Ordre : {col.order}</p>}
+                                                </td>
+                                                {/* Description */}
+                                                <td className="px-4 py-3.5 hidden md:table-cell">
+                                                    <p className="text-xs text-[#6B7280] max-w-xs line-clamp-2">{col.description || '—'}</p>
+                                                </td>
+                                                {/* Statut */}
+                                                <td className="px-4 py-3.5">
+                                                    <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full ${col.is_active ? 'bg-green-100 text-green-700' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
+                                                        {col.is_active ? 'Actif' : 'Inactif'}
+                                                    </span>
+                                                </td>
+                                                {/* Actions */}
+                                                <td className="px-4 py-3.5">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button onClick={() => handleToggle(col)}
+                                                            className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
+                                                                col.is_active
+                                                                    ? 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#F9FAFB]'
+                                                                    : 'border-[#C9A84C]/40 bg-[#FDF8EC] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white'
+                                                            }`}>
+                                                            {col.is_active ? 'Désactiver' : 'Activer'}
+                                                        </button>
+                                                        <button onClick={() => setEditing(col)}
+                                                            className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
+                                                            Modifier
+                                                        </button>
+                                                        <button onClick={() => handleDelete(col._id)}
+                                                            className="text-xs font-medium text-[#DC2626] bg-[#FEF2F2] hover:bg-[#FEE2E2] px-3 py-1.5 rounded-lg transition-colors">
+                                                            Supprimer
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
 
-                                        {/* Image */}
-                                        <div className="relative h-36 bg-[#F3F4F6] overflow-hidden">
-                                            {col.image ? (
-                                                <img
-                                                    src={col.image.startsWith('/') ? col.image : `/uploads/${col.image}`}
-                                                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                                                    alt={col.name} />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1">
-                                                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-                                                    </svg>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Infos */}
-                                        <div className="p-4">
-                                            <div className="flex items-start justify-between gap-2 mb-1">
-                                                <p className="text-sm font-semibold text-[#111827] leading-tight">{col.name}</p>
-                                                <span className={`flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${col.is_active ? 'bg-green-100 text-green-700' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
-                                                    {col.is_active ? 'Actif' : 'Off'}
+                                {/* ── Cartes mobile ── */}
+                                <div className="sm:hidden divide-y divide-[#F3F4F6]">
+                                    {group.items.map(col => (
+                                        <div key={col._id} className={`flex items-center gap-3 p-4 ${!col.is_active ? 'opacity-50' : ''}`}>
+                                            {col.image
+                                                ? <img src={imgSrc(col.image)} className="w-14 h-14 object-cover rounded-xl border border-[#E5E7EB] flex-shrink-0" alt={col.name} />
+                                                : <div className="w-14 h-14 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] flex-shrink-0 flex items-center justify-center">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                  </div>}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold text-[#111827] truncate">{col.name}</p>
+                                                <span className={`inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full mt-1 ${col.is_active ? 'bg-green-100 text-green-700' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
+                                                    {col.is_active ? 'Actif' : 'Inactif'}
                                                 </span>
                                             </div>
-                                            {col.description && (
-                                                <p className="text-xs text-[#9CA3AF] leading-relaxed line-clamp-2">{col.description}</p>
-                                            )}
-                                        </div>
-
-                                        {/* Actions */}
-                                        <div className="flex items-center justify-between px-4 py-3 border-t border-[#F3F4F6] bg-[#FAFAFA]">
-                                            <button onClick={() => handleToggle(col)}
-                                                className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
-                                                    col.is_active
-                                                        ? 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#F9FAFB]'
-                                                        : 'border-[#C9A84C]/40 bg-[#FDF8EC] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white'
-                                                }`}>
-                                                {col.is_active ? 'Désactiver' : '✓ Activer'}
-                                            </button>
-                                            <div className="flex items-center gap-1.5">
+                                            <div className="flex flex-col gap-1.5 flex-shrink-0">
                                                 <button onClick={() => setEditing(col)}
-                                                    className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#6B7280] transition-colors">
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                    className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
+                                                    Modifier
                                                 </button>
                                                 <button onClick={() => handleDelete(col._id)}
-                                                    className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#DC2626] transition-colors">
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+                                                    className="text-xs font-medium text-[#DC2626] bg-[#FEF2F2] hover:bg-[#FEE2E2] px-3 py-1.5 rounded-lg transition-colors">
+                                                    Supprimer
                                                 </button>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     ))}

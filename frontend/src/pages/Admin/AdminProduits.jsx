@@ -113,7 +113,7 @@ function ProductForm({ initial, onSave, onCancel }) {
                     <input type="file" accept="image/*" onChange={handleFile}
                         className="w-full text-sm text-[#374151] file:mr-3 file:border-0 file:bg-[#FDF8EC] file:text-[#C9A84C] file:text-xs file:font-medium file:px-3 file:py-2 file:rounded-lg cursor-pointer border border-[#E5E7EB] rounded-lg px-3 py-2 bg-white" />
                     {(preview || form.image) && (
-                        <img src={preview || `/uploads/${form.image}`} className="mt-2 h-20 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="aperçu" />
+                        <img src={preview || (form.image?.startsWith('http') ? form.image : `/uploads/${form.image}`)} className="mt-2 h-20 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="aperçu" />
                     )}
                 </div>
 
@@ -254,7 +254,7 @@ export default function AdminProduits() {
                                         style={isOut ? { borderLeft: '3px solid #FCA5A5' } : isLow ? { borderLeft: '3px solid #FCD34D' } : {}}>
                                         <td className="px-4 py-3.5">
                                             {p.image
-                                                ? <img src={`/uploads/${p.image}`} className="w-10 h-12 object-cover rounded-lg border border-[#E5E7EB]" alt="" />
+                                                ? <img src={p.image?.startsWith('http') ? p.image : `/uploads/${p.image}`} className="w-10 h-12 object-cover rounded-lg border border-[#E5E7EB]" alt="" />
                                                 : <div className="w-10 h-12 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB]" />
                                             }
                                         </td>

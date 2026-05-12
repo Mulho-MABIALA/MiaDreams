@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     plugins: [react()],
-    publicDir: 'public',   // frontend/public/ → copié dans dist/
+    publicDir: '../public', // dossier public racine → copié dans dist/
     server: {
         port: 5173,
         proxy: {

@@ -54,101 +54,116 @@ export default function Brand() {
 
             {/* COLLECTIONS */}
             {collections.length > 0 && (
-                <section className="bg-[#080808] py-24 lg:py-32">
+                <section className="bg-[#080808] py-20 lg:py-28">
                     <div className="max-w-7xl mx-auto px-6 lg:px-10">
-                        <div className="text-center mb-16 reveal">
-                            <span className="eyebrow justify-center">Nos créations</span>
-                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">NOS <span className="text-gold">COLLECTIONS</span></h2>
-                            <div className="gold-line-center" />
-                        </div>
-                        {collections.map((col, ci) => {
-                            const colImg = col.image
-                                ? imgSrc(col.image)
-                                : null;
-                            return (
-                            <div key={col._id} className="mb-32 last:mb-0">
 
-                                {/* ── Bannière collection ── */}
-                                {colImg ? (
-                                    <div className="relative overflow-hidden mb-12 reveal" style={{ height: 420 }}>
-                                        <img src={colImg} alt={col.name}
-                                            className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
-                                            loading="lazy" />
-                                        {/* Dégradé sombre sur le bas */}
-                                        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(8,8,8,.95) 0%, rgba(8,8,8,.4) 50%, rgba(8,8,8,.1) 100%)' }} />
-                                        {/* Infos en overlay */}
-                                        <div className="absolute bottom-0 inset-x-0 p-8 lg:p-12">
-                                            <div className="flex items-end gap-6">
-                                                <div className="flex-1">
-                                                    <span className="font-lastica text-[8px] tracking-[5px] text-gold/50 block mb-2">COLLECTION {String(ci + 1).padStart(2, '0')}</span>
-                                                    <h3 className="font-glacial text-3xl lg:text-4xl text-white uppercase tracking-[3px] mb-3">{col.name}</h3>
-                                                    {col.description && (
-                                                        <p className="font-glacial text-sm text-white/55 leading-relaxed max-w-xl">{col.description}</p>
-                                                    )}
+                        {/* Titre section */}
+                        <div className="flex items-center gap-6 mb-16 reveal">
+                            <div>
+                                <span className="font-lastica text-[8px] tracking-[5px] text-gold/40 uppercase block mb-2">Nos créations</span>
+                                <h2 className="display-title text-2xl lg:text-3xl text-white">NOS <span className="text-gold">COLLECTIONS</span></h2>
+                            </div>
+                            <div className="flex-1 h-px bg-gold/10" />
+                            <span className="font-lastica text-[8px] tracking-[3px] text-white/15">
+                                {collections.length} collection{collections.length > 1 ? 's' : ''}
+                            </span>
+                        </div>
+
+                        <div className="space-y-20">
+                            {collections.map((col, ci) => (
+                                <div key={col._id} className="reveal">
+
+                                    {/* ── En-tête de collection ── */}
+                                    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 mb-10 overflow-hidden border border-white/[0.06] ${ci % 2 === 1 ? 'lg:[&>*:first-child]:order-2' : ''}`}>
+                                        {/* Image */}
+                                        <div className="relative overflow-hidden" style={{ minHeight: 280 }}>
+                                            {col.image ? (
+                                                <img src={imgSrc(col.image)} alt={col.name}
+                                                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 hover:scale-[1.04]"
+                                                    loading="lazy" />
+                                            ) : (
+                                                <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#0f0f0f' }}>
+                                                    <svg className="w-12 h-12 text-gold/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                    </svg>
                                                 </div>
-                                                {col.products?.length > 0 && (
-                                                    <span className="font-lastica text-[7px] tracking-[3px] text-gold/40 flex-shrink-0">
-                                                        {col.products.length} pièce{col.products.length > 1 ? 's' : ''}
-                                                    </span>
-                                                )}
+                                            )}
+                                            {/* Numéro flottant */}
+                                            <div className="absolute top-5 left-5">
+                                                <span className="font-lastica text-[9px] tracking-[4px] text-white/30 bg-black/40 backdrop-blur-sm px-3 py-1.5">
+                                                    {String(ci + 1).padStart(2, '0')}
+                                                </span>
                                             </div>
                                         </div>
-                                        {/* Trait doré en haut */}
-                                        <div className="absolute top-0 inset-x-0 h-px bg-gold/20" />
-                                    </div>
-                                ) : (
-                                    /* Sans image : header simple */
-                                    <div className="border-l-2 border-gold/30 pl-6 mb-10 reveal">
-                                        <span className="font-lastica text-[8px] tracking-[5px] text-gold/40 block mb-1">COLLECTION {String(ci + 1).padStart(2, '0')}</span>
-                                        <h3 className="font-glacial text-2xl text-white uppercase tracking-[3px]">{col.name}</h3>
-                                        {col.description && (
-                                            <p className="font-glacial text-sm text-white/45 mt-3 leading-relaxed max-w-2xl">{col.description}</p>
-                                        )}
-                                    </div>
-                                )}
 
-                                {/* ── Grille produits ── */}
-                                {col.products && col.products.length > 0 ? (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {col.products.map((prod, pi) => (
-                                            <div key={prod._id} className="reveal group" style={{ transitionDelay: `${pi * 0.08}s` }}>
-                                                <div className="overflow-hidden mb-4 relative" style={{ background: '#111' }}>
-                                                    {prod.image
-                                                        ? <img src={imgSrc(prod.image)}
-                                                               className="w-full h-[320px] object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                                                               alt={prod.name} loading="lazy" />
-                                                        : <div className="w-full h-[320px] bg-[#141414] flex items-center justify-center">
-                                                              <svg className="w-8 h-8 text-gold/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                              </svg>
-                                                          </div>
-                                                    }
-                                                    <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/40 transition-colors duration-400" />
-                                                    <div className="absolute bottom-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/20 transition-colors duration-400" />
+                                        {/* Infos */}
+                                        <div className="flex flex-col justify-center p-8 lg:p-12" style={{ background: '#0c0c0c' }}>
+                                            <span className="font-lastica text-[7px] tracking-[5px] text-gold/50 uppercase mb-4">Collection</span>
+                                            <h3 className="font-glacial text-2xl lg:text-3xl text-white uppercase tracking-[3px] leading-tight mb-4">
+                                                {col.name}
+                                            </h3>
+                                            <div className="w-8 h-px mb-5" style={{ background: '#C9A84C' }} />
+                                            {col.description && (
+                                                <p className="font-glacial text-sm text-white/45 leading-loose mb-6">
+                                                    {col.description}
+                                                </p>
+                                            )}
+                                            {col.products?.length > 0 && (
+                                                <div className="flex items-center gap-2 mt-auto">
+                                                    <div className="w-1 h-1 rounded-full bg-gold/60" />
+                                                    <span className="font-lastica text-[8px] tracking-[3px] text-gold/50">
+                                                        {col.products.length} pièce{col.products.length > 1 ? 's' : ''}
+                                                    </span>
                                                 </div>
-                                                <h4 className="font-glacial text-sm text-white uppercase tracking-[2px] mb-1 group-hover:text-gold transition-colors duration-300">{prod.name}</h4>
-                                                {prod.price > 0 && (
-                                                    <p className="font-glacial text-sm font-light" style={{ color: '#C9A84C' }}>
-                                                        {prod.price.toLocaleString('fr-FR')} FCFA
-                                                        {prod.compare_price > prod.price && (
-                                                            <span className="ml-2 line-through text-white/20 text-xs">{prod.compare_price.toLocaleString('fr-FR')}</span>
-                                                        )}
-                                                    </p>
-                                                )}
-                                                {prod.description && (
-                                                    <p className="font-glacial text-xs text-white/30 mt-1.5 leading-relaxed line-clamp-2">{prod.description}</p>
-                                                )}
-                                            </div>
-                                        ))}
+                                            )}
+                                        </div>
                                     </div>
-                                ) : (
-                                    <div className="border border-dashed border-white/[0.05] py-12 text-center">
-                                        <p className="font-lastica text-[7px] tracking-[3px] text-white/15 uppercase">Produits à venir</p>
-                                    </div>
-                                )}
-                            </div>
-                            );
-                        })}
+
+                                    {/* ── Grille produits ── */}
+                                    {col.products && col.products.length > 0 ? (
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                                            {col.products.map((prod, pi) => (
+                                                <div key={prod._id} className="group reveal" style={{ transitionDelay: `${pi * 0.06}s` }}>
+                                                    <div className="overflow-hidden mb-3 relative" style={{ background: '#111' }}>
+                                                        {prod.image
+                                                            ? <img src={imgSrc(prod.image)}
+                                                                   className="w-full h-[240px] object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                                                                   alt={prod.name} loading="lazy" />
+                                                            : <div className="w-full h-[240px] bg-[#141414] flex items-center justify-center">
+                                                                  <svg className="w-7 h-7 text-gold/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                  </svg>
+                                                              </div>
+                                                        }
+                                                        <div className="absolute inset-x-0 bottom-0 h-px bg-gold/0 group-hover:bg-gold/30 transition-colors duration-300" />
+                                                    </div>
+                                                    <h4 className="font-glacial text-xs text-white/70 uppercase tracking-[1.5px] mb-1 group-hover:text-gold transition-colors duration-300 leading-snug">
+                                                        {prod.name}
+                                                    </h4>
+                                                    {prod.price > 0 && (
+                                                        <p className="font-glacial text-sm" style={{ color: '#C9A84C' }}>
+                                                            {prod.price.toLocaleString('fr-FR')} <span className="text-xs text-gold/60">FCFA</span>
+                                                            {prod.compare_price > prod.price && (
+                                                                <span className="ml-2 line-through text-white/20 text-xs">
+                                                                    {prod.compare_price.toLocaleString('fr-FR')}
+                                                                </span>
+                                                            )}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="border border-dashed border-white/[0.06] py-10 text-center">
+                                            <svg className="w-6 h-6 text-white/10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                            </svg>
+                                            <p className="font-lastica text-[7px] tracking-[3px] text-white/15 uppercase">Produits à venir</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
             )}

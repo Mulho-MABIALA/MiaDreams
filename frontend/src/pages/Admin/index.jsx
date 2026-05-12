@@ -19,6 +19,7 @@ import AdminProduits from './AdminProduits';
 import AdminCommandes from './AdminCommandes';
 import AdminPages from './AdminPages';
 import AdminCollections from './AdminCollections';
+import AdminProfile from './AdminProfile';
 
 const NAV_GROUPS = [
     {
@@ -308,14 +309,22 @@ export default function Admin() {
                         Voir le site
                     </a>
 
-                    {/* User */}
-                    <div
-                        className="flex items-center"
-                        style={{
+                    {/* User — cliquable → page profil */}
+                    <NavLink
+                        to="/admin/profil"
+                        className="flex items-center rounded-xl transition-all duration-150"
+                        style={({ isActive }) => ({
                             gap: '10px',
                             paddingLeft: '16px',
                             borderLeft: '1px solid #EDE5DA',
-                        }}
+                            paddingRight: '8px',
+                            paddingTop: '4px',
+                            paddingBottom: '4px',
+                            textDecoration: 'none',
+                            background: isActive ? '#FDF8EC' : 'transparent',
+                        })}
+                        onMouseEnter={e => { if (!e.currentTarget.classList.contains('active')) e.currentTarget.style.background = '#FDF8EC'; }}
+                        onMouseLeave={e => { if (!e.currentTarget.classList.contains('active')) e.currentTarget.style.background = 'transparent'; }}
                     >
                         <div
                             className="flex items-center justify-center flex-shrink-0"
@@ -329,13 +338,13 @@ export default function Admin() {
                                 color: '#1E110A',
                             }}
                         >
-                            {user.name?.[0]?.toUpperCase()}
+                            {user.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
                         </div>
                         <div className="hidden sm:block">
                             <p style={{ fontSize: '13px', color: '#3D2214', fontWeight: 500, lineHeight: 1 }}>{user.name}</p>
-                            <p style={{ fontSize: '11px', color: '#9E8272', marginTop: '2px' }}>Administrateur</p>
+                            <p style={{ fontSize: '11px', color: '#9E8272', marginTop: '2px' }}>Mon profil</p>
                         </div>
-                    </div>
+                    </NavLink>
                 </header>
 
                 {/* Content */}
@@ -362,6 +371,7 @@ export default function Admin() {
                             <Route path="newsletter" element={<AdminNewsletter />} />
                             <Route path="pages/*"    element={<AdminPages />} />
                             <Route path="parametres" element={<AdminSettings />} />
+                            <Route path="profil" element={<AdminProfile />} />
                             <Route path="*" element={<Navigate to="/admin" replace />} />
                         </Routes>
                     </div>

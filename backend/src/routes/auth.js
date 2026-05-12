@@ -48,6 +48,29 @@ router.get('/me', (req, res) => {
     }
 });
 
+// PUT /api/auth/profile  (authentifié) — mise à jour nom + email
+router.put('/profile', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: 'Non autorisé' });
+
+    try {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const admin = await Admin.findById(decoded.id);
+        if (!admin) return res.status(404).json({ message: 'Admin introuvable' });
+
+        const { name, email } = req.body;
+        if (name)  admin.name  = name.trim();
+        if (email) admin.email = email.toLowerCase().trim();
+
+        await admin.save();
+        res.json({ message: 'Profil mis à jour', user: { name: admin.name, email: admin.email } });
+    } catch (err) {
+        console.error('Erreur profil :', err);
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+});
+
 // POST /api/auth/change-password  (authentifié)
 router.post('/change-password', async (req, res) => {
     const { currentPassword, newPassword } = req.body;

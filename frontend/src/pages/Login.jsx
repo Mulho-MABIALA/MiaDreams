@@ -12,16 +12,35 @@ export default function Login() {
         e.preventDefault();
         setError('');
         setLoading(true);
-        try {
-            const res = await axios.post('/api/auth/login', form);
-            localStorage.setItem('admin_token', res.data.token);
-            localStorage.setItem('admin_user', JSON.stringify(res.data.user));
-            navigate('/admin');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Identifiants incorrects');
-        } finally {
-            setLoading(false);
+
+        // Retry jusqu'à 8 fois (gère le cold start Render ~50s)
+        const MAX_RETRIES = 8;
+        const RETRY_DELAY = 7000; // 7s entre chaque essai
+
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                const res = await axios.post('/api/auth/login', form);
+                localStorage.setItem('admin_token', res.data.token);
+                localStorage.setItem('admin_user', JSON.stringify(res.data.user));
+                navigate('/admin');
+                return;
+            } catch (err) {
+                const status = err.response?.status;
+                // 401 = mauvais identifiants → ne pas retry
+                if (status === 401) {
+                    setError(err.response.data.message || 'Identifiants incorrects');
+                    break;
+                }
+                // 404/503/network → serveur en démarrage → retry
+                if (attempt < MAX_RETRIES) {
+                    setError(`Serveur en démarrage… (${attempt}/${MAX_RETRIES})`);
+                    await new Promise(r => setTimeout(r, RETRY_DELAY));
+                } else {
+                    setError('Le serveur est indisponible. Réessayez dans quelques secondes.');
+                }
+            }
         }
+        setLoading(false);
     };
 
     return (

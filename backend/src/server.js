@@ -72,6 +72,11 @@ try {
     console.error('❌ Erreur route /api/admin :', e.message);
 }
 
+// Health check — utilisé pour garder le serveur éveillé (cron ping)
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Gestion des 404 API
 app.use('/api/*', (req, res) => {
     res.status(404).json({ message: 'Route API non trouvée' });

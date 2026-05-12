@@ -145,9 +145,15 @@ const crudRouter = (Model, fields = []) => {
     r.put('/:id', uploadFields, compressImages, async (req, res) => {
         try {
             const data = castData(Model, req.body);
-            if(req.files) fields.forEach(f => { if(req.files[f]) data[f] = req.files[f][0].filename; });
+            if(req.files) fields.forEach(f => { if(req.files[f] && req.files[f][0].filename) data[f] = req.files[f][0].filename; });
+            // Récupérer le doc existant pour préserver les champs image/PDF non modifiés
+            const existing = await Model.findById(req.params.id);
+            if(!existing) return res.status(404).json({message:'Introuvable'});
+            fields.forEach(f => {
+                // Si aucun nouveau fichier envoyé et pas de valeur dans req.body → garder l'existant
+                if (data[f] === undefined && existing[f]) data[f] = existing[f];
+            });
             const doc = await Model.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: false });
-            if(!doc) return res.status(404).json({message:'Introuvable'});
             res.json(doc);
         } catch(e){ res.status(400).json({message:e.message}); }
     });
@@ -162,7 +168,55 @@ const crudRouter = (Model, fields = []) => {
 
 router.use('/brands',       crudRouter(Brand, ['image']));
 router.use('/collections',  crudRouter(Collection, ['image']));
-router.use('/products',     crudRouter(Product, ['image']));
+// ─── Routes produits personnalisées (support multi-images) ──────────────────────
+const productUpload = upload.fields([
+    { name: 'image',  maxCount: 1 },
+    { name: 'images', maxCount: 8 },
+]);
+
+const parseProduct = (body) => {
+    const data = castData(Product, body);
+    if (data.sizes  && typeof data.sizes  === 'string') data.sizes  = data.sizes.split(',').map(s => s.trim()).filter(Boolean);
+    if (data.colors && typeof data.colors === 'string') data.colors = data.colors.split(',').map(s => s.trim()).filter(Boolean);
+    return data;
+};
+
+router.get('/products',     async (req, res) => { try { res.json(await Product.find().sort('order createdAt')); } catch(e){ res.status(500).json({message:e.message}); }});
+router.get('/products/:id', async (req, res) => { try { const d = await Product.findById(req.params.id); if(!d) return res.status(404).json({message:'Introuvable'}); res.json(d); } catch(e){ res.status(500).json({message:e.message}); }});
+
+router.post('/products', productUpload, processImages, async (req, res) => {
+    try {
+        const data = parseProduct(req.body);
+        if (req.files?.image?.[0]?.filename)  data.image  = req.files.image[0].filename;
+        if (req.files?.images) data.images = req.files.images.map(f => f.filename).filter(Boolean);
+        const doc = await Product.create(data);
+        res.status(201).json(doc);
+    } catch(e){ res.status(400).json({message:e.message}); }
+});
+
+router.put('/products/:id', productUpload, processImages, async (req, res) => {
+    try {
+        const existing = await Product.findById(req.params.id);
+        if (!existing) return res.status(404).json({message:'Introuvable'});
+        const data = parseProduct(req.body);
+        // Image principale
+        if (req.files?.image?.[0]?.filename) data.image = req.files.image[0].filename;
+        else if (!data.image) data.image = existing.image; // garder l'existante
+        // Images supplémentaires : combiner existantes conservées + nouvelles uploadées
+        const kept = req.body.existingImages
+            ? (Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages])
+            : [];
+        const newImgs = req.files?.images ? req.files.images.map(f => f.filename).filter(Boolean) : [];
+        data.images = [...kept, ...newImgs];
+        const doc = await Product.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: false });
+        res.json(doc);
+    } catch(e){ res.status(400).json({message:e.message}); }
+});
+
+router.delete('/products/:id', async (req, res) => {
+    try { await Product.findByIdAndDelete(req.params.id); res.json({ message: 'Supprimé' }); }
+    catch(e){ res.status(500).json({message:e.message}); }
+});
 router.use('/services',     crudRouter(Service, ['image']));
 router.use('/posts',        crudRouter(Post, ['cover_image']));
 router.use('/podcasts',     crudRouter(Podcast, ['thumbnail']));

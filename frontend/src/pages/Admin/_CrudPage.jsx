@@ -19,7 +19,7 @@ const imgSrc = (val) => {
     return `/uploads/${val}`;
 };
 
-export default function CrudPage({ title, apiPath, fields, imageFields = [], hideHeader = false }) {
+export default function CrudPage({ title, apiPath, fields, imageFields = [], pdfFields = [], hideHeader = false }) {
     const [items, setItems] = useState([]);
     const [form, setForm] = useState({});
     const [files, setFiles] = useState({});
@@ -41,7 +41,8 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
         try {
             const fd = new FormData();
             Object.entries(form).forEach(([k, v]) => {
-                if (v !== undefined && v !== null && !imageFields.includes(k) && k !== '_id' && k !== '__v') fd.append(k, v);
+                // Exclure les champs image ET pdf (envoyés uniquement via files si nouveau fichier sélectionné)
+                if (v !== undefined && v !== null && !imageFields.includes(k) && !pdfFields.includes(k) && k !== '_id' && k !== '__v') fd.append(k, v);
             });
             Object.entries(files).forEach(([k, v]) => fd.append(k, v));
             const cfg = { headers: { 'Content-Type': 'multipart/form-data' } };
@@ -93,19 +94,64 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
                                 <label className="block text-xs font-medium text-[#374151] mb-1.5">{f.label}</label>
                                 {f.type === 'textarea' ? (
                                     <textarea rows={4} value={form[f.name] || ''} onChange={e => setForm(p => ({ ...p, [f.name]: e.target.value }))} className={inputCls + " resize-none"} />
-                                ) : f.type === 'file' ? (
+                                ) : f.type === 'file' ? (() => {
+                                    const isPdf = f.isPdf || pdfFields.includes(f.name);
+                                    const selectedFile = files[f.name];
+                                    const existingVal  = form[f.name];
+                                    return (
                                     <div>
-                                        <input type="file" accept="image/*,.pdf" onChange={e => setFiles(p => ({ ...p, [f.name]: e.target.files[0] }))}
+                                        <input type="file"
+                                            accept={f.accept || 'image/*,.pdf'}
+                                            onChange={e => setFiles(p => ({ ...p, [f.name]: e.target.files[0] }))}
                                             className="w-full text-sm text-[#374151] file:mr-3 file:border-0 file:bg-[#FDF8EC] file:text-[#C9A84C] file:text-xs file:font-medium file:px-3 file:py-2 file:rounded-lg cursor-pointer border border-[#E5E7EB] rounded-lg px-3 py-2 bg-white" />
-                                        {files[f.name] ? (
-                                            <img src={URL.createObjectURL(files[f.name])} className="mt-2 h-20 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="aperçu" />
-                                        ) : form[f.name] ? (
-                                            <div className="flex items-center gap-3 mt-2">
-                                                <img src={imgSrc(form[f.name])} className="h-14 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="actuel" />
-                                                <p className="text-xs text-[#9CA3AF] truncate max-w-[180px]">{form[f.name].startsWith('http') ? 'Cloudinary ✓' : form[f.name]}</p>
-                                            </div>
-                                        ) : null}
+
+                                        {/* Aperçu du nouveau fichier sélectionné */}
+                                        {selectedFile && (
+                                            isPdf ? (
+                                                <div className="mt-2 flex items-center gap-3 p-3 bg-[#FDF8EC] border border-[#C9A84C]/25 rounded-lg">
+                                                    <svg className="w-8 h-8 text-[#C9A84C] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                        <text x="8" y="17" fontSize="5" fill="#C9A84C" stroke="none" fontWeight="bold">PDF</text>
+                                                    </svg>
+                                                    <div className="min-w-0">
+                                                        <p className="text-xs font-medium text-[#374151] truncate">{selectedFile.name}</p>
+                                                        <p className="text-xs text-[#9CA3AF]">{(selectedFile.size / 1024).toFixed(0)} Ko — Prêt à enregistrer</p>
+                                                    </div>
+                                                    <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <img src={URL.createObjectURL(selectedFile)} className="mt-2 h-20 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="aperçu" />
+                                            )
+                                        )}
+
+                                        {/* Valeur existante déjà enregistrée */}
+                                        {!selectedFile && existingVal && (
+                                            isPdf ? (
+                                                <div className="flex items-center gap-3 mt-2 p-2.5 bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg">
+                                                    <svg className="w-6 h-6 text-[#C9A84C] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                    </svg>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs font-medium text-[#374151]">PDF enregistré</p>
+                                                        <p className="text-xs text-[#9CA3AF] truncate">{existingVal.startsWith('http') ? 'Cloudinary ✓' : existingVal}</p>
+                                                    </div>
+                                                    <a href={existingVal} target="_blank" rel="noreferrer"
+                                                        className="text-xs font-medium text-[#C9A84C] hover:text-[#B8973B] border border-[#C9A84C]/30 px-2.5 py-1 rounded-md flex-shrink-0">
+                                                        Ouvrir
+                                                    </a>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-3 mt-2">
+                                                    <img src={imgSrc(existingVal)} className="h-14 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="actuel" />
+                                                    <p className="text-xs text-[#9CA3AF] truncate max-w-[180px]">{existingVal.startsWith('http') ? 'Cloudinary ✓' : existingVal}</p>
+                                                </div>
+                                            )
+                                        )}
                                     </div>
+                                    );
+                                })()
                                 ) : f.type === 'select' ? (
                                     <select value={form[f.name] || ''} onChange={e => setForm(p => ({ ...p, [f.name]: e.target.value }))} className={inputCls}>
                                         <option value="">— Choisir —</option>

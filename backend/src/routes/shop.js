@@ -25,12 +25,23 @@ router.get('/categories', async (req, res) => {
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
-// GET /api/shop/:slug
+// GET /api/shop/:slug — produit + articles similaires
 router.get('/:slug', async (req, res) => {
     try {
         const product = await Product.findOne({ slug: req.params.slug, is_active: true });
         if (!product) return res.status(404).json({ message: 'Produit introuvable' });
-        res.json(product);
+
+        // Articles similaires : même catégorie, différent produit, max 4
+        const similar = await Product.find({
+            is_active:  true,
+            category:   product.category,
+            _id:        { $ne: product._id },
+        })
+        .sort({ is_featured: -1, order: 1 })
+        .limit(4)
+        .select('name slug image price compare_price category');
+
+        res.json({ product, similar });
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 

@@ -20,6 +20,7 @@ import AdminCommandes from './AdminCommandes';
 import AdminPages from './AdminPages';
 import AdminCollections from './AdminCollections';
 import AdminProfile from './AdminProfile';
+import AdminCaisse from './AdminCaisse';
 
 const NAV_GROUPS = [
     {
@@ -48,6 +49,12 @@ const NAV_GROUPS = [
         items: [
             { to: '/admin/produits',   label: 'Produits',   icon: <IconShop /> },
             { to: '/admin/commandes',  label: 'Commandes',  icon: <IconCart /> },
+        ]
+    },
+    {
+        label: 'Finance',
+        items: [
+            { to: '/admin/caisse', label: 'Caisse', icon: <IconCaisse /> },
         ]
     },
     {
@@ -372,6 +379,7 @@ export default function Admin() {
                             <Route path="pages/*"    element={<AdminPages />} />
                             <Route path="parametres" element={<AdminSettings />} />
                             <Route path="profil" element={<AdminProfile />} />
+                            <Route path="caisse" element={<AdminCaisse />} />
                             <Route path="*" element={<Navigate to="/admin" replace />} />
                         </Routes>
                     </div>
@@ -420,4 +428,5 @@ function IconSettings() { return <svg width="15" height="15" viewBox="0 0 24 24"
 function IconLogout() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> }
 function IconShop() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> }
 function IconCart() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg> }
-function IconMenu() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> }
+function IconMenu()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> }
+function IconCaisse() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="15"/><line x1="10" y1="13" x2="14" y2="13"/></svg> }

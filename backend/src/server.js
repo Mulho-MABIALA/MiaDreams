@@ -5,7 +5,8 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/auth');
-const seedAdmin = require('./seed');
+const seedAdmin  = require('./seed');
+const seedBrands = require('./seedBrands');
 
 const app = express();
 
@@ -13,7 +14,10 @@ const app = express();
 const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-connectDB().then(() => seedAdmin());
+connectDB().then(async () => {
+    await seedAdmin();
+    await seedBrands();
+});
 
 // CORS : accepte toutes les origines connues + reflect pour credentials
 app.use(cors({

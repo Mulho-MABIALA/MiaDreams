@@ -32,27 +32,45 @@ app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 // Servir les assets publics (images, polices, etc.)
 app.use(express.static(path.join(__dirname, '../../public')));
 
-// Routes API
-app.use('/api/auth',         require('./routes/auth'));
-app.use('/api/settings',     require('./routes/settings'));
-app.use('/api/home',         require('./routes/home'));
-app.use('/api/brands',       require('./routes/brands'));
-app.use('/api/blog',         require('./routes/blog'));
-app.use('/api/podcasts',     require('./routes/podcasts'));
-app.use('/api/gallery',      require('./routes/gallery'));
-app.use('/api/catalogues',   require('./routes/catalogues'));
-app.use('/api/search',       require('./routes/search'));
-app.use('/api/contact',      require('./routes/contact'));
-app.use('/api/reservation',  require('./routes/reservation'));
-app.use('/api/newsletter',   require('./routes/newsletter'));
-app.use('/api/testimonials', require('./routes/testimonials'));
-app.use('/api/apropos',      require('./routes/apropos'));
-app.use('/api/impact',       require('./routes/impact'));
-app.use('/api/sections',     require('./routes/sections'));
-app.use('/api/shop',         require('./routes/shop'));
-app.use('/api/orders',       require('./routes/orders'));
-app.use('/api/payment',      require('./routes/payment'));
-app.use('/api/admin',        authMiddleware, require('./routes/admin'));
+// Routes API — chaque require est blindé pour ne pas crasher le serveur
+const routes = [
+    ['/api/auth',         './routes/auth'],
+    ['/api/settings',     './routes/settings'],
+    ['/api/home',         './routes/home'],
+    ['/api/brands',       './routes/brands'],
+    ['/api/blog',         './routes/blog'],
+    ['/api/podcasts',     './routes/podcasts'],
+    ['/api/gallery',      './routes/gallery'],
+    ['/api/catalogues',   './routes/catalogues'],
+    ['/api/search',       './routes/search'],
+    ['/api/contact',      './routes/contact'],
+    ['/api/reservation',  './routes/reservation'],
+    ['/api/newsletter',   './routes/newsletter'],
+    ['/api/testimonials', './routes/testimonials'],
+    ['/api/apropos',      './routes/apropos'],
+    ['/api/impact',       './routes/impact'],
+    ['/api/sections',     './routes/sections'],
+    ['/api/shop',         './routes/shop'],
+    ['/api/orders',       './routes/orders'],
+    ['/api/payment',      './routes/payment'],
+];
+
+routes.forEach(([path, file]) => {
+    try {
+        app.use(path, require(file));
+        console.log(`✅ Route chargée : ${path}`);
+    } catch (e) {
+        console.error(`❌ Erreur route ${path} :`, e.message);
+    }
+});
+
+// Route admin (authentifiée)
+try {
+    app.use('/api/admin', authMiddleware, require('./routes/admin'));
+    console.log('✅ Route chargée : /api/admin');
+} catch (e) {
+    console.error('❌ Erreur route /api/admin :', e.message);
+}
 
 // Gestion des 404 API
 app.use('/api/*', (req, res) => {

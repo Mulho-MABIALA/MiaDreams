@@ -32,12 +32,17 @@ export default function Navbar() {
         { name: 'Fashion Program', slug: 'fashion-program', href: '/fashionProgram' },
         { name: 'Personal Branding', slug: 'personal-branding', href: '/personalBranding' },
     ];
+    // Chemins des pages de marques statiques existantes
+    const STATIC_BRAND_PATHS = ['/miaDreams', '/mprew', '/fashionProgram', '/personalBranding'];
     const brands = navBrands && navBrands.length > 0
         ? navBrands.map(b => {
-            let href = b.href || `/marque/${b.slug}`;
-            // S'assurer que le lien commence par / ou http (évite les 404 avec chemins relatifs)
-            if (href && !href.startsWith('/') && !href.startsWith('http')) {
-                href = `/${href}`;
+            let href = b.href || '';
+            // N'utiliser le href personnalisé que s'il correspond à une page statique existante
+            // ou s'il commence par http. Sinon, utiliser la route dynamique /marque/:slug
+            const isValidHref = href &&
+                (STATIC_BRAND_PATHS.includes(href) || href.startsWith('http'));
+            if (!isValidHref) {
+                href = `/marque/${b.slug}`;
             }
             return { ...b, href };
         })

@@ -3,6 +3,15 @@ import axios from 'axios';
 
 const inputCls = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
 
+// Génère un slug depuis un texte (même logique que le backend)
+const toSlug = (str) =>
+    str.toLowerCase()
+       .normalize('NFD').replace(/[̀-ͯ]/g, '') // enlève les accents
+       .replace(/[^a-z0-9\s-]/g, '')
+       .trim()
+       .replace(/\s+/g, '-')
+       .replace(/-+/g, '-');
+
 // Gère les URLs Cloudinary (https://...) ET les anciens noms de fichiers locaux
 const imgSrc = (val) => {
     if (!val) return '';
@@ -111,7 +120,31 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
                                         <span className="text-sm text-[#374151]">{f.checkboxLabel || f.label}</span>
                                     </label>
                                 ) : (
-                                    <input type={f.type || 'text'} value={form[f.name] ?? ''} onChange={e => setForm(p => ({ ...p, [f.name]: e.target.value }))} className={inputCls} />
+                                    <>
+                                        <input
+                                            type={f.type || 'text'}
+                                            value={form[f.name] ?? ''}
+                                            onChange={e => {
+                                                const val = e.target.value;
+                                                const hasSlugField = fields.some(x => x.name === 'slug');
+                                                if (f.name === 'name' && hasSlugField && !editing) {
+                                                    // Auto-génère le slug depuis le nom (seulement en création)
+                                                    setForm(p => ({ ...p, name: val, slug: toSlug(val) }));
+                                                } else {
+                                                    setForm(p => ({ ...p, [f.name]: val }));
+                                                }
+                                            }}
+                                            className={inputCls}
+                                            readOnly={f.name === 'slug' && !editing}
+                                            style={f.name === 'slug' && !editing ? { background: '#F9FAFB', color: '#9CA3AF', cursor: 'default' } : {}}
+                                        />
+                                        {f.name === 'slug' && !editing && form.slug && (
+                                            <p className="text-xs text-[#9CA3AF] mt-1 flex items-center gap-1">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                                                Page accessible sur&nbsp;<strong>/marque/{form.slug}</strong>
+                                            </p>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         ))}

@@ -18,10 +18,6 @@ const MODES = [
     { value: 'especes',      label: '💵 Espèces' },
     { value: 'wave',         label: '📱 Wave' },
     { value: 'orange_money', label: '🟠 Orange Money' },
-    { value: 'free_money',   label: '🔵 Free Money' },
-    { value: 'virement',     label: '🏦 Virement' },
-    { value: 'cheque',       label: '📄 Chèque' },
-    { value: 'autre',        label: '🔹 Autre' },
 ];
 
 const inputCls = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
@@ -42,12 +38,19 @@ function StatCard({ label, value, sub, color, icon }) {
     );
 }
 
-const emptyForm = { type: 'entree', montant: '', categorie: '', description: '', date: new Date().toISOString().split('T')[0], mode_paiement: 'especes', reference: '', notes: '' };
+const genRef = () => {
+    const d = new Date();
+    const ymd = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    const rand = String(Math.floor(Math.random() * 900) + 100);
+    return `REF-${ymd}-${rand}`;
+};
+
+const emptyForm = () => ({ type: 'entree', montant: '', categorie: '', description: '', date: new Date().toISOString().split('T')[0], mode_paiement: 'especes', reference: genRef(), notes: '' });
 
 export default function AdminCaisse() {
     const [transactions, setTransactions] = useState([]);
     const [stats, setStats] = useState(null);
-    const [form, setForm] = useState(emptyForm);
+    const [form, setForm] = useState(emptyForm());
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -73,7 +76,7 @@ export default function AdminCaisse() {
 
     const openNew = (type = 'entree') => {
         setEditing(null);
-        setForm({ ...emptyForm, type, date: new Date().toISOString().split('T')[0] });
+        setForm({ ...emptyForm(), type });
         setShowForm(true);
         setTimeout(() => document.getElementById('caisse-form')?.scrollIntoView({ behavior: 'smooth' }), 50);
     };
@@ -83,7 +86,7 @@ export default function AdminCaisse() {
         setShowForm(true);
         setTimeout(() => document.getElementById('caisse-form')?.scrollIntoView({ behavior: 'smooth' }), 50);
     };
-    const cancel = () => { setShowForm(false); setEditing(null); setForm(emptyForm); };
+    const cancel = () => { setShowForm(false); setEditing(null); setForm(emptyForm()); };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -221,13 +224,20 @@ export default function AdminCaisse() {
                                 placeholder="Ex: Vente robe sur mesure Mme Koné" />
                         </div>
 
-                        {/* Référence */}
+                        {/* Référence auto */}
                         <div>
                             <label className="block text-xs font-medium text-[#374151] mb-1.5">Référence / N° reçu</label>
-                            <input type="text" className={inputCls}
-                                value={form.reference}
-                                onChange={e => setForm(p => ({ ...p, reference: e.target.value }))}
-                                placeholder="Ex: REF-001" />
+                            <div className="flex gap-2">
+                                <input type="text" className={inputCls + ' font-mono'}
+                                    value={form.reference}
+                                    onChange={e => setForm(p => ({ ...p, reference: e.target.value }))} />
+                                <button type="button"
+                                    onClick={() => setForm(p => ({ ...p, reference: genRef() }))}
+                                    title="Générer une nouvelle référence"
+                                    className="flex-shrink-0 px-2.5 border border-[#E5E7EB] rounded-lg text-[#9CA3AF] hover:text-[#C9A84C] hover:border-[#C9A84C] transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                                </button>
+                            </div>
                         </div>
 
                         {/* Notes (pleine largeur) */}

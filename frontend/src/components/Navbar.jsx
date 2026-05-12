@@ -33,7 +33,14 @@ export default function Navbar() {
         { name: 'Personal Branding', slug: 'personal-branding', href: '/personalBranding' },
     ];
     const brands = navBrands && navBrands.length > 0
-        ? navBrands.map(b => ({ ...b, href: b.href || `/marque/${b.slug}` }))
+        ? navBrands.map(b => {
+            let href = b.href || `/marque/${b.slug}`;
+            // S'assurer que le lien commence par / ou http (évite les 404 avec chemins relatifs)
+            if (href && !href.startsWith('/') && !href.startsWith('http')) {
+                href = `/${href}`;
+            }
+            return { ...b, href };
+        })
         : defaultBrands;
 
     useEffect(() => {

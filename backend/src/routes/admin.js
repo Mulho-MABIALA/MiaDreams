@@ -22,6 +22,7 @@ const Contact = require('../models/Contact');
 const Reservation = require('../models/Reservation');
 const Newsletter = require('../models/Newsletter');
 const Order = require('../models/Order');
+const CaisseTransaction = require('../models/CaisseTransaction');
 
 // ── Cloudinary (stockage cloud permanent) ─────────────────────────────────────
 const cloudinary = require('cloudinary').v2;
@@ -191,12 +192,52 @@ router.get('/orders/:id', async (req, res) => {
 router.patch('/orders/:id', async (req, res) => {
     try {
         const { order_status, payment_status, notes } = req.body;
+
+        // Récupérer l'état AVANT mise à jour pour détecter le changement
+        const before = await Order.findById(req.params.id);
+        if (!before) return res.status(404).json({ message: 'Introuvable' });
+
         const update = {};
-        if (order_status) update.order_status = order_status;
-        if (payment_status) update.payment_status = payment_status;
-        if (notes !== undefined) update.notes = notes;
+        if (order_status)       update.order_status  = order_status;
+        if (payment_status)     update.payment_status = payment_status;
+        if (notes !== undefined) update.notes         = notes;
+
         const order = await Order.findByIdAndUpdate(req.params.id, update, { new: true });
-        if (!order) return res.status(404).json({ message: 'Introuvable' });
+
+        // ── Entrée caisse automatique quand une commande passe à "paid" ──
+        const vientDePayé = payment_status === 'paid' && before.payment_status !== 'paid';
+        const vientDeRemboursé = payment_status === 'refunded' && before.payment_status === 'paid';
+
+        if (vientDePayé) {
+            const modeMap = { wave: 'wave', orange_money: 'orange_money', free_money: 'free_money', cash: 'especes' };
+            await CaisseTransaction.create({
+                type:          'entree',
+                montant:       order.total,
+                categorie:     'Vente boutique',
+                description:   `Commande ${order.order_number} — ${order.customer?.name || ''}`,
+                date:          new Date(),
+                mode_paiement: modeMap[order.payment_method] || 'autre',
+                reference:     order.order_number,
+                notes:         `Ajouté automatiquement lors du paiement de la commande.`,
+            });
+            console.log(`💰 Entrée caisse créée pour ${order.order_number} : ${order.total} FCFA`);
+        }
+
+        // ── Sortie caisse automatique si remboursement ──
+        if (vientDeRemboursé) {
+            await CaisseTransaction.create({
+                type:          'sortie',
+                montant:       order.total,
+                categorie:     'Remboursement',
+                description:   `Remboursement commande ${order.order_number} — ${order.customer?.name || ''}`,
+                date:          new Date(),
+                mode_paiement: 'autre',
+                reference:     order.order_number,
+                notes:         `Remboursement automatique suite à annulation de commande.`,
+            });
+            console.log(`💸 Sortie caisse créée (remboursement) pour ${order.order_number}`);
+        }
+
         res.json(order);
     } catch (e) { res.status(400).json({ message: e.message }); }
 });

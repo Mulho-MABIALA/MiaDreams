@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
+import { imgSrc } from '../utils/imgSrc';
 
 const GOLD = '#C9A84C';
 
@@ -245,7 +246,7 @@ export default function Commande() {
                                             <div key={item.key} className="flex justify-between items-start gap-3">
                                                 <div className="flex gap-3 flex-1 min-w-0">
                                                     {item.image && (
-                                                        <img src={`/uploads/${item.image}`} className="w-12 h-14 object-cover flex-shrink-0" alt={item.name} style={{ background: '#111' }} />
+                                                        <img src={imgSrc(item.image)} className="w-12 h-14 object-cover flex-shrink-0" alt={item.name} style={{ background: '#111' }} />
                                                     )}
                                                     <div className="min-w-0">
                                                         <p className="font-glacial text-xs text-white/60 uppercase tracking-[0.5px] truncate">{item.name}</p>

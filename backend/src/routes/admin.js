@@ -40,7 +40,10 @@ const storage = CLOUDINARY_READY
     ? multer.memoryStorage()
     : multer.diskStorage({
         destination: (req, file, cb) => cb(null, UPLOADS),
-        filename:    (req, file, cb) => cb(null, `${Date.now()}-${Math.round(Math.random()*1e9)}.webp`),
+        filename:    (req, file, cb) => {
+            const ext = file.mimetype === 'application/pdf' ? '.pdf' : '.webp';
+            cb(null, `${Date.now()}-${Math.round(Math.random()*1e9)}${ext}`);
+        },
     });
 
 const upload = multer({
@@ -59,34 +62,50 @@ async function processImages(req, res, next) {
         const files = req.file ? [req.file] : Object.values(req.files || {}).flat();
 
         await Promise.all(files.map(async (file) => {
-            if (!file.mimetype.startsWith('image/')) return;
+            if (file.mimetype.startsWith('image/')) {
+                // ── Traitement image ──────────────────────────────────────
+                if (CLOUDINARY_READY) {
+                    const buffer = await sharp(file.buffer)
+                        .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
+                        .webp({ quality: 82 })
+                        .toBuffer();
 
-            if (CLOUDINARY_READY) {
-                // Upload buffer → Cloudinary avec compression
-                const buffer = await sharp(file.buffer)
-                    .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
-                    .webp({ quality: 82 })
-                    .toBuffer();
+                    const result = await new Promise((resolve, reject) => {
+                        cloudinary.uploader.upload_stream(
+                            { folder: 'miadreams', resource_type: 'image' },
+                            (err, res) => err ? reject(err) : resolve(res)
+                        ).end(buffer);
+                    });
 
-                const result = await new Promise((resolve, reject) => {
-                    cloudinary.uploader.upload_stream(
-                        { folder: 'miadreams', resource_type: 'image' },
-                        (err, res) => err ? reject(err) : resolve(res)
-                    ).end(buffer);
-                });
+                    file.filename  = result.secure_url;
+                    file.cloudinary = true;
+                } else {
+                    // Fallback disque local + sharp
+                    const tmpPath = file.path + '.tmp';
+                    fs.renameSync(file.path, tmpPath);
+                    await sharp(tmpPath)
+                        .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
+                        .webp({ quality: 82 })
+                        .toFile(file.path);
+                    fs.unlinkSync(tmpPath);
+                }
 
-                // Stocker l'URL complète Cloudinary dans filename
-                file.filename  = result.secure_url;
-                file.cloudinary = true;
-            } else {
-                // Fallback disque local + sharp
-                const tmpPath = file.path + '.tmp';
-                fs.renameSync(file.path, tmpPath);
-                await sharp(tmpPath)
-                    .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
-                    .webp({ quality: 82 })
-                    .toFile(file.path);
-                fs.unlinkSync(tmpPath);
+            } else if (file.mimetype === 'application/pdf') {
+                // ── Traitement PDF ────────────────────────────────────────
+                if (CLOUDINARY_READY) {
+                    // Upload PDF vers Cloudinary en tant que ressource "raw"
+                    const result = await new Promise((resolve, reject) => {
+                        cloudinary.uploader.upload_stream(
+                            { folder: 'miadreams', resource_type: 'raw' },
+                            (err, res) => err ? reject(err) : resolve(res)
+                        ).end(file.buffer);
+                    });
+
+                    file.filename  = result.secure_url;
+                    file.cloudinary = true;
+                    console.log(`📄 PDF uploadé sur Cloudinary : ${result.secure_url}`);
+                }
+                // Fallback disque : multer a déjà sauvegardé le fichier avec la bonne extension .pdf
             }
         }));
         next();

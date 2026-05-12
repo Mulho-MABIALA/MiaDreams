@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
+import { imgSrc as getImgSrc } from '../../utils/imgSrc';
 
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 
@@ -37,7 +38,7 @@ export default function BlogShow() {
     );
 
     const { post, related } = data;
-    const imgSrc = post.cover_image ? `/uploads/${post.cover_image}` : '/img/index/home-image7.webp';
+    const imgSrc = getImgSrc(post.cover_image, '/img/index/home-image7.webp');
 
     return (
         <Layout title={post.title}>
@@ -96,7 +97,7 @@ export default function BlogShow() {
                             {related.map((p, i) => (
                                 <Link key={p._id} to={`/blog/${p.slug}`} className="group reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
                                     <div className="overflow-hidden mb-4">
-                                        <img src={p.cover_image ? `/uploads/${p.cover_image}` : '/img/index/home-image7.webp'}
+                                        <img src={getImgSrc(p.cover_image, '/img/index/home-image7.webp')}
                                              className="w-full h-[200px] object-cover transition-transform duration-700 group-hover:scale-105"
                                              style={{ filter: 'brightness(.7)' }} alt={p.title} loading="lazy" />
                                     </div>

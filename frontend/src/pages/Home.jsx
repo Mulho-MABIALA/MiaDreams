@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
+import { imgSrc } from '../utils/imgSrc';
 
 const DEFAULT_SLIDES = [
     { image: '/img/index/home-image1.jpg', subtitle: 'Maison de mode africaine', title: 'RÉVOLUTION', content: "L'artisanat est au cœur de notre métier.", cta_label: 'DÉCOUVRIR', cta_href: '/miaDreams' },
@@ -18,13 +19,13 @@ function HeroCarousel({ slides }) {
     const startAuto = () => { clearInterval(timerRef.current); timerRef.current = setInterval(() => setCurrent(c => (c + 1) % list.length), 5500); };
     useEffect(() => { startAuto(); return () => clearInterval(timerRef.current); }, [list.length]);
 
-    const imgSrc = (s) => s.image?.startsWith('/') ? s.image : `/uploads/${s.image}`;
+    const slideImg = (s) => imgSrc(s.image);
 
     return (
         <div className="hero-carousel">
             {list.map((s, i) => (
                 <div key={i} className={`hero-slide ${i === current ? 'active' : ''}`}>
-                    <img src={imgSrc(s)} alt="MIA DREAMS" loading={i === 0 ? 'eager' : 'lazy'} />
+                    <img src={slideImg(s)} alt="MIA DREAMS" loading={i === 0 ? 'eager' : 'lazy'} />
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-8 lg:px-24">
@@ -90,7 +91,7 @@ function ServiceModal({ service, onClose }) {
                 {/* Image */}
                 <div className="relative overflow-hidden" style={{ height: 280 }}>
                     {service.image
-                        ? <img src={`/uploads/${service.image}`} className="w-full h-full object-cover object-top" alt={service.title} style={{ filter: 'brightness(.75)' }} />
+                        ? <img src={imgSrc(service.image)} className="w-full h-full object-cover object-top" alt={service.title} style={{ filter: 'brightness(.75)' }} />
                         : <div className="w-full h-full flex items-center justify-center" style={{ background: '#111' }}>
                               <svg className="w-12 h-12 text-gold/15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
@@ -215,7 +216,7 @@ function TestimonialsSection({ testimonials }) {
                             {/* Auteur */}
                             <div className="flex items-center justify-center gap-4">
                                 {t?.photo ? (
-                                    <img src={`/uploads/${t.photo}`} className="w-12 h-12 rounded-full object-cover border border-gold/25" alt={t?.name} />
+                                    <img src={imgSrc(t.photo)} className="w-12 h-12 rounded-full object-cover border border-gold/25" alt={t?.name} />
                                 ) : (
                                     <div className="w-12 h-12 rounded-full flex items-center justify-center border border-gold/20" style={{ background: 'rgba(196,162,103,0.08)' }}>
                                         <span className="font-glacial text-gold text-base">{t?.name?.[0]?.toUpperCase()}</span>
@@ -380,7 +381,7 @@ function FeaturedProducts({ products }) {
                             <div className="relative overflow-hidden mb-3" style={{ background: '#111' }}>
                                 <div className="aspect-[3/4] overflow-hidden">
                                     {product.image
-                                        ? <img src={`/uploads/${product.image}`} alt={product.name}
+                                        ? <img src={imgSrc(product.image)} alt={product.name}
                                                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                                         : <div className="w-full h-full flex items-center justify-center bg-[#161616]">
                                               <svg className="w-8 h-8 opacity-10" fill="none" stroke="white" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -489,10 +490,10 @@ export default function Home() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-0.5">
                         {(univers.length > 0 ? univers : DEFAULT_UNIVERS).map((u, i) => {
-                            const imgSrc = u.image?.startsWith('/') ? u.image : `/uploads/${u.image}`;
+                            const uImg = imgSrc(u.image);
                             return (
                                 <Link key={u._id || i} to={u.cta_href || u.href || '/'} className="card-editorial reveal h-[480px] lg:h-[580px] group" style={{ transitionDelay: `${i * 0.1}s` }}>
-                                    <img src={imgSrc} alt={u.title} loading="lazy" />
+                                    <img src={uImg} alt={u.title} loading="lazy" />
                                     <div className="card-overlay" />
                                     <span className="card-number">{u.subtitle || String(i + 1).padStart(2, '0')}</span>
                                     <div className="absolute bottom-0 inset-x-0 p-7 z-10">
@@ -524,7 +525,7 @@ export default function Home() {
                                      onClick={() => setSelectedService(s)}>
                                     <div className="relative overflow-hidden">
                                         {s.image
-                                            ? <img src={`/uploads/${s.image}`} className="w-full h-[200px] object-cover object-top transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.7)' }} alt={s.title} loading="lazy" />
+                                            ? <img src={imgSrc(s.image)} className="w-full h-[200px] object-cover object-top transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.7)' }} alt={s.title} loading="lazy" />
                                             : <div className="w-full h-[200px] bg-[#161616] flex items-center justify-center"><svg className="w-8 h-8 text-gold/15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></div>
                                         }
                                         <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/40 transition-colors duration-400" />
@@ -556,7 +557,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
                         <div className="reveal img-hover">
                             <img
-                                src={personalBranding?.image ? (personalBranding.image.startsWith('/') ? personalBranding.image : `/uploads/${personalBranding.image}`) : '/img/index/home-image5.jpg'}
+                                src={imgSrc(personalBranding?.image, '/img/index/home-image5.jpg')}
                                 className="w-full h-[450px] lg:h-auto object-cover object-top" alt="Personal Branding" loading="lazy" />
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
@@ -595,7 +596,7 @@ export default function Home() {
                         </div>
                         <div className="reveal order-1 lg:order-2 img-hover">
                             <img
-                                src={ethicalFashion?.image ? (ethicalFashion.image.startsWith('/') ? ethicalFashion.image : `/uploads/${ethicalFashion.image}`) : '/img/index/home-image6.jpg'}
+                                src={imgSrc(ethicalFashion?.image, '/img/index/home-image6.jpg')}
                                 className="w-full h-[450px] lg:h-auto object-cover object-top" alt="Ethical Fashion" loading="lazy" />
                         </div>
                     </div>
@@ -604,9 +605,7 @@ export default function Home() {
 
             {/* BLOG */}
             {(() => {
-                const bgImg = blogBanner?.image
-                    ? (blogBanner.image.startsWith('/') ? blogBanner.image : `/uploads/${blogBanner.image}`)
-                    : '/img/index/home-image7.webp';
+                const bgImg = imgSrc(blogBanner?.image, '/img/index/home-image7.webp');
                 return (
                     <section className="relative py-36 overflow-hidden">
                         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${bgImg}')`, filter: 'brightness(.3)' }} />

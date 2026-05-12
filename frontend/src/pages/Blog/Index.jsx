@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
+import { imgSrc as getImgSrc } from '../../utils/imgSrc';
 
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 const epLabel = (p) => `${p.season ? `S${p.season} ` : ''}EP.${String(p.episode_number ?? 0).padStart(2, '0')}`;
 
 function PostCard({ post, featured = false }) {
-    const imgSrc = post.cover_image ? `/uploads/${post.cover_image}` : '/img/index/home-image7.webp';
+    const imgSrc = getImgSrc(post.cover_image, '/img/index/home-image7.webp');
     if (featured) return (
         <Link to={`/blog/${post.slug}`} className="group relative overflow-hidden block h-[480px]">
             <img src={imgSrc} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.5)' }} alt={post.title} loading="eager" />
@@ -181,7 +182,7 @@ export default function BlogIndex() {
                                 <div className="border border-gold/15 grid grid-cols-1 lg:grid-cols-2 overflow-hidden hover:border-gold/30 transition-colors group">
                                     <div className="relative overflow-hidden" style={{ minHeight: '280px' }}>
                                         {latestPodcast.thumbnail
-                                            ? <img src={`/uploads/${latestPodcast.thumbnail}`} className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.75)' }} alt={latestPodcast.title} />
+                                            ? <img src={getImgSrc(latestPodcast.thumbnail)} className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.75)' }} alt={latestPodcast.title} />
                                             : <div className="w-full h-full min-h-[280px] bg-[#141414] flex items-center justify-center"><span className="font-lastica text-[7px] tracking-[4px] text-gold/30 uppercase">Dernier épisode</span></div>
                                         }
                                         <div className="absolute top-4 left-4">

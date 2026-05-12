@@ -3,6 +3,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
+import { imgSrc } from '../utils/imgSrc';
 
 export default function Search() {
     const [searchParams] = useSearchParams();
@@ -60,7 +61,7 @@ export default function Search() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {data.posts.map((post, i) => (
                                     <Link key={post._id} to={`/blog/${post.slug}`} className="group reveal border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 overflow-hidden transition-colors" style={{ transitionDelay: `${i * 0.08}s` }}>
-                                        {post.cover_image && <img src={`/uploads/${post.cover_image}`} className="w-full h-[180px] object-cover transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.7)' }} alt={post.title} loading="lazy" />}
+                                        {post.cover_image && <img src={imgSrc(post.cover_image)} className="w-full h-[180px] object-cover transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.7)' }} alt={post.title} loading="lazy" />}
                                         <div className="p-5">
                                             {post.category && <span className="font-lastica text-[7px] tracking-[3px] text-gold uppercase block mb-2">{post.category}</span>}
                                             <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] leading-tight group-hover:text-gold transition-colors">{post.title}</h3>
@@ -83,7 +84,7 @@ export default function Search() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {data.brands.map((brand, i) => (
                                     <Link key={brand._id} to={`/marque/${brand.slug}`} className="group reveal flex items-center gap-5 border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 p-5 transition-colors" style={{ transitionDelay: `${i * 0.08}s` }}>
-                                        {brand.image && <img src={`/uploads/${brand.image}`} className="w-16 h-16 object-cover flex-shrink-0" alt={brand.name} />}
+                                        {brand.image && <img src={imgSrc(brand.image)} className="w-16 h-16 object-cover flex-shrink-0" alt={brand.name} />}
                                         <div>
                                             <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] group-hover:text-gold transition-colors">{brand.name}</h3>
                                             {brand.description && <p className="font-glacial text-xs text-white/30 mt-1 line-clamp-2">{brand.description}</p>}
@@ -109,7 +110,7 @@ export default function Search() {
                                         style={{ transitionDelay: `${i * 0.08}s` }}>
                                         <div className="relative overflow-hidden">
                                             {prod.image
-                                                ? <img src={`/uploads/${prod.image}`} className="w-full h-[180px] object-cover transition-transform duration-700 group-hover:scale-105" alt={prod.name} loading="lazy" />
+                                                ? <img src={imgSrc(prod.image)} className="w-full h-[180px] object-cover transition-transform duration-700 group-hover:scale-105" alt={prod.name} loading="lazy" />
                                                 : <div className="w-full h-[180px] bg-[#161616]" />
                                             }
                                             {prod.stock === 0 && (

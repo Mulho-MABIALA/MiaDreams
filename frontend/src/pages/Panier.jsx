@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
+import { imgSrc } from '../utils/imgSrc';
 
 const GOLD = '#C9A84C';
 
@@ -51,7 +52,7 @@ export default function Panier() {
                                     <div className="flex items-center gap-4">
                                         <div className="w-16 h-20 flex-shrink-0 overflow-hidden" style={{ background: '#111' }}>
                                             {item.image
-                                                ? <img src={`/uploads/${item.image}`} className="w-full h-full object-cover" alt={item.name} />
+                                                ? <img src={imgSrc(item.image)} className="w-full h-full object-cover" alt={item.name} />
                                                 : <div className="w-full h-full bg-white/5" />
                                             }
                                         </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import { imgSrc } from '../utils/imgSrc';
 
 function TeamModal({ member, onClose }) {
     useEffect(() => {
@@ -27,7 +28,7 @@ function TeamModal({ member, onClose }) {
                 {/* Photo pleine largeur */}
                 <div className="relative overflow-hidden" style={{ height: 320 }}>
                     {member.photo
-                        ? <img src={`/uploads/${member.photo}`}
+                        ? <img src={imgSrc(member.photo)}
                                className="w-full h-full object-cover object-top"
                                alt={member.name} />
                         : <div className="w-full h-full flex items-center justify-center" style={{ background: 'rgba(196,162,103,0.06)' }}>
@@ -102,7 +103,7 @@ export default function APropos() {
     // Split histoire content on newlines for multiple paragraphs
     const histoireParagraphs = (h.content || '').split('\n').filter(Boolean);
     const histoireImg = h.image
-        ? (h.image.startsWith('/') ? h.image : `/uploads/${h.image}`)
+        ? imgSrc(h.image)
         : '/img/index/home-image2.jpg';
 
     return (
@@ -191,7 +192,7 @@ export default function APropos() {
                                      onClick={() => setSelectedMember(m)}>
                                     <div className="relative overflow-hidden mb-5 mx-auto" style={{ width: 220, height: 260 }}>
                                         {m.photo
-                                            ? <img src={`/uploads/${m.photo}`}
+                                            ? <img src={imgSrc(m.photo)}
                                                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                                                    alt={m.name} loading="lazy" />
                                             : <div className="w-full h-full flex items-center justify-center border border-gold/20"

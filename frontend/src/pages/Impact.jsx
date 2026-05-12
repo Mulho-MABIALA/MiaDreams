@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import { imgSrc } from '../utils/imgSrc';
 
 // ── SVG icons for MVV cards (keyed by subtitle/label) ──────────────────────────
 const MVV_ICONS = {
@@ -151,7 +152,7 @@ export default function Impact() {
                                         </div>
                                     )}
                                     {init.image && !init.youtube_id && (
-                                        <img src={`/uploads/${init.image}`} className="w-full h-48 object-cover object-top" alt={init.name} loading="lazy" />
+                                        <img src={imgSrc(init.image)} className="w-full h-48 object-cover object-top" alt={init.name} loading="lazy" />
                                     )}
                                     <div className="p-7">
                                         <h3 className="font-glacial text-lg text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{init.name}</h3>

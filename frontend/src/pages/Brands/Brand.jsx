@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
+import { imgSrc } from '../../utils/imgSrc';
 
 export default function Brand() {
     const { slug } = useParams();
@@ -25,7 +26,7 @@ export default function Brand() {
             {/* HERO */}
             <div className="relative h-[60vh] min-h-[400px] flex items-center overflow-hidden">
                 {brand.image
-                    ? <img src={`/uploads/${brand.image}`} className="absolute inset-0 w-full h-full object-cover object-top" style={{ filter: 'brightness(.3)' }} alt={brand.name} />
+                    ? <img src={imgSrc(brand.image)} className="absolute inset-0 w-full h-full object-cover object-top" style={{ filter: 'brightness(.3)' }} alt={brand.name} />
                     : <div className="absolute inset-0 bg-[#0d0d0d]" />
                 }
                 {brand.youtube_id && (
@@ -62,7 +63,7 @@ export default function Brand() {
                         </div>
                         {collections.map((col, ci) => {
                             const colImg = col.image
-                                ? (col.image.startsWith('/') ? col.image : `/uploads/${col.image}`)
+                                ? imgSrc(col.image)
                                 : null;
                             return (
                             <div key={col._id} className="mb-32 last:mb-0">
@@ -113,7 +114,7 @@ export default function Brand() {
                                             <div key={prod._id} className="reveal group" style={{ transitionDelay: `${pi * 0.08}s` }}>
                                                 <div className="overflow-hidden mb-4 relative" style={{ background: '#111' }}>
                                                     {prod.image
-                                                        ? <img src={`/uploads/${prod.image}`}
+                                                        ? <img src={imgSrc(prod.image)}
                                                                className="w-full h-[320px] object-cover object-top transition-transform duration-700 group-hover:scale-105"
                                                                alt={prod.name} loading="lazy" />
                                                         : <div className="w-full h-[320px] bg-[#141414] flex items-center justify-center">

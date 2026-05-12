@@ -440,8 +440,9 @@ export default function AdminCommandes() {
                                     <td className="px-5 py-4">
                                         <div className="flex items-center justify-end">
                                             <button onClick={() => setSelected(o)}
-                                                className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
-                                                Gérer
+                                                className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
+                                                style={{ background: '#C9A84C' }}>
+                                                Voir
                                             </button>
                                         </div>
                                     </td>

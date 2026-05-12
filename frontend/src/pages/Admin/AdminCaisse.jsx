@@ -52,6 +52,7 @@ export default function AdminCaisse() {
     const [stats, setStats] = useState(null);
     const [form, setForm] = useState(emptyForm());
     const [editing, setEditing] = useState(null);
+    const [viewing, setViewing] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [saving, setSaving] = useState(false);
     const [filters, setFilters] = useState({ type: '', debut: '', fin: '', categorie: '' });
@@ -357,6 +358,11 @@ export default function AdminCaisse() {
                                                 </td>
                                                 <td className="px-4 py-3.5">
                                                     <div className="flex items-center justify-end gap-2">
+                                                        <button onClick={() => setViewing(tx)}
+                                                            className="text-xs font-medium text-white px-2.5 py-1.5 rounded-lg transition-colors"
+                                                            style={{ background: '#C9A84C' }}>
+                                                            Voir
+                                                        </button>
                                                         <button onClick={() => openEdit(tx)}
                                                             className="text-xs text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-2.5 py-1.5 rounded-lg transition-colors">
                                                             Modifier
@@ -407,7 +413,10 @@ export default function AdminCaisse() {
                                                         {tx.type === 'entree' ? '+' : '-'}{fmt(tx.montant)}
                                                     </span>
                                                 </div>
-                                                <div className="flex gap-2 mt-2">
+                                                <div className="flex gap-2 mt-2 flex-wrap">
+                                                    <button onClick={() => setViewing(tx)}
+                                                        className="text-xs font-medium text-white px-2.5 py-1 rounded-lg"
+                                                        style={{ background: '#C9A84C' }}>Voir</button>
                                                     <button onClick={() => openEdit(tx)}
                                                         className="text-xs text-[#374151] bg-[#F3F4F6] px-2.5 py-1 rounded-lg">Modifier</button>
                                                     <button onClick={() => handleDelete(tx._id)}
@@ -421,6 +430,51 @@ export default function AdminCaisse() {
                         )}
                     </div>
                 </>
+            )}
+
+            {/* ── Modal détail transaction ── */}
+            {viewing && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/50 backdrop-blur-sm" onClick={() => setViewing(null)}>
+                    <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-[#E5E7EB]"
+                         onClick={e => e.stopPropagation()}>
+                        {/* Header */}
+                        <div className={`flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] ${viewing.type === 'entree' ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                            <div>
+                                <p className="text-xs text-[#9CA3AF] uppercase tracking-widest mb-0.5">Transaction</p>
+                                <p className={`text-xl font-bold ${viewing.type === 'entree' ? 'text-emerald-600' : 'text-red-600'}`}>
+                                    {viewing.type === 'entree' ? '+' : '−'}{fmt(viewing.montant)}
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => { setViewing(null); openEdit(viewing); }}
+                                    className="text-xs font-medium text-[#374151] bg-white hover:bg-[#F3F4F6] px-3 py-1.5 rounded-lg transition-colors border border-[#E5E7EB]">
+                                    Modifier
+                                </button>
+                                <button onClick={() => setViewing(null)}
+                                    className="w-8 h-8 rounded-lg bg-white hover:bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        {/* Corps */}
+                        <div className="p-6 space-y-3">
+                            {[
+                                { label: 'Type', value: viewing.type === 'entree' ? '↑ Entrée' : '↓ Sortie' },
+                                { label: 'Catégorie', value: viewing.categorie },
+                                { label: 'Date', value: fmtDate(viewing.date) },
+                                { label: 'Mode de paiement', value: MODES.find(m => m.value === viewing.mode_paiement)?.label || viewing.mode_paiement },
+                                { label: 'Description', value: viewing.description || null },
+                                { label: 'Référence', value: viewing.reference || null },
+                                { label: 'Notes', value: viewing.notes || null },
+                            ].map(row => row.value ? (
+                                <div key={row.label} className="flex flex-col gap-1 py-2 border-b border-[#F3F4F6] last:border-0">
+                                    <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">{row.label}</span>
+                                    <span className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap">{row.value}</span>
+                                </div>
+                            ) : null)}
+                        </div>
+                    </div>
+                </div>
             )}
 
             {tab === 'stats' && stats && (

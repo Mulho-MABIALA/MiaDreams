@@ -113,7 +113,7 @@ export default function AdminContacts() {
                                          selected?._id === item._id
                                              ? 'bg-[#FDF8EC] border-l-2 border-l-[#C9A84C]'
                                              : 'border-l-2 border-l-transparent'
-                                     }`}>
+                                     }`} role="button" aria-label={`Voir le message de ${item.name}`}>
 
                                     {/* Dot non-lu */}
                                     <div className="flex-shrink-0 mt-2">
@@ -136,6 +136,10 @@ export default function AdminContacts() {
                                         <p className="text-xs text-[#9CA3AF] truncate mt-0.5">
                                             {item.message?.slice(0, 55)}{item.message?.length > 55 ? '…' : ''}
                                         </p>
+                                        <span className="inline-block mt-2 text-xs font-semibold text-white px-2.5 py-1 rounded-md"
+                                            style={{ background: '#C9A84C' }}>
+                                            Voir
+                                        </span>
                                     </div>
                                 </div>
                             ))}

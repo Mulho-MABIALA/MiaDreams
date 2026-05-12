@@ -352,6 +352,12 @@ export default function AdminReservations() {
 
                                 {/* Actions rapides */}
                                 <div className="flex items-center gap-1.5 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                                    <button onClick={() => openDetail(item)}
+                                        title="Voir le détail"
+                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors text-white"
+                                        style={{ background: '#C9A84C' }}>
+                                        Voir
+                                    </button>
                                     {waPhone && (
                                         <a href={`https://wa.me/${waPhone}?text=${quickWa}`}
                                            target="_blank" rel="noopener noreferrer"

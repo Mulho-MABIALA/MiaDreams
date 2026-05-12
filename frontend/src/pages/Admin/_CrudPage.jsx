@@ -17,6 +17,7 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [viewing, setViewing] = useState(null);
 
     const load = () => axios.get(`/api/admin/${apiPath}`).then(r => setItems(r.data)).catch(() => {});
     useEffect(() => { load(); }, [apiPath]);
@@ -170,6 +171,11 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
                                         </td>
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center justify-end gap-2">
+                                                <button onClick={() => setViewing(item)}
+                                                    className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
+                                                    style={{ background: '#C9A84C' }}>
+                                                    Voir
+                                                </button>
                                                 <button onClick={() => openEdit(item)}
                                                     className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
                                                     Modifier
@@ -206,6 +212,11 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
                                         )}
                                     </div>
                                     <div className="flex flex-col gap-1.5 flex-shrink-0">
+                                        <button onClick={() => setViewing(item)}
+                                            className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
+                                            style={{ background: '#C9A84C' }}>
+                                            Voir
+                                        </button>
                                         <button onClick={() => openEdit(item)}
                                             className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
                                             Modifier
@@ -221,6 +232,65 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
                     </>
                 )}
             </div>
+
+            {/* ── Modal Détail ── */}
+            {viewing && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/50 backdrop-blur-sm" onClick={() => setViewing(null)}>
+                    <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-[#E5E7EB]"
+                         onClick={e => e.stopPropagation()}>
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] bg-[#F9FAFB]">
+                            <div>
+                                <p className="text-xs text-[#9CA3AF] uppercase tracking-widest mb-0.5">Détail</p>
+                                <p className="text-base font-semibold text-[#111827]">
+                                    {viewing[firstTextField?.name] || viewing.name || viewing.title || '—'}
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => { setViewing(null); openEdit(viewing); }}
+                                    className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
+                                    Modifier
+                                </button>
+                                <button onClick={() => setViewing(null)}
+                                    className="w-8 h-8 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] flex items-center justify-center text-[#6B7280] transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        {/* Corps */}
+                        <div className="p-6 space-y-4">
+                            {/* Image principale si présente */}
+                            {imageFields.length > 0 && viewing[imageFields[0]] && (
+                                <img src={imgSrc(viewing[imageFields[0]])} className="w-full max-h-52 object-cover rounded-xl border border-[#E5E7EB]" alt="" />
+                            )}
+                            {/* Champs texte */}
+                            {fields.filter(f => f.type !== 'file').map(f => {
+                                const val = viewing[f.name];
+                                if (val === undefined || val === null || val === '') return null;
+                                return (
+                                    <div key={f.name} className="flex flex-col gap-1 py-2 border-b border-[#F3F4F6] last:border-0">
+                                        <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">{f.label}</span>
+                                        <span className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap">
+                                            {f.type === 'checkbox'
+                                                ? (val ? '✓ Oui' : '✗ Non')
+                                                : f.type === 'select'
+                                                    ? (f.options?.find(o => o.value === val)?.label || val)
+                                                    : String(val)}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                            {/* Autres images si plusieurs */}
+                            {imageFields.slice(1).map(imgF => viewing[imgF] ? (
+                                <div key={imgF} className="flex flex-col gap-1 py-2 border-b border-[#F3F4F6] last:border-0">
+                                    <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">{imgF}</span>
+                                    <img src={imgSrc(viewing[imgF])} className="h-20 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="" />
+                                </div>
+                            ) : null)}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

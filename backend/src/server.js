@@ -15,25 +15,14 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 connectDB().then(() => seedAdmin());
 
-const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:4173',
-].filter(Boolean);
-
+// CORS : accepte toutes les origines connues + reflect pour credentials
 app.use(cors({
-    origin: (origin, callback) => {
-        // Autoriser les requêtes sans origin (Postman, mobile, SSR, etc.)
-        if (!origin) return callback(null, true);
-        // Autoriser tous les sous-domaines vercel.app et netlify.app
-        if (origin.endsWith('.vercel.app') || origin.endsWith('.netlify.app') || allowedOrigins.some(o => origin.startsWith(o))) {
-            return callback(null, true);
-        }
-        callback(new Error(`CORS bloqué pour l'origine : ${origin}`));
-    },
+    origin: true,        // reflète l'origine de la requête → compatible credentials
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.options('*', cors()); // pré-vol OPTIONS sur toutes les routes
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

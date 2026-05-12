@@ -74,6 +74,13 @@ export default function Admin() {
     });
     const [collapsed, setCollapsed] = useState(false);
 
+    // Supprimer le padding-top du body (prévu pour la nav publique)
+    useEffect(() => {
+        const prev = document.body.style.paddingTop;
+        document.body.style.paddingTop = '0';
+        return () => { document.body.style.paddingTop = prev; };
+    }, []);
+
     useEffect(() => {
         const token = localStorage.getItem('admin_token');
         if (!token) { navigate('/login'); return; }

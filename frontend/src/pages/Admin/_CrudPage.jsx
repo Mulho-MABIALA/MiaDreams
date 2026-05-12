@@ -3,6 +3,13 @@ import axios from 'axios';
 
 const inputCls = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
 
+// Gère les URLs Cloudinary (https://...) ET les anciens noms de fichiers locaux
+const imgSrc = (val) => {
+    if (!val) return '';
+    if (val.startsWith('http') || val.startsWith('/')) return val;
+    return `/uploads/${val}`;
+};
+
 export default function CrudPage({ title, apiPath, fields, imageFields = [], hideHeader = false }) {
     const [items, setItems] = useState([]);
     const [form, setForm] = useState({});
@@ -84,8 +91,8 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
                                             <img src={URL.createObjectURL(files[f.name])} className="mt-2 h-20 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="aperçu" />
                                         ) : form[f.name] ? (
                                             <div className="flex items-center gap-3 mt-2">
-                                                <img src={`/uploads/${form[f.name]}`} className="h-14 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="actuel" />
-                                                <p className="text-xs text-[#9CA3AF]">{form[f.name]}</p>
+                                                <img src={imgSrc(form[f.name])} className="h-14 w-auto object-cover rounded-lg border border-[#E5E7EB]" alt="actuel" />
+                                                <p className="text-xs text-[#9CA3AF] truncate max-w-[180px]">{form[f.name].startsWith('http') ? 'Cloudinary ✓' : form[f.name]}</p>
                                             </div>
                                         ) : null}
                                     </div>
@@ -132,49 +139,86 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], hid
                         <p className="text-xs text-[#9CA3AF] mt-1">Cliquez sur "Ajouter" pour commencer</p>
                     </div>
                 ) : (
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-[#E5E7EB]">
-                                {imageFields.length > 0 && <th className="w-16 px-4 py-3 bg-[#F9FAFB]" />}
-                                <th className="text-left px-4 py-3 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Élément</th>
-                                <th className="text-right px-4 py-3 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-36">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#F3F4F6]">
-                            {items.map((item) => (
-                                <tr key={item._id} className="hover:bg-[#F9FAFB] transition-colors">
-                                    {imageFields.length > 0 && (
+                    <>
+                        {/* ── Tableau desktop (≥ sm) ── */}
+                        <table className="w-full hidden sm:table">
+                            <thead>
+                                <tr className="border-b border-[#E5E7EB]">
+                                    {imageFields.length > 0 && <th className="w-16 px-4 py-3 bg-[#F9FAFB]" />}
+                                    <th className="text-left px-4 py-3 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Élément</th>
+                                    <th className="text-right px-4 py-3 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-36">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#F3F4F6]">
+                                {items.map((item) => (
+                                    <tr key={item._id} className="hover:bg-[#F9FAFB] transition-colors">
+                                        {imageFields.length > 0 && (
+                                            <td className="px-4 py-3.5">
+                                                {item[imageFields[0]]
+                                                    ? <img src={imgSrc(item[imageFields[0]])} className="w-10 h-10 object-cover rounded-lg border border-[#E5E7EB]" alt="" />
+                                                    : <div className="w-10 h-10 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB]" />}
+                                            </td>
+                                        )}
                                         <td className="px-4 py-3.5">
-                                            {item[imageFields[0]]
-                                                ? <img src={`/uploads/${item[imageFields[0]]}`} className="w-10 h-10 object-cover rounded-lg border border-[#E5E7EB]" alt="" />
-                                                : <div className="w-10 h-10 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB]" />}
+                                            <p className="text-sm font-medium text-[#111827]">{item[firstTextField?.name] || item.name || item.title || '—'}</p>
+                                            {item.slug && <p className="text-xs text-[#9CA3AF] mt-0.5">/{item.slug}</p>}
+                                            {item.category && (
+                                                <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-[#FDF8EC] text-[#C9A84C] font-medium">
+                                                    {item.category}
+                                                </span>
+                                            )}
                                         </td>
+                                        <td className="px-4 py-3.5">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button onClick={() => openEdit(item)}
+                                                    className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
+                                                    Modifier
+                                                </button>
+                                                <button onClick={() => handleDelete(item._id)}
+                                                    className="text-xs font-medium text-[#DC2626] bg-[#FEF2F2] hover:bg-[#FEE2E2] px-3 py-1.5 rounded-lg transition-colors">
+                                                    Supprimer
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* ── Cartes mobile (< sm) ── */}
+                        <div className="sm:hidden divide-y divide-[#F3F4F6]">
+                            {items.map((item) => (
+                                <div key={item._id} className="flex items-center gap-3 p-4">
+                                    {imageFields.length > 0 && (
+                                        item[imageFields[0]]
+                                            ? <img src={imgSrc(item[imageFields[0]])} className="w-14 h-14 object-cover rounded-xl border border-[#E5E7EB] flex-shrink-0" alt="" />
+                                            : <div className="w-14 h-14 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] flex-shrink-0" />
                                     )}
-                                    <td className="px-4 py-3.5">
-                                        <p className="text-sm font-medium text-[#111827]">{item[firstTextField?.name] || item.name || item.title || '—'}</p>
-                                        {item.slug && <p className="text-xs text-[#9CA3AF] mt-0.5">/{item.slug}</p>}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-[#111827] truncate">
+                                            {item[firstTextField?.name] || item.name || item.title || '—'}
+                                        </p>
+                                        {item.slug && <p className="text-xs text-[#9CA3AF] mt-0.5 truncate">/{item.slug}</p>}
                                         {item.category && (
                                             <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-[#FDF8EC] text-[#C9A84C] font-medium">
                                                 {item.category}
                                             </span>
                                         )}
-                                    </td>
-                                    <td className="px-4 py-3.5">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button onClick={() => openEdit(item)}
-                                                className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
-                                                Modifier
-                                            </button>
-                                            <button onClick={() => handleDelete(item._id)}
-                                                className="text-xs font-medium text-[#DC2626] bg-[#FEF2F2] hover:bg-[#FEE2E2] px-3 py-1.5 rounded-lg transition-colors">
-                                                Supprimer
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                    <div className="flex flex-col gap-1.5 flex-shrink-0">
+                                        <button onClick={() => openEdit(item)}
+                                            className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
+                                            Modifier
+                                        </button>
+                                        <button onClick={() => handleDelete(item._id)}
+                                            className="text-xs font-medium text-[#DC2626] bg-[#FEF2F2] hover:bg-[#FEE2E2] px-3 py-1.5 rounded-lg transition-colors">
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </div>
                             ))}
-                        </tbody>
-                    </table>
+                        </div>
+                    </>
                 )}
             </div>
         </div>

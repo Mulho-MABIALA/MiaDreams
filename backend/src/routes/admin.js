@@ -23,17 +23,24 @@ const Reservation = require('../models/Reservation');
 const Newsletter = require('../models/Newsletter');
 const Order = require('../models/Order');
 
-// Upload + compression sharp
+// ── Cloudinary (stockage cloud permanent) ─────────────────────────────────────
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+const CLOUDINARY_READY = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+
+// ── Multer : mémoire si Cloudinary dispo, disque sinon ────────────────────────
 const UPLOADS = path.join(__dirname, '../../../uploads');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, UPLOADS),
-    filename: (req, file, cb) => {
-        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        // Toujours stocker en .webp après compression
-        cb(null, unique + '.webp');
-    },
-});
+const storage = CLOUDINARY_READY
+    ? multer.memoryStorage()
+    : multer.diskStorage({
+        destination: (req, file, cb) => cb(null, UPLOADS),
+        filename:    (req, file, cb) => cb(null, `${Date.now()}-${Math.round(Math.random()*1e9)}.webp`),
+    });
 
 const upload = multer({
     storage,
@@ -44,24 +51,49 @@ const upload = multer({
     },
 });
 
-// Middleware de compression : appelé après multer pour chaque image uploadée
-async function compressImages(req, res, next) {
+// ── Upload vers Cloudinary ou compression locale ───────────────────────────────
+async function processImages(req, res, next) {
     if (!req.files && !req.file) return next();
     try {
         const files = req.file ? [req.file] : Object.values(req.files || {}).flat();
+
         await Promise.all(files.map(async (file) => {
             if (!file.mimetype.startsWith('image/')) return;
-            const tmpPath = file.path + '.tmp';
-            fs.renameSync(file.path, tmpPath);
-            await sharp(tmpPath)
-                .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
-                .webp({ quality: 82 })
-                .toFile(file.path);
-            fs.unlinkSync(tmpPath);
+
+            if (CLOUDINARY_READY) {
+                // Upload buffer → Cloudinary avec compression
+                const buffer = await sharp(file.buffer)
+                    .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
+                    .webp({ quality: 82 })
+                    .toBuffer();
+
+                const result = await new Promise((resolve, reject) => {
+                    cloudinary.uploader.upload_stream(
+                        { folder: 'miadreams', resource_type: 'image' },
+                        (err, res) => err ? reject(err) : resolve(res)
+                    ).end(buffer);
+                });
+
+                // Stocker l'URL complète Cloudinary dans filename
+                file.filename  = result.secure_url;
+                file.cloudinary = true;
+            } else {
+                // Fallback disque local + sharp
+                const tmpPath = file.path + '.tmp';
+                fs.renameSync(file.path, tmpPath);
+                await sharp(tmpPath)
+                    .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
+                    .webp({ quality: 82 })
+                    .toFile(file.path);
+                fs.unlinkSync(tmpPath);
+            }
         }));
         next();
     } catch (e) { next(e); }
 }
+
+// Alias pour compatibilité avec le code existant
+const compressImages = processImages;
 
 // Cast les strings "true"/"false" en vrais booleans pour les champs boolean du schema
 function castData(Model, raw) {
@@ -180,10 +212,10 @@ router.delete('/orders/:id', async (req, res) => {
 router.get('/company-info', async (req, res) => {
     try { res.json(await CompanyInfo.findOne() || {}); } catch(e){ res.status(500).json({message:e.message}); }
 });
-router.put('/company-info', upload.single('logo'), compressImages, async (req, res) => {
+router.put('/company-info', upload.single('logo'), processImages, async (req, res) => {
     try {
         const data = { ...req.body };
-        if(req.file) data.logo = req.file.filename;
+        if(req.file) data.logo = req.file.filename; // URL Cloudinary ou nom de fichier local
         const existing = await CompanyInfo.findOne();
         const doc = existing
             ? await CompanyInfo.findByIdAndUpdate(existing._id, data, { new: true })

@@ -26,8 +26,8 @@ app.use(cors({
     origin: (origin, callback) => {
         // Autoriser les requêtes sans origin (Postman, mobile, SSR, etc.)
         if (!origin) return callback(null, true);
-        // Autoriser tous les sous-domaines vercel.app en développement/preview
-        if (origin.endsWith('.vercel.app') || allowedOrigins.some(o => origin.startsWith(o))) {
+        // Autoriser tous les sous-domaines vercel.app et netlify.app
+        if (origin.endsWith('.vercel.app') || origin.endsWith('.netlify.app') || allowedOrigins.some(o => origin.startsWith(o))) {
             return callback(null, true);
         }
         callback(new Error(`CORS bloqué pour l'origine : ${origin}`));

@@ -1,0 +1,29 @@
+# ─────────────────────────────────────────────
+#  MIA DREAMS & CO — Configuration Netlify
+#  Frontend : Netlify  |  Backend : Render
+# ─────────────────────────────────────────────
+
+[build]
+  base    = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# Proxy API → Render (aucune variable d'env nécessaire côté frontend)
+[[redirects]]
+  from   = "/api/*"
+  to     = "https://miadreams-19z0.onrender.com/api/:splat"
+  status = 200
+  force  = true
+
+# Proxy uploads → Render
+[[redirects]]
+  from   = "/uploads/*"
+  to     = "https://miadreams-19z0.onrender.com/uploads/:splat"
+  status = 200
+  force  = true
+
+# SPA fallback — toutes les routes vers index.html
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

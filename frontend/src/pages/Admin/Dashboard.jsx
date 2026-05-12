@@ -459,50 +459,6 @@ export default function Dashboard() {
                     }
                 </Panel>
 
-                {/* Pages publiques */}
-                <Panel title="Pages publiques">
-                    <div>
-                        {[
-                            { label: 'Accueil',          href: '/' },
-                            { label: 'À Propos',         href: '/apropos' },
-                            { label: 'Mia Dreams Brand', href: '/miaDreams' },
-                            { label: 'MPREW',            href: '/mprew' },
-                            { label: 'Personal Branding',href: '/personalBranding' },
-                            { label: 'Fashion Program',  href: '/fashionProgram' },
-                            { label: 'Galerie',          href: '/gallery' },
-                            { label: 'Catalogues',       href: '/catalogues' },
-                            { label: 'Blog',             href: '/blog' },
-                            { label: 'Impact',           href: '/impact' },
-                            { label: 'Contact',          href: '/contact' },
-                            { label: 'Réservation',      href: '/reservation' },
-                        ].map(p => (
-                            <a
-                                key={p.href}
-                                href={p.href}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center justify-between group"
-                                style={{
-                                    padding: '8px 0',
-                                    borderBottom: '1px solid #E5E7EB',
-                                    textDecoration: 'none',
-                                }}
-                            >
-                                <span style={{ fontSize: '13px', color: '#6B4F3A', transition: 'color 150ms' }}
-                                    onMouseEnter={e => e.currentTarget.style.color = '#1E110A'}
-                                    onMouseLeave={e => e.currentTarget.style.color = '#6B4F3A'}
-                                >
-                                    {p.label}
-                                </span>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.5" style={{ flexShrink: 0, opacity: 0.6 }}>
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                                    <polyline points="15 3 21 3 21 9"/>
-                                    <line x1="10" y1="14" x2="21" y2="3"/>
-                                </svg>
-                            </a>
-                        ))}
-                    </div>
-                </Panel>
             </div>
 
             {/* ─── ACTIONS RAPIDES ─── */}

@@ -54,7 +54,7 @@ const MIA_DREAMS_COLLECTIONS = [
     },
     {
         name:        'Kente Moderne',
-        description: 'Le tissu kente réinterprété avec des coupes contemporaines pour la femme africaine d'aujourd'hui.',
+        description: "Le tissu kente réinterprété avec des coupes contemporaines pour la femme africaine d'aujourd'hui.",
         order:       2,
         is_active:   true,
     },

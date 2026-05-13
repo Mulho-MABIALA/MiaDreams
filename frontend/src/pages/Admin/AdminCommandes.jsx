@@ -350,6 +350,7 @@ export default function AdminCommandes() {
     const [filterStatus, setFilterStatus] = useState('');
     const [filterPayment, setFilterPayment] = useState('');
     const [selected, setSelected] = useState(null);
+    const [invoiceOrder, setInvoiceOrder] = useState(null);
 
     const load = () => {
         const params = {};
@@ -410,7 +411,7 @@ export default function AdminCommandes() {
                                 <th className="text-left px-5 py-3.5 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider hidden lg:table-cell">Montant</th>
                                 <th className="text-left px-5 py-3.5 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider hidden sm:table-cell">Paiement</th>
                                 <th className="text-left px-5 py-3.5 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Statut</th>
-                                <th className="text-right px-5 py-3.5 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-28">Actions</th>
+                                <th className="text-right px-5 py-3.5 bg-[#F9FAFB] text-xs font-semibold text-[#6B7280] uppercase tracking-wider w-40">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#F3F4F6]">
@@ -438,11 +439,20 @@ export default function AdminCommandes() {
                                         <Badge type="order" value={o.order_status} />
                                     </td>
                                     <td className="px-5 py-4">
-                                        <div className="flex items-center justify-end">
+                                        <div className="flex items-center justify-end gap-2">
                                             <button onClick={() => setSelected(o)}
                                                 className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
                                                 style={{ background: '#C9A84C' }}>
                                                 Voir
+                                            </button>
+                                            <button onClick={() => setInvoiceOrder(o)}
+                                                title="Voir la facture"
+                                                className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors"
+                                                style={{ borderColor: '#C9A84C', color: '#C9A84C', background: 'transparent' }}
+                                                onMouseEnter={e => { e.currentTarget.style.background = '#FDF8EC'; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                                Facture
                                             </button>
                                         </div>
                                     </td>
@@ -459,6 +469,10 @@ export default function AdminCommandes() {
                     onClose={() => setSelected(null)}
                     onUpdate={load}
                 />
+            )}
+
+            {invoiceOrder && !selected && (
+                <InvoiceModal order={invoiceOrder} onClose={() => setInvoiceOrder(null)} />
             )}
         </div>
     );

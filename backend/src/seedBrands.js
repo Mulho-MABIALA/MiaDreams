@@ -8,7 +8,7 @@ const Collection = require('./models/Collection');
 const DEFAULT_BRANDS = [
     {
         name:         'Mia Dreams Brand',
-        slug:         'mia-dreams',
+        slug:         'mia-dreams-brand',
         href:         '/miaDreams',
         header_title: 'MIA DREAMS BRAND',
         description:  "Mia Dreams Brand est notre ligne de vêtements — une collection qui marie l'artisanat africain traditionnel aux codes de la mode contemporaine. Chaque pièce raconte une histoire.",
@@ -98,12 +98,18 @@ async function seedBrands() {
         let skipped = 0;
 
         for (const brandData of DEFAULT_BRANDS) {
-            const exists = await Brand.findOne({ slug: brandData.slug });
+            // Chercher par nom OU slug (robuste aux migrations de slug)
+            const exists = await Brand.findOne({
+                $or: [{ name: brandData.name }, { slug: brandData.slug }]
+            });
             if (exists) {
-                // Mettre à jour le href si il manque ou est incorrect
-                if (!exists.href || exists.href !== brandData.href) {
-                    await Brand.updateOne({ slug: brandData.slug }, { $set: { href: brandData.href } });
-                    console.log(`🔄 Marque mise à jour : ${brandData.name} (href corrigé → ${brandData.href})`);
+                // Corriger href et slug si nécessaire
+                const updates = {};
+                if (!exists.href || exists.href !== brandData.href) updates.href = brandData.href;
+                if (exists.slug !== brandData.slug) updates.slug = brandData.slug;
+                if (Object.keys(updates).length > 0) {
+                    await Brand.updateOne({ _id: exists._id }, { $set: updates });
+                    console.log(`🔄 Marque mise à jour : ${brandData.name}`, updates);
                 } else {
                     console.log(`ℹ️  Marque déjà présente : ${brandData.name}`);
                 }
@@ -111,9 +117,9 @@ async function seedBrands() {
                 continue;
             }
 
-            // Créer la marque (le pre-save hook générera le slug, on le force via set)
-            const brand = new Brand(brandData);
-            brand.slug = brandData.slug; // forcer le slug exact
+            // Créer la marque — désactiver temporairement le hook slug via markModified trick
+            const brand = new Brand({ ...brandData });
+            brand.$locals.forceSlug = brandData.slug;
             await brand.save();
             console.log(`✅ Marque créée : ${brandData.name} → ${brandData.href}`);
             created++;

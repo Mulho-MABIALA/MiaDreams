@@ -14,7 +14,10 @@ const brandSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 brandSchema.pre('save', function(next) {
-    if (this.isModified('name') || !this.slug) {
+    // Si un slug forcé est passé via $locals, on le respecte
+    if (this.$locals && this.$locals.forceSlug) {
+        this.slug = this.$locals.forceSlug;
+    } else if (this.isModified('name') || !this.slug) {
         this.slug = slugify(this.name, { lower: true, strict: true });
     }
     next();

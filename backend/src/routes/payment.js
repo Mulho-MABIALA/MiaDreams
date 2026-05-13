@@ -1,178 +1,295 @@
+/**
+ * payment.js — Routes de paiement MIA DREAMS
+ * ─────────────────────────────────────────────
+ * Wave CI       : api.wave.com (checkout sessions + webhook HMAC)
+ * Orange Money CI : api.orange.com (WebPay CI + webhook)
+ * Confirmation manuelle : admin
+ */
+
 const express = require('express');
-const router = express.Router();
-const Order = require('../models/Order');
+const crypto  = require('crypto');
+const router  = express.Router();
+const Order   = require('../models/Order');
 
 const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
+const BACKEND  = process.env.BACKEND_URL  || 'http://localhost:5000';
 
-// ─── WAVE ────────────────────────────────────────────────────────────────────
-// POST /api/payment/wave/init
+// ─────────────────────────────────────────────────────────────────────────────
+//  WAVE CI
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/payment/wave/init
+ * Crée une session de paiement Wave et retourne le lien de paiement.
+ *
+ * Doc Wave : https://wave.com/en/business/developer/
+ * Clé API  : Tableau de bord Wave Business → Paramètres → API & Webhooks
+ */
 router.post('/wave/init', async (req, res) => {
     const { orderId } = req.body;
     try {
         const order = await Order.findById(orderId);
         if (!order) return res.status(404).json({ message: 'Commande introuvable' });
 
+        if (!process.env.WAVE_API_KEY) {
+            return res.status(503).json({ message: 'Paiement Wave non configuré. Contactez-nous.' });
+        }
+
+        const payload = {
+            amount:           String(Math.round(order.total)),
+            currency:         'XOF',
+            success_url:      `${FRONTEND}/commande/succes/${orderId}`,
+            error_url:        `${FRONTEND}/commande/erreur/${orderId}`,
+            client_reference: orderId,
+        };
+
         const response = await fetch('https://api.wave.com/v1/checkout/sessions', {
-            method: 'POST',
+            method:  'POST',
             headers: {
                 'Authorization': `Bearer ${process.env.WAVE_API_KEY}`,
-                'Content-Type': 'application/json',
+                'Content-Type':  'application/json',
+                'Idempotency-Key': orderId,   // évite les doubles débits
             },
-            body: JSON.stringify({
-                amount: String(Math.round(order.total)),
-                currency: 'XOF',
-                success_url: `${FRONTEND}/commande/succes/${orderId}`,
-                error_url:   `${FRONTEND}/commande/erreur/${orderId}`,
-                client_reference: orderId,
-            }),
+            body: JSON.stringify(payload),
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Erreur Wave API');
 
+        if (!response.ok) {
+            console.error('Wave API error:', data);
+            throw new Error(data.message || `Erreur Wave (${response.status})`);
+        }
+
+        // Sauvegarder la référence Wave
         await Order.findByIdAndUpdate(orderId, {
-            payment_ref: data.id,
+            payment_ref:    data.id,
             payment_status: 'pending',
         });
 
         res.json({ checkout_url: data.wave_launch_url });
-    } catch (e) { res.status(500).json({ message: e.message }); }
+    } catch (e) {
+        console.error('Wave init error:', e.message);
+        res.status(500).json({ message: e.message });
+    }
 });
 
-// POST /api/payment/wave/webhook
+/**
+ * POST /api/payment/wave/webhook
+ * Appelé par Wave après paiement. Vérifie la signature HMAC-SHA256.
+ *
+ * Configuration dans Wave Business :
+ * → Paramètres → API & Webhooks → Webhook URL :
+ *   https://mia-dreams.onrender.com/api/payment/wave/webhook
+ * → Copier le "Webhook Secret" dans WAVE_WEBHOOK_SECRET
+ */
 router.post('/wave/webhook', async (req, res) => {
+    // ── Vérification signature HMAC-SHA256 ──
+    const waveSig    = req.headers['wave-signature'] || '';
+    const webhookKey = process.env.WAVE_WEBHOOK_SECRET;
+
+    if (webhookKey && waveSig) {
+        try {
+            // Format Wave : "t=<timestamp>,v1=<signature>"
+            const parts     = Object.fromEntries(waveSig.split(',').map(p => p.split('=')));
+            const timestamp = parts.t;
+            const signature = parts.v1;
+            // req.rawBody capturé par express.json({ verify }) dans server.js
+            const rawBody   = req.rawBody ? req.rawBody.toString() : JSON.stringify(req.body);
+            const expected  = crypto
+                .createHmac('sha256', webhookKey)
+                .update(`${timestamp}.${rawBody}`)
+                .digest('hex');
+
+            if (expected !== signature) {
+                console.warn('⚠️  Wave webhook signature invalide');
+                return res.status(401).json({ message: 'Signature invalide' });
+            }
+        } catch (e) {
+            console.error('Erreur vérification signature Wave:', e.message);
+        }
+    }
+
     try {
         const { client_reference, payment_status } = req.body;
+
         if (payment_status === 'succeeded') {
-            await Order.findByIdAndUpdate(client_reference, {
-                payment_status: 'paid',
-                order_status: 'confirmed',
-            });
-        } else if (payment_status === 'failed') {
+            const order = await Order.findByIdAndUpdate(
+                client_reference,
+                { payment_status: 'paid', order_status: 'confirmed' },
+                { new: true }
+            );
+            if (order) {
+                console.log(`✅ Wave — Paiement confirmé : ${order.order_number}`);
+            }
+        } else if (payment_status === 'failed' || payment_status === 'cancelled') {
             await Order.findByIdAndUpdate(client_reference, { payment_status: 'failed' });
+            console.log(`❌ Wave — Paiement ${payment_status} : ${client_reference}`);
         }
+
         res.json({ received: true });
-    } catch (e) { res.status(500).json({ message: e.message }); }
+    } catch (e) {
+        console.error('Erreur webhook Wave:', e.message);
+        res.status(500).json({ message: e.message });
+    }
 });
 
-// ─── ORANGE MONEY ────────────────────────────────────────────────────────────
-// POST /api/payment/orange-money/init
+// ─────────────────────────────────────────────────────────────────────────────
+//  ORANGE MONEY CI
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/payment/orange-money/init
+ * Initie un paiement Orange Money CI via l'API WebPay.
+ *
+ * Pour obtenir les credentials :
+ * 1. Créer un compte développeur : https://developer.orange.com
+ * 2. Créer une application et souscrire à "Orange Money CI WebPay"
+ * 3. Récupérer le Bearer Token OAuth2 et le Merchant Key
+ * → ORANGE_MONEY_TOKEN      : Bearer token (expire, à renouveler)
+ * → ORANGE_MONEY_MERCHANT_KEY : Merchant key (fixe)
+ */
 router.post('/orange-money/init', async (req, res) => {
-    const { orderId, phone } = req.body;
+    const { orderId } = req.body;
     try {
         const order = await Order.findById(orderId);
         if (!order) return res.status(404).json({ message: 'Commande introuvable' });
 
-        if (!process.env.ORANGE_MONEY_MERCHANT_KEY) {
-            // Mode demo : marquer comme en attente avec instructions
+        // ── Mode manuel si clé absente ──
+        if (!process.env.ORANGE_MONEY_MERCHANT_KEY || !process.env.ORANGE_MONEY_TOKEN) {
             await Order.findByIdAndUpdate(orderId, {
-                payment_ref: `OM-${Date.now()}`,
+                payment_ref:    `OM-MANUEL-${Date.now()}`,
                 payment_status: 'pending',
             });
             return res.json({
-                status: 'instructions',
-                message: `Envoyez ${order.total.toLocaleString()} FCFA au numéro marchand Orange Money, puis envoyez votre reçu à contact@miadreams.com avec la référence ${order.order_number}.`,
+                status:       'instructions',
+                message:      `Envoyez ${order.total.toLocaleString('fr-FR')} FCFA au marchand Orange Money, puis partagez votre reçu sur WhatsApp avec la référence ${order.order_number}.`,
                 order_number: order.order_number,
             });
         }
 
-        // Orange Money API (Côte d'Ivoire / Sénégal)
+        const payload = {
+            merchant_key: process.env.ORANGE_MONEY_MERCHANT_KEY,
+            currency:     'OUV',                  // OUV = unité Orange Money (XOF)
+            order_id:     order.order_number,
+            amount:       Math.round(order.total),
+            return_url:   `${FRONTEND}/commande/succes/${orderId}`,
+            cancel_url:   `${FRONTEND}/commande/erreur/${orderId}`,
+            notif_url:    `${BACKEND}/api/payment/orange-money/webhook`,
+            lang:         'fr',
+            reference:    orderId,
+        };
+
         const response = await fetch('https://api.orange.com/orange-money-webpay/ci/v1/webpayment', {
-            method: 'POST',
+            method:  'POST',
             headers: {
                 'Authorization': `Bearer ${process.env.ORANGE_MONEY_TOKEN}`,
-                'Content-Type': 'application/json',
+                'Content-Type':  'application/json',
+                'Accept':        'application/json',
             },
-            body: JSON.stringify({
-                merchant_key: process.env.ORANGE_MONEY_MERCHANT_KEY,
-                currency: 'OUV',
-                order_id: order.order_number,
-                amount: Math.round(order.total),
-                return_url: `${FRONTEND}/commande/succes/${orderId}`,
-                cancel_url:  `${FRONTEND}/commande/erreur/${orderId}`,
-                notif_url:   `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/payment/orange-money/webhook`,
-                lang: 'fr',
-                reference: orderId,
-            }),
+            body: JSON.stringify(payload),
         });
 
         const data = await response.json();
-        if (data.status !== '200') throw new Error(data.message || 'Erreur Orange Money');
+
+        if (!response.ok || data.status !== '200') {
+            console.error('Orange Money API error:', data);
+            throw new Error(data.message || `Erreur Orange Money (${response.status})`);
+        }
 
         await Order.findByIdAndUpdate(orderId, {
-            payment_ref: data.pay_token,
+            payment_ref:    data.pay_token,
             payment_status: 'pending',
         });
 
         res.json({ checkout_url: data.payment_url });
-    } catch (e) { res.status(500).json({ message: e.message }); }
+    } catch (e) {
+        console.error('Orange Money init error:', e.message);
+        res.status(500).json({ message: e.message });
+    }
 });
 
-// POST /api/payment/orange-money/webhook
+/**
+ * POST /api/payment/orange-money/webhook
+ * Notif de paiement Orange Money (envoyée sur notif_url).
+ *
+ * Dans votre portail Orange Developer, configurez :
+ * Webhook URL : https://mia-dreams.onrender.com/api/payment/orange-money/webhook
+ */
 router.post('/orange-money/webhook', async (req, res) => {
     try {
-        const { reference, status } = req.body;
+        const { reference, status, txnid } = req.body;
+        console.log('Orange Money webhook reçu:', { reference, status, txnid });
+
         if (status === 'SUCCESS') {
-            await Order.findByIdAndUpdate(reference, {
-                payment_status: 'paid',
-                order_status: 'confirmed',
-            });
+            const order = await Order.findByIdAndUpdate(
+                reference,
+                { payment_status: 'paid', order_status: 'confirmed', payment_ref: txnid || reference },
+                { new: true }
+            );
+            if (order) {
+                console.log(`✅ Orange Money — Paiement confirmé : ${order.order_number}`);
+            }
+        } else if (status === 'FAILED' || status === 'CANCELLED') {
+            await Order.findByIdAndUpdate(reference, { payment_status: 'failed' });
+            console.log(`❌ Orange Money — Paiement ${status} : ${reference}`);
         }
+
         res.json({ received: true });
-    } catch (e) { res.status(500).json({ message: e.message }); }
+    } catch (e) {
+        console.error('Erreur webhook Orange Money:', e.message);
+        res.status(500).json({ message: e.message });
+    }
 });
 
-// ─── FREE MONEY ──────────────────────────────────────────────────────────────
-// POST /api/payment/free-money/init
+// ─────────────────────────────────────────────────────────────────────────────
+//  FREE MONEY (instructions manuelles — pas d'API officielle)
+// ─────────────────────────────────────────────────────────────────────────────
+
 router.post('/free-money/init', async (req, res) => {
     const { orderId } = req.body;
     try {
         const order = await Order.findById(orderId);
         if (!order) return res.status(404).json({ message: 'Commande introuvable' });
 
-        if (!process.env.FREE_MONEY_API_KEY) {
-            await Order.findByIdAndUpdate(orderId, {
-                payment_ref: `FM-${Date.now()}`,
-                payment_status: 'pending',
-            });
-            return res.json({
-                status: 'instructions',
-                message: `Envoyez ${order.total.toLocaleString()} FCFA via Free Money, puis envoyez votre reçu à contact@miadreams.com avec la référence ${order.order_number}.`,
-                order_number: order.order_number,
-            });
-        }
+        await Order.findByIdAndUpdate(orderId, {
+            payment_ref:    `FM-${Date.now()}`,
+            payment_status: 'pending',
+        });
 
-        // Free Money API (à configurer selon documentation officielle)
-        res.json({
-            status: 'instructions',
-            message: `Composez *555# sur votre téléphone Free, sélectionnez "Paiement marchand" et entrez le code ${order.order_number} pour un montant de ${order.total.toLocaleString()} FCFA.`,
+        return res.json({
+            status:       'instructions',
+            message:      `Composez *555# sur votre mobile Free, choisissez "Paiement marchand" et entrez le code ${order.order_number} pour ${order.total.toLocaleString('fr-FR')} FCFA. Envoyez ensuite votre reçu sur WhatsApp.`,
             order_number: order.order_number,
         });
-    } catch (e) { res.status(500).json({ message: e.message }); }
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
 });
 
-// POST /api/payment/free-money/webhook
 router.post('/free-money/webhook', async (req, res) => {
     try {
         const { reference, status } = req.body;
         if (status === 'SUCCESS') {
             await Order.findByIdAndUpdate(reference, {
                 payment_status: 'paid',
-                order_status: 'confirmed',
+                order_status:   'confirmed',
             });
         }
         res.json({ received: true });
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
-// ─── CONFIRM MANUEL (admin) ───────────────────────────────────────────────────
-// PATCH /api/payment/confirm/:orderId
+// ─────────────────────────────────────────────────────────────────────────────
+//  CONFIRMATION MANUELLE (admin)
+// ─────────────────────────────────────────────────────────────────────────────
+
 router.patch('/confirm/:orderId', async (req, res) => {
     try {
-        const order = await Order.findByIdAndUpdate(req.params.orderId, {
-            payment_status: 'paid',
-            order_status: 'confirmed',
-        }, { new: true });
+        const order = await Order.findByIdAndUpdate(
+            req.params.orderId,
+            { payment_status: 'paid', order_status: 'confirmed' },
+            { new: true }
+        );
         if (!order) return res.status(404).json({ message: 'Commande introuvable' });
         res.json(order);
     } catch (e) { res.status(500).json({ message: e.message }); }

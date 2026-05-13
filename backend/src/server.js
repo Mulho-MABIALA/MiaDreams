@@ -28,7 +28,10 @@ app.use(cors({
 }));
 app.options('*', cors()); // pré-vol OPTIONS sur toutes les routes
 
-app.use(express.json());
+// Capture le corps brut pour vérification de signature webhook (Wave)
+app.use(express.json({
+    verify: (req, res, buf) => { req.rawBody = buf; }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check en premier — Render pingue cette URL pour savoir si le service est up

@@ -9,7 +9,7 @@ export default function NewsletterPopup() {
 
     useEffect(() => {
         if (localStorage.getItem('mia_newsletter_dismissed')) return;
-        const timer = setTimeout(() => setVisible(true), 30000);
+        const timer = setTimeout(() => setVisible(true), 8000);
         const onMouseLeave = (e) => {
             if (e.clientY <= 0 && !localStorage.getItem('mia_newsletter_dismissed')) setVisible(true);
         };

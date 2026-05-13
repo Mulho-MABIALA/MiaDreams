@@ -209,9 +209,98 @@ function SectionLabel({ children }) {
     );
 }
 
+/* ── Graphique revenus SVG ─────────────────────────────────────── */
+function RevenueChart({ data }) {
+    const max = Math.max(...data.map(d => d.value), 1);
+    const W = 600, H = 140, PAD = { t: 10, b: 36, l: 8, r: 8 };
+    const barW = (W - PAD.l - PAD.r) / data.length;
+    const barGap = barW * 0.25;
+
+    return (
+        <div style={{ width: '100%', overflowX: 'auto' }}>
+            <svg viewBox={`0 0 ${W} ${H + PAD.t + PAD.b}`} style={{ width: '100%', minWidth: '320px', display: 'block' }}>
+                {/* Lignes de grille */}
+                {[0, 0.25, 0.5, 0.75, 1].map((r, i) => (
+                    <line key={i}
+                        x1={PAD.l} y1={PAD.t + H * (1 - r)}
+                        x2={W - PAD.r} y2={PAD.t + H * (1 - r)}
+                        stroke="#F0E8D8" strokeWidth="1" />
+                ))}
+
+                {data.map((d, i) => {
+                    const barH = Math.max((d.value / max) * H, d.value > 0 ? 4 : 0);
+                    const x = PAD.l + i * barW + barGap / 2;
+                    const w = barW - barGap;
+                    const y = PAD.t + H - barH;
+                    return (
+                        <g key={i}>
+                            {/* Barre */}
+                            <rect x={x} y={y} width={w} height={barH}
+                                fill={d.value > 0 ? GOLD : '#F0E8D8'}
+                                rx="3" opacity={d.value > 0 ? 1 : 0.4} />
+
+                            {/* Valeur au-dessus */}
+                            {d.value > 0 && (
+                                <text x={x + w / 2} y={y - 5}
+                                    textAnchor="middle" fontSize="9"
+                                    fill="#6B4F3A" fontWeight="600">
+                                    {d.value >= 1000 ? `${Math.round(d.value / 1000)}k` : d.value}
+                                </text>
+                            )}
+
+                            {/* Label jour */}
+                            <text x={x + w / 2} y={PAD.t + H + PAD.b - 8}
+                                textAnchor="middle" fontSize="9"
+                                fill="#9E8272">
+                                {d.label}
+                            </text>
+
+                            {/* Nombre de commandes */}
+                            {d.count > 0 && (
+                                <text x={x + w / 2} y={PAD.t + H + PAD.b - 20}
+                                    textAnchor="middle" fontSize="8"
+                                    fill={GOLD} fontWeight="600">
+                                    {d.count} cmd
+                                </text>
+                            )}
+                        </g>
+                    );
+                })}
+            </svg>
+
+            {/* Légende totaux */}
+            <div className="flex gap-6 flex-wrap" style={{ marginTop: '8px', paddingLeft: '8px' }}>
+                <div>
+                    <p style={{ fontSize: '10px', color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>Total 7j</p>
+                    <p style={{ fontSize: '16px', fontWeight: 700, color: GOLD }}>
+                        {data.reduce((s, d) => s + d.value, 0).toLocaleString('fr-FR')} FCFA
+                    </p>
+                </div>
+                <div>
+                    <p style={{ fontSize: '10px', color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>Commandes</p>
+                    <p style={{ fontSize: '16px', fontWeight: 700, color: '#3D2214' }}>
+                        {data.reduce((s, d) => s + d.count, 0)}
+                    </p>
+                </div>
+                <div>
+                    <p style={{ fontSize: '10px', color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>Panier moyen</p>
+                    <p style={{ fontSize: '16px', fontWeight: 700, color: '#3D2214' }}>
+                        {(() => {
+                            const total = data.reduce((s, d) => s + d.value, 0);
+                            const count = data.reduce((s, d) => s + d.count, 0);
+                            return count > 0 ? Math.round(total / count).toLocaleString('fr-FR') + ' FCFA' : '—';
+                        })()}
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function Dashboard() {
-    const [stats, setStats] = useState({});
-    const [recent, setRecent] = useState({ reservations: [], contacts: [], posts: [], testimonials: [], newsletters: [], orders: [] });
+    const [stats,   setStats]   = useState({});
+    const [recent,  setRecent]  = useState({ reservations: [], contacts: [], posts: [], testimonials: [], newsletters: [], orders: [] });
+    const [chartData, setChartData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -231,6 +320,9 @@ export default function Dashboard() {
             axios.get('/api/admin/products').catch(() => ({ data: [] })),
             axios.get('/api/admin/orders').catch(() => ({ data: [] })),
         ]).then(([brands, posts, gallery, catalogues, podcasts, testimonials, team, services, initiatives, reservations, contacts, newsletters, products, orders]) => {
+            const allOrders = orders.data;
+            const paidOrders = allOrders.filter(o => o.payment_status === 'paid');
+
             setStats({
                 brands:       brands.data.length,
                 posts:        posts.data.length,
@@ -245,16 +337,43 @@ export default function Dashboard() {
                 contacts:     contacts.data.length,
                 newsletters:  newsletters.data.length,
                 products:     products.data.length,
-                orders:       orders.data.length,
-                revenue:      orders.data.filter(o => o.payment_status === 'paid').reduce((s, o) => s + o.total, 0),
+                orders:       allOrders.length,
+                ordersPending:  allOrders.filter(o => o.order_status === 'pending').length,
+                ordersShipped:  allOrders.filter(o => o.order_status === 'shipped').length,
+                ordersDelivered:allOrders.filter(o => o.order_status === 'delivered').length,
+                revenue:      paidOrders.reduce((s, o) => s + o.total, 0),
+                revenueMonth: paidOrders.filter(o => {
+                    const d = new Date(o.createdAt);
+                    const now = new Date();
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                }).reduce((s, o) => s + o.total, 0),
             });
+
+            // Graphique : revenus des 7 derniers jours
+            const days = Array.from({ length: 7 }, (_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() - (6 - i));
+                return {
+                    label: d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }),
+                    date:  d.toDateString(),
+                    value: 0,
+                    count: 0,
+                };
+            });
+            paidOrders.forEach(o => {
+                const d = new Date(o.createdAt).toDateString();
+                const day = days.find(x => x.date === d);
+                if (day) { day.value += o.total; day.count++; }
+            });
+            setChartData(days);
+
             setRecent({
                 reservations: reservations.data.slice(-5).reverse(),
                 contacts:     contacts.data.slice(-5).reverse(),
                 posts:        posts.data.slice(-5).reverse(),
                 testimonials: testimonials.data.slice(-5).reverse(),
                 newsletters:  newsletters.data.slice(-5).reverse(),
-                orders:       orders.data.slice(-5).reverse(),
+                orders:       allOrders.slice(0, 5),
             });
         }).finally(() => setLoading(false));
     }, []);
@@ -285,61 +404,64 @@ export default function Dashboard() {
             </div>
             <div
                 className="grid gap-4"
-                style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: '32px' }}
+                style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '16px' }}
             >
-                <StatCard label="Produits"      value={stats.products} icon={<IcoShop />}  color={COLORS.products}  to="/admin/produits"  sub="en boutique" />
-                <StatCard label="Commandes"     value={stats.orders}   icon={<IcoCart />}  color={COLORS.orders}   to="/admin/commandes" sub="total reçues" />
+                <StatCard label="Produits"   value={stats.products}        icon={<IcoShop />} color={COLORS.products} to="/admin/produits"  sub="en boutique" />
+                <StatCard label="Commandes"  value={stats.orders}          icon={<IcoCart />} color={COLORS.orders}   to="/admin/commandes" sub="total reçues" />
+                <StatCard label="En attente" value={stats.ordersPending}   icon={<IcoCart />} color="#E8A838"         to="/admin/commandes" sub="à traiter" />
+                <StatCard label="Livrées"    value={stats.ordersDelivered} icon={<IcoCart />} color="#7C9A84"         to="/admin/commandes" sub="commandes" />
 
-                {/* Revenue card — special gradient */}
-                <div
-                    className="relative overflow-hidden"
-                    style={{
-                        borderRadius: '16px',
-                        padding: '20px',
-                        background: 'linear-gradient(135deg, #2D1B0E 0%, #4A2C18 100%)',
-                        boxShadow: '0 1px 4px rgba(45,27,14,0.10), 0 8px 24px rgba(45,27,14,0.12)',
-                        border: '1px solid rgba(201,168,76,0.2)',
-                    }}
-                >
-                    <div
-                        className="flex items-center justify-center"
-                        style={{
-                            width: '36px',
-                            height: '36px',
-                            borderRadius: '10px',
-                            background: 'rgba(201,168,76,0.2)',
-                            marginBottom: '12px',
-                        }}
-                    >
-                        <span style={{ color: GOLD }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <line x1="12" y1="1" x2="12" y2="23"/>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                            </svg>
-                        </span>
+                {/* Revenue total */}
+                <div className="relative overflow-hidden" style={{
+                    gridColumn: 'span 2',
+                    borderRadius: '16px', padding: '20px',
+                    background: 'linear-gradient(135deg, #2D1B0E 0%, #4A2C18 100%)',
+                    boxShadow: '0 1px 4px rgba(45,27,14,0.10), 0 8px 24px rgba(45,27,14,0.12)',
+                    border: '1px solid rgba(201,168,76,0.2)',
+                }}>
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(201,168,76,0.7)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '6px' }}>
+                                Revenu total
+                            </p>
+                            <p style={{ fontSize: '26px', fontWeight: 700, color: GOLD, lineHeight: 1 }}>
+                                {(stats.revenue || 0).toLocaleString('fr-FR')} FCFA
+                            </p>
+                            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>paiements confirmés</p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(201,168,76,0.5)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '6px' }}>
+                                Ce mois
+                            </p>
+                            <p style={{ fontSize: '20px', fontWeight: 700, color: 'rgba(201,168,76,0.8)', lineHeight: 1 }}>
+                                {(stats.revenueMonth || 0).toLocaleString('fr-FR')} FCFA
+                            </p>
+                            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>
+                                {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                            </p>
+                        </div>
                     </div>
-                    <p style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(201,168,76,0.7)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '6px' }}>
-                        Revenu total
-                    </p>
-                    <p style={{ fontSize: '22px', fontWeight: 700, color: GOLD, lineHeight: 1 }}>
-                        {(stats.revenue || 0).toLocaleString('fr-FR')} FCFA
-                    </p>
-                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>
-                        paiements confirmés
-                    </p>
-                    {/* decorative circle */}
-                    <div style={{
-                        position: 'absolute',
-                        right: '-20px',
-                        top: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        borderRadius: '50%',
-                        background: 'rgba(201,168,76,0.06)',
-                        pointerEvents: 'none',
-                    }} />
+                    <div style={{ position: 'absolute', right: '-20px', top: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(201,168,76,0.06)', pointerEvents: 'none' }} />
                 </div>
             </div>
+
+            {/* ─── GRAPHIQUE 7 JOURS ─── */}
+            {chartData.length > 0 && (
+                <div style={{ ...CARD_STYLE, padding: '24px', marginBottom: '32px' }}>
+                    <div className="flex items-center justify-between" style={{ marginBottom: '20px' }}>
+                        <div>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '2px' }}>
+                                Revenus
+                            </p>
+                            <p style={{ fontSize: '15px', fontWeight: 700, color: '#1E110A' }}>7 derniers jours</p>
+                        </div>
+                        <Link to="/admin/commandes" style={{ fontSize: '12px', color: GOLD, textDecoration: 'none', fontWeight: 500 }}>
+                            Voir commandes →
+                        </Link>
+                    </div>
+                    <RevenueChart data={chartData} />
+                </div>
+            )}
 
             {/* ─── CONTENU DU SITE ─── */}
             <div style={{ marginBottom: '8px' }}>

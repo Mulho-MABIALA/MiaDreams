@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const { notifyNewOrder } = require('../utils/notify');
 
 // POST /api/orders — créer une commande
 router.post('/', async (req, res) => {
@@ -37,6 +38,9 @@ router.post('/', async (req, res) => {
                     { new: true }
                 ))
         );
+
+        // Notifier l'admin (WhatsApp + Email) — sans bloquer la réponse client
+        notifyNewOrder(order).catch(e => console.error('Notify error:', e.message));
 
         res.status(201).json(order);
     } catch (e) { res.status(400).json({ message: e.message }); }

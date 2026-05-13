@@ -44,6 +44,7 @@ import BoutiqueProduct from './pages/Boutique/Product';
 import Panier from './pages/Panier';
 import Commande from './pages/Commande';
 import CommandeSucces from './pages/CommandeSucces';
+import CommandeErreur from './pages/CommandeErreur';
 import MesCommandes from './pages/MesCommandes';
 import NotFound from './pages/NotFound';
 
@@ -79,7 +80,7 @@ export default function App() {
                 <Route path="/panier"            element={<Panier />} />
                 <Route path="/commande"          element={<Commande />} />
                 <Route path="/commande/succes/:id"  element={<CommandeSucces />} />
-                <Route path="/commande/erreur/:id"  element={<CommandeSucces />} />
+                <Route path="/commande/erreur/:id"  element={<CommandeErreur />} />
                 <Route path="/mes-commandes"     element={<MesCommandes />} />
                 <Route path="/login"             element={<Login />} />
                 <Route path="/admin/*"           element={<Admin />} />

@@ -24,84 +24,224 @@ function Spinner({ small }) {
     );
 }
 
-// ─── Impression du reçu dans une nouvelle fenêtre ─────────────────────────────
+// ─── Ticket thermique (impression rapide) ─────────────────────────────────────
 function printReceipt(order, remiseMt) {
+    const LOGO    = 'https://miadreams.netlify.app/img/logo_MIA.png';
     const modeLbl = MODES.find(m => m.value === order.payment_method)?.label || order.payment_method;
-    const lines   = order.items.map(i =>
-        `<tr>
-            <td style="padding:6px 0;font-size:13px;color:#374151;">${i.quantity}× ${i.name}</td>
-            <td style="padding:6px 0;font-size:13px;color:#111827;text-align:right;font-weight:600;">${fmt(i.price * i.quantity)}</td>
-        </tr>`
-    ).join('');
+    const now     = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-    const w = window.open('', '_blank', 'width=400,height=620');
+    const itemRows = order.items.map(i => {
+        const total = (i.price * i.quantity).toLocaleString('fr-FR');
+        const unit  = Number(i.price).toLocaleString('fr-FR');
+        const name  = i.name.length > 22 ? i.name.slice(0, 21) + '…' : i.name;
+        return `
+        <tr>
+          <td class="item-name">${i.quantity}&times; ${name}</td>
+          <td class="item-unit">${unit}</td>
+          <td class="item-total">${total}</td>
+        </tr>`;
+    }).join('');
+
+    const subtotal  = order.subtotal ?? order.total;
+    const hasRemise = remiseMt > 0;
+    const clientName  = order.customer?.name && order.customer.name !== 'Client comptoir' ? order.customer.name : null;
+    const clientPhone = order.customer?.phone || null;
+
+    const w = window.open('', '_blank', 'width=360,height=700,scrollbars=yes');
     w.document.write(`<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8"/>
-<title>Reçu ${order.order_number}</title>
+<title>Reçu — ${order.order_number}</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Arial', sans-serif; background: #fff; padding: 24px; color: #111827; }
-  .logo { text-align: center; margin-bottom: 20px; }
-  .logo h1 { font-size: 18px; letter-spacing: 4px; font-weight: 900; color: #111827; }
-  .logo p  { font-size: 10px; letter-spacing: 2px; color: #9CA3AF; margin-top: 2px; }
-  .divider { border: none; border-top: 1px dashed #D1D5DB; margin: 14px 0; }
-  .row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: 12px; }
-  .label { color: #6B7280; }
-  .value { color: #111827; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; }
-  .total-row td { font-size: 15px; font-weight: 800; color: #C9A84C; padding-top: 10px; }
-  .footer { text-align: center; margin-top: 24px; font-size: 11px; color: #9CA3AF; line-height: 1.8; }
+
+  body {
+    font-family: 'Inter', 'Courier New', monospace;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    padding: 24px 12px 40px;
+  }
+
+  .receipt {
+    width: 320px;
+    background: #fff;
+    padding: 28px 24px 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 20px rgba(0,0,0,.10);
+    position: relative;
+  }
+
+  /* Bord dentelé haut */
+  .receipt::before {
+    content: '';
+    position: absolute;
+    top: -10px; left: 0; right: 0;
+    height: 12px;
+    background: radial-gradient(circle at 8px 12px, #f5f5f5 8px, transparent 0),
+                radial-gradient(circle at calc(100% - 8px) 12px, #f5f5f5 8px, transparent 0);
+    background-size: 16px 12px;
+    background-repeat: repeat-x;
+  }
+  /* Bord dentelé bas */
+  .receipt::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: 0; right: 0;
+    height: 12px;
+    background: radial-gradient(circle at 8px 0px, #f5f5f5 8px, transparent 0),
+                radial-gradient(circle at calc(100% - 8px) 0px, #f5f5f5 8px, transparent 0);
+    background-size: 16px 12px;
+    background-repeat: repeat-x;
+    background-position: 0 0;
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 20px; }
+  .logo-img { width: 64px; height: 64px; object-fit: contain; margin-bottom: 10px; filter: drop-shadow(0 1px 3px rgba(0,0,0,.15)); }
+  .brand { font-size: 20px; letter-spacing: 5px; font-weight: 900; color: #1a1a1a; text-transform: uppercase; line-height: 1; }
+  .brand-co { font-size: 9px; letter-spacing: 3px; color: #C9A84C; text-transform: uppercase; margin-top: 3px; font-weight: 600; }
+  .brand-addr { font-size: 10px; color: #9CA3AF; margin-top: 6px; line-height: 1.5; }
+
+  /* Séparateur */
+  .sep { border: none; border-top: 1px dashed #D1D5DB; margin: 14px 0; }
+  .sep-solid { border: none; border-top: 1px solid #E5E7EB; margin: 14px 0; }
+
+  /* Badge */
+  .badge-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
+  .badge { background: #1a1a1a; color: #C9A84C; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; }
+
+  /* Méta */
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; margin-bottom: 4px; }
+  .meta-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
+  .meta-label { color: #9CA3AF; }
+  .meta-val { color: #374151; font-weight: 600; text-align: right; }
+
+  /* Articles */
+  .items-header { display: grid; grid-template-columns: 1fr auto auto; gap: 0 8px; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #9CA3AF; padding: 6px 0 4px; border-top: 1px solid #F3F4F6; border-bottom: 1px solid #F3F4F6; margin-bottom: 4px; }
+  .items-header .right { text-align: right; }
+
+  table.items { width: 100%; border-collapse: collapse; }
+  table.items td { font-size: 12px; padding: 5px 0; vertical-align: top; }
+  td.item-name { color: #1a1a1a; font-weight: 500; padding-right: 6px; line-height: 1.4; }
+  td.item-unit { color: #9CA3AF; font-size: 11px; text-align: right; white-space: nowrap; padding-right: 8px; padding-top: 6px; }
+  td.item-total { color: #1a1a1a; font-weight: 700; text-align: right; white-space: nowrap; padding-top: 6px; }
+
+  /* Totaux */
+  .totals { margin-top: 4px; }
+  .total-line { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+  .total-line .tl { color: #6B7280; }
+  .total-line .tv { color: #374151; font-weight: 600; }
+  .total-line.remise .tv { color: #ef4444; }
+
+  .grand-total { background: #1a1a1a; border-radius: 8px; padding: 12px 14px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .gt-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .gt-amount { font-size: 18px; font-weight: 900; color: #C9A84C; letter-spacing: 0.5px; }
+
+  /* Mode paiement */
+  .pay-mode { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 11px; color: #6B7280; }
+  .pay-mode strong { color: #374151; }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 20px; }
+  .footer-thanks { font-size: 13px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .footer-sub { font-size: 10px; color: #9CA3AF; line-height: 1.7; }
+  .footer-web { font-size: 11px; color: #C9A84C; font-weight: 700; margin-top: 4px; }
+
+  /* Bouton */
+  .print-btn-wrap { text-align: center; margin-top: 24px; padding-top: 20px; }
+  .print-btn { background: #C9A84C; color: #fff; border: none; padding: 10px 28px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
+  .print-btn:hover { background: #b8973b; }
+
   @media print {
-    body { padding: 8px; }
-    button { display: none; }
+    body { background: #fff; padding: 0; }
+    .receipt { box-shadow: none; width: 100%; }
+    .receipt::before, .receipt::after { display: none; }
+    .print-btn-wrap { display: none; }
   }
 </style>
 </head>
 <body>
-<div class="logo">
-  <h1>MIA DREAMS</h1>
-  <p>& CO — REÇU DE VENTE</p>
-</div>
-<hr class="divider"/>
-<div class="row"><span class="label">N° commande</span><span class="value">${order.order_number}</span></div>
-<div class="row"><span class="label">Date</span><span class="value">${fmtDate(new Date())}</span></div>
-${order.customer?.name && order.customer.name !== 'Client comptoir'
-    ? `<div class="row"><span class="label">Client</span><span class="value">${order.customer.name}</span></div>`
-    : ''}
-${order.customer?.phone ? `<div class="row"><span class="label">Téléphone</span><span class="value">${order.customer.phone}</span></div>` : ''}
-<hr class="divider"/>
-<table>
-  <tbody>${lines}</tbody>
-</table>
-<hr class="divider"/>
-${remiseMt > 0 ? `
-<div class="row"><span class="label">Sous-total</span><span class="value">${fmt(order.subtotal)}</span></div>
-<div class="row"><span class="label">Remise</span><span class="value" style="color:#ef4444;">− ${fmt(remiseMt)}</span></div>` : ''}
-<table><tbody>
-  <tr class="total-row">
-    <td>TOTAL ENCAISSÉ</td>
-    <td style="text-align:right;">${fmt(order.total)}</td>
-  </tr>
-</tbody></table>
-<div class="row" style="margin-top:8px;"><span class="label">Mode de paiement</span><span class="value">${modeLbl}</span></div>
-<hr class="divider"/>
-<div class="footer">
-  Merci pour votre confiance !<br/>
-  MIA DREAMS & CO — Abidjan, Côte d'Ivoire<br/>
-  <strong style="color:#C9A84C;">www.miadreams.com</strong>
-</div>
-<br/>
-<div style="text-align:center;">
-  <button onclick="window.print()" style="background:#C9A84C;color:#fff;border:none;padding:8px 24px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">
-    🖨 Imprimer
-  </button>
+<div class="receipt">
+
+  <!-- En-tête -->
+  <div class="header">
+    <img class="logo-img" src="${LOGO}" alt="MIA DREAMS" onerror="this.style.display='none'"/>
+    <div class="brand">MIA DREAMS</div>
+    <div class="brand-co">&amp; CO — Maison de Mode Africaine</div>
+    <div class="brand-addr">Abidjan, Côte d'Ivoire · +225 XX XX XX XX<br/>www.miadreams.com</div>
+  </div>
+
+  <hr class="sep"/>
+
+  <!-- Badge reçu -->
+  <div class="badge-wrap"><span class="badge">✦ Reçu de vente ✦</span></div>
+
+  <!-- Méta infos -->
+  <div style="margin-bottom:10px;">
+    <div class="meta-row"><span class="meta-label">N° commande</span><span class="meta-val" style="font-family:monospace;">${order.order_number}</span></div>
+    <div class="meta-row"><span class="meta-label">Date</span><span class="meta-val">${dateStr} à ${timeStr}</span></div>
+    ${clientName ? `<div class="meta-row"><span class="meta-label">Client</span><span class="meta-val">${clientName}</span></div>` : ''}
+    ${clientPhone ? `<div class="meta-row"><span class="meta-label">Téléphone</span><span class="meta-val">${clientPhone}</span></div>` : ''}
+  </div>
+
+  <hr class="sep"/>
+
+  <!-- En-tête articles -->
+  <div class="items-header">
+    <span>Article</span>
+    <span class="right">P.U.</span>
+    <span class="right">Montant</span>
+  </div>
+
+  <!-- Articles -->
+  <table class="items">
+    <tbody>${itemRows}</tbody>
+  </table>
+
+  <hr class="sep"/>
+
+  <!-- Totaux -->
+  <div class="totals">
+    ${hasRemise ? `
+    <div class="total-line"><span class="tl">Sous-total</span><span class="tv">${subtotal.toLocaleString('fr-FR')} FCFA</span></div>
+    <div class="total-line remise"><span class="tl">Remise</span><span class="tv">− ${remiseMt.toLocaleString('fr-FR')} FCFA</span></div>
+    ` : ''}
+  </div>
+
+  <div class="grand-total">
+    <span class="gt-label">Total encaissé</span>
+    <span class="gt-amount">${order.total.toLocaleString('fr-FR')} FCFA</span>
+  </div>
+
+  <div class="pay-mode">
+    ${modeLbl === 'Espèces' ? '💵' : '📱'}
+    Paiement par <strong>${modeLbl}</strong>
+  </div>
+
+  <hr class="sep" style="margin-top:16px;"/>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-thanks">Merci pour votre confiance !</div>
+    <div class="footer-sub">Ce reçu est valide comme preuve d'achat<br/>MIA DREAMS &amp; CO — Abidjan, Côte d'Ivoire</div>
+    <div class="footer-web">www.miadreams.com</div>
+  </div>
+
+  <!-- Bouton imprimer -->
+  <div class="print-btn-wrap">
+    <button class="print-btn" onclick="window.print()">🖨&nbsp; Imprimer le reçu</button>
+  </div>
+
 </div>
 </body>
 </html>`);
     w.document.close();
-    setTimeout(() => w.print(), 600);
+    setTimeout(() => w.print(), 800);
 }
 
 // ─── URL de la facture ────────────────────────────────────────────────────────

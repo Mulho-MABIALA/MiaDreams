@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { jsPDF } from 'jspdf';
 
 const GOLD = '#C9A84C';
 
@@ -80,33 +81,194 @@ function InvoiceModal({ order, onClose }) {
         setTimeout(() => win.print(), 300);
     };
 
-    const itemsText = order.items.map(i =>
-        `• ${i.name} × ${i.quantity}${i.size ? ` (T.${i.size})` : ''}${i.color ? ` — ${i.color}` : ''} → *${(i.price * i.quantity).toLocaleString('fr-FR')} FCFA*`
-    ).join('\n');
-
     const dateStr = new Date(order.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-
-    const whatsappText =
-`🧾 *FACTURE — MIA DREAMS & CO*
-━━━━━━━━━━━━━━━━
-📋 N° commande : *${order.order_number}*
-📅 Date : ${dateStr}
-👤 Client : *${order.customer.name}*
-━━━━━━━━━━━━━━━━
-📦 *ARTICLES :*
-${itemsText}
-━━━━━━━━━━━━━━━━
-${order.shipping_fee > 0 ? `🚚 Livraison : ${order.shipping_fee.toLocaleString('fr-FR')} FCFA\n` : ''}💰 *TOTAL : ${order.total.toLocaleString('fr-FR')} FCFA*
-💳 Paiement : ${PAYMENT_METHOD_LABELS[order.payment_method] || order.payment_method}
-━━━━━━━━━━━━━━━━
-Merci pour votre confiance ! 🙏✨
-*MIA DREAMS & CO*`;
-
     const rawPhone = (order.customer.phone || '').replace(/\D/g, '');
     const phone = rawPhone.startsWith('221') ? rawPhone : rawPhone.startsWith('0') ? `221${rawPhone.slice(1)}` : `221${rawPhone}`;
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(whatsappText)}`;
     const emailSubject = `Votre facture ${order.order_number} — MIA DREAMS & CO`;
-    const emailBody = whatsappText.replace(/\*/g, '').replace(/━/g, '---');
+
+    // ── Génère le PDF avec jsPDF et retourne la data URI base64 ──
+    const buildPDF = () => {
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const W = 210, M = 15;
+        const gold = [201, 168, 76];
+        let y = M;
+
+        // En-tête
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.setTextColor(26, 26, 26);
+        doc.text('MIA DREAMS & CO', M, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...gold);
+        doc.text("MODE AFRICAINE D'EXCELLENCE", M, y + 5);
+        doc.setFontSize(9);
+        doc.setTextColor(136, 136, 136);
+        doc.text('Dakar, Sénégal', M, y + 11);
+        doc.text('contact@miadreams.com', M, y + 16);
+
+        // FACTURE (droite)
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(22);
+        doc.setTextColor(...gold);
+        doc.text('FACTURE', W - M, y + 5, { align: 'right' });
+        doc.setFontSize(9);
+        doc.setTextColor(136, 136, 136);
+        doc.text(order.order_number, W - M, y + 13, { align: 'right' });
+        doc.text(dateStr, W - M, y + 18, { align: 'right' });
+
+        // Ligne dorée
+        y += 28;
+        doc.setDrawColor(...gold);
+        doc.setLineWidth(0.8);
+        doc.line(M, y, W - M, y);
+        y += 10;
+
+        // Infos client
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(170, 170, 170);
+        doc.text('FACTURÉ À', M, y);
+        doc.text('PAIEMENT', W / 2 + 5, y);
+        y += 5;
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(26, 26, 26);
+        doc.text(order.customer.name, M, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        if (order.customer.email)   doc.text(order.customer.email, M, y + 5);
+        if (order.customer.phone)   doc.text(order.customer.phone, M, y + 10);
+        if (order.customer.address) doc.text(`${order.customer.address}${order.customer.city ? ', ' + order.customer.city : ''}`, M, y + 15);
+
+        doc.setFontSize(10);
+        doc.setTextColor(26, 26, 26);
+        doc.text(PAYMENT_METHOD_LABELS[order.payment_method] || order.payment_method, W / 2 + 5, y + 3);
+        const pLabel = PAYMENT_LABELS[order.payment_status];
+        if (pLabel) {
+            doc.setFontSize(8);
+            doc.setTextColor(...(order.payment_status === 'paid' ? [5, 150, 105] : [217, 119, 6]));
+            doc.text(pLabel.label.toUpperCase(), W / 2 + 5, y + 10);
+        }
+
+        // Tableau articles
+        y += 28;
+        doc.setDrawColor(229, 231, 235);
+        doc.setLineWidth(0.3);
+        doc.line(M, y, W - M, y);
+        y += 5;
+
+        // En-têtes tableau
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(153, 153, 153);
+        doc.text('PRODUIT', M, y);
+        doc.text('QTÉ', 130, y, { align: 'center' });
+        doc.text('P.U.', 158, y, { align: 'right' });
+        doc.text('TOTAL', W - M, y, { align: 'right' });
+        y += 3;
+        doc.setLineWidth(0.2);
+        doc.line(M, y, W - M, y);
+        y += 6;
+
+        // Lignes articles
+        order.items.forEach(item => {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(26, 26, 26);
+            doc.text(item.name.substring(0, 45), M, y);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            if (item.size || item.color) {
+                doc.text([item.size && `T. ${item.size}`, item.color].filter(Boolean).join(' · '), M, y + 4);
+            }
+            doc.setTextColor(100, 100, 100);
+            doc.text(String(item.quantity), 130, y, { align: 'center' });
+            doc.text(`${item.price.toLocaleString('fr-FR')} F`, 158, y, { align: 'right' });
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(26, 26, 26);
+            doc.text(`${(item.price * item.quantity).toLocaleString('fr-FR')} F`, W - M, y, { align: 'right' });
+            y += (item.size || item.color) ? 11 : 8;
+            doc.setDrawColor(245, 245, 245);
+            doc.line(M, y - 3, W - M, y - 3);
+        });
+
+        // Totaux
+        y += 5;
+        const shipping = order.shipping_fee || 0;
+        const subtotal = order.subtotal || order.total - shipping;
+        if (shipping > 0) {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Sous-total', 140, y);
+            doc.text(`${subtotal.toLocaleString('fr-FR')} FCFA`, W - M, y, { align: 'right' });
+            y += 7;
+            doc.text('Livraison', 140, y);
+            doc.text(`${shipping.toLocaleString('fr-FR')} FCFA`, W - M, y, { align: 'right' });
+            y += 5;
+        }
+
+        doc.setDrawColor(...gold);
+        doc.setLineWidth(0.8);
+        doc.line(130, y, W - M, y);
+        y += 7;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(...gold);
+        doc.text('TOTAL', 140, y);
+        doc.text(`${order.total.toLocaleString('fr-FR')} FCFA`, W - M, y, { align: 'right' });
+
+        // Pied de page
+        y = 275;
+        doc.setDrawColor(240, 240, 240);
+        doc.setLineWidth(0.2);
+        doc.line(M, y, W - M, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(200, 200, 200);
+        doc.text('Merci pour votre confiance', W / 2, y, { align: 'center' });
+        doc.text("MIA DREAMS & CO · Mode Africaine d'Excellence · Dakar, Sénégal", W / 2, y + 5, { align: 'center' });
+
+        return doc;
+    };
+
+    // ── Envoie le PDF via WhatsApp ──
+    const [sending, setSending] = useState(false);
+    const handleWhatsAppPDF = async () => {
+        setSending(true);
+        try {
+            const doc = buildPDF();
+            const dataUri = doc.output('datauristring');
+            const { data } = await axios.post('/api/invoices/upload', {
+                data: dataUri,
+                filename: `facture-${order.order_number}.pdf`,
+            });
+            const pdfUrl = `${window.location.origin}/api/invoices/${data.token}`;
+            const msg =
+`🧾 *Votre reçu MIA DREAMS & CO*
+━━━━━━━━━━━━━━━━
+📋 Commande : *${order.order_number}*
+📅 Date : ${dateStr}
+💰 Total : *${order.total.toLocaleString('fr-FR')} FCFA*
+━━━━━━━━━━━━━━━━
+📥 *Téléchargez votre reçu PDF ici :*
+${pdfUrl}
+━━━━━━━━━━━━━━━━
+Merci pour votre confiance ! 🙏✨`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        } catch (err) {
+            alert('Erreur lors de la génération du PDF.');
+            console.error(err);
+        } finally {
+            setSending(false);
+        }
+    };
+
+    const emailBody = `Bonjour ${order.customer.name},\n\nVeuillez trouver ci-joint votre facture ${order.order_number} pour un montant de ${order.total.toLocaleString('fr-FR')} FCFA.\n\nMerci de votre confiance.\nMIA DREAMS & CO`;
     const mailtoUrl = `mailto:${order.customer.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
     const subtotal = order.subtotal || order.total - (order.shipping_fee || 0);
     const shipping = order.shipping_fee || 0;
@@ -122,11 +284,14 @@ Merci pour votre confiance ! 🙏✨
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                         Imprimer / PDF
                     </button>
-                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg border border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/10 transition-colors">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.119.553 4.109 1.517 5.834L0 24l6.335-1.484A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.899 0-3.67-.524-5.183-1.435l-.369-.221-3.762.881.936-3.672-.242-.381A9.938 9.938 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-                        WhatsApp
-                    </a>
+                    <button onClick={handleWhatsAppPDF} disabled={sending}
+                        className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg border border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/10 transition-colors disabled:opacity-50">
+                        {sending
+                            ? <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".25"/><path d="M12 2a10 10 0 0110 10" /></svg>
+                            : <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.119.553 4.109 1.517 5.834L0 24l6.335-1.484A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.899 0-3.67-.524-5.183-1.435l-.369-.221-3.762.881.936-3.672-.242-.381A9.938 9.938 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                        }
+                        {sending ? 'Génération…' : 'WhatsApp PDF'}
+                    </button>
                     <a href={mailtoUrl}
                         className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-colors">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>

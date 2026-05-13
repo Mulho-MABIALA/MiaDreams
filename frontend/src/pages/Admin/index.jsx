@@ -21,6 +21,7 @@ import AdminPages from './AdminPages';
 import AdminCollections from './AdminCollections';
 import AdminProfile from './AdminProfile';
 import AdminCaisse from './AdminCaisse';
+import AdminPOS from './AdminPOS';
 
 const NAV_GROUPS = [
     {
@@ -54,7 +55,8 @@ const NAV_GROUPS = [
     {
         label: 'Finance',
         items: [
-            { to: '/admin/caisse', label: 'Caisse', icon: <IconCaisse /> },
+            { to: '/admin/pos',    label: 'Point de Vente', icon: <IconPOS /> },
+            { to: '/admin/caisse', label: 'Caisse',         icon: <IconCaisse /> },
         ]
     },
     {
@@ -379,6 +381,7 @@ export default function Admin() {
                             <Route path="pages/*"    element={<AdminPages />} />
                             <Route path="parametres" element={<AdminSettings />} />
                             <Route path="profil" element={<AdminProfile />} />
+                            <Route path="pos"    element={<AdminPOS />} />
                             <Route path="caisse" element={<AdminCaisse />} />
                             <Route path="*" element={<Navigate to="/admin" replace />} />
                         </Routes>
@@ -430,3 +433,4 @@ function IconShop() { return <svg width="15" height="15" viewBox="0 0 24 24" fil
 function IconCart() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg> }
 function IconMenu()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> }
 function IconCaisse() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="15"/><line x1="10" y1="13" x2="14" y2="13"/></svg> }
+function IconPOS()    { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M12 8h.01M17 8h.01M7 12h.01M12 12h.01M17 12h.01"/></svg> }

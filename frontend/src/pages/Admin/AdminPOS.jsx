@@ -104,16 +104,19 @@ ${remiseMt > 0 ? `
     setTimeout(() => w.print(), 600);
 }
 
+// ─── URL de la facture ────────────────────────────────────────────────────────
+const SITE_URL = 'https://miadreams.netlify.app';
+function invoiceUrl(order) {
+    return `${SITE_URL}/api/invoices/order/${order._id}`;
+}
+
 // ─── Compose le texte WhatsApp du reçu ───────────────────────────────────────
 function buildWhatsAppText(order, remiseMt) {
     const modeLbl = MODES.find(m => m.value === order.payment_method)?.label || order.payment_method;
     const lines   = order.items.map(i => `  • ${i.quantity}× ${i.name} — ${fmt(i.price * i.quantity)}`).join('\n');
-    const remiseLine = remiseMt > 0
-        ? `\nRemise : -${fmt(remiseMt)}`
-        : '';
+    const remiseLine = remiseMt > 0 ? `\nRemise : -${fmt(remiseMt)}` : '';
     const client = order.customer?.name && order.customer.name !== 'Client comptoir'
-        ? `\nClient : ${order.customer.name}`
-        : '';
+        ? `\nClient : ${order.customer.name}` : '';
 
     return `🛍️ *MIA DREAMS & CO — Reçu de vente*
 ━━━━━━━━━━━━━━━━━━━━
@@ -125,6 +128,9 @@ ${lines}
 ━━━━━━━━━━━━━━━━━━━━${remiseLine}
 *💰 Total encaissé : ${fmt(order.total)}*
 💳 Paiement : ${modeLbl}
+━━━━━━━━━━━━━━━━━━━━
+📄 Voir la facture :
+${invoiceUrl(order)}
 ━━━━━━━━━━━━━━━━━━━━
 Merci pour votre confiance ! 🌸
 _MIA DREAMS & CO — Abidjan, Côte d'Ivoire_`;
@@ -301,15 +307,26 @@ export default function AdminPOS() {
                             Envoyer le reçu par WhatsApp
                         </a>
 
+                        {/* Voir la facture */}
+                        <a href={invoiceUrl(order)} target="_blank" rel="noreferrer"
+                            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:bg-[#FFFBF0] active:scale-[.98]"
+                            style={{ borderColor: GOLD, color: GOLD }}>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                            Voir / Imprimer la facture
+                        </a>
+
                         <div className="flex gap-3">
-                            {/* Imprimer */}
+                            {/* Imprimer reçu rapide */}
                             <button onClick={() => printReceipt(order, rm)}
                                 className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#E5E7EB] text-[#374151] text-sm font-medium hover:bg-[#F9FAFB] transition-all">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
                                     <rect x="6" y="14" width="12" height="8"/>
                                 </svg>
-                                Imprimer
+                                Ticket rapide
                             </button>
 
                             {/* Nouvelle vente */}

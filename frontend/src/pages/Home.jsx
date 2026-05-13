@@ -400,53 +400,77 @@ export default function Home() {
             <HeroCarousel slides={heroSlides} />
 
             {/* ══ MANIFESTE ════════════════════════════════════════════════ */}
-            <section className="bg-white py-24 lg:py-36">
-                <div className="max-w-6xl mx-auto px-6 lg:px-10">
-                    <div className="flex flex-col lg:flex-row items-stretch reveal">
+            {(() => {
+                const rawUrl  = introSection?.video_url || 'https://www.youtube.com/embed/sTfEIkU309s';
+                const embedUrl = rawUrl.includes('embed/')
+                    ? rawUrl
+                    : (() => { const m = rawUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m ? `https://www.youtube.com/embed/${m[1]}` : rawUrl; })();
 
-                        {/* Colonne gauche — grande citation */}
-                        <div className="flex-1 lg:pr-16 xl:pr-24 pb-12 lg:pb-0 lg:border-r border-b lg:border-b-0 border-[#e8e3da]">
-                            <span className="font-lastica text-[7px] tracking-[6px] uppercase mb-8 block"
-                                  style={{ color: 'rgba(196,162,103,.65)' }}>
-                                Notre vision
-                            </span>
-                            <p className="font-glacial leading-[1.6] text-[#1a1a1a] italic font-light"
-                               style={{ fontSize: 'clamp(1.2rem, 2.2vw, 1.65rem)' }}>
-                                «&thinsp;{introSection?.title || "Notre startup diffuse l'ensemble de la richesse culturelle du continent africain"}&thinsp;»
-                            </p>
-                            {/* Petit trait doré sous la citation */}
-                            <div className="w-10 h-px mt-10" style={{ background: GOLD }} />
-                        </div>
+                return (
+                    <section className="bg-white py-20 lg:py-28">
+                        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-28 items-center">
 
-                        {/* Colonne droite — corps + chiffres clés + CTA */}
-                        <div className="flex-1 lg:pl-16 xl:pl-24 pt-12 lg:pt-0 flex flex-col justify-between gap-10"
-                             style={{ transitionDelay: '.12s' }}>
-                            <p className="font-glacial text-sm text-[#888] leading-[1.95]">
-                                {introSection?.content ||
-                                    "Au-delà d'une simple entreprise ou d'une marque de vêtements, nous incarnons un univers contemporain de la mode africaine. Notre savoir-faire dans l'industrie textile est empreint de valeurs vertueuses, tout en embrassant l'innovation numérique."}
-                            </p>
-
-                            {/* Chiffres clés */}
-                            <div className="flex gap-8 sm:gap-12 py-8 border-t border-b border-[#ede9e3]">
-                                {[
-                                    { n: '2018',  l: 'Fondée à Dakar' },
-                                    { n: '4',     l: 'Univers créatifs' },
-                                    { n: '100+',  l: 'Clients satisfaits' },
-                                ].map((s, i) => (
-                                    <div key={i}>
-                                        <p className="font-glacial text-2xl font-light" style={{ color: GOLD }}>{s.n}</p>
-                                        <p className="font-lastica text-[6px] tracking-[3px] text-[#aaa] uppercase mt-1.5">{s.l}</p>
+                                {/* ── Vidéo ── */}
+                                <div className="reveal">
+                                    <div className="relative w-full shadow-lg" style={{ paddingBottom: '56.25%' }}>
+                                        <iframe
+                                            className="absolute inset-0 w-full h-full"
+                                            src={embedUrl}
+                                            frameBorder="0" allowFullScreen loading="lazy" title="MIA DREAMS" />
                                     </div>
-                                ))}
-                            </div>
+                                    {/* Trait doré décoratif sous la vidéo */}
+                                    <div className="flex items-center gap-3 mt-5">
+                                        <div className="h-px flex-1" style={{ background: '#e8e3da' }} />
+                                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'rgba(196,162,103,.4)' }} />
+                                        <div className="h-px w-8" style={{ background: GOLD, opacity: .5 }} />
+                                    </div>
+                                </div>
 
-                            <Link to={introSection?.cta_href || '/apropos'} className="btn btn-gold self-start">
-                                {introSection?.cta_label || 'NOTRE HISTOIRE'}
-                            </Link>
+                                {/* ── Texte ── */}
+                                <div className="flex flex-col gap-7 reveal" style={{ transitionDelay: '.12s' }}>
+                                    <span className="font-lastica text-[7px] tracking-[6px] uppercase"
+                                          style={{ color: 'rgba(196,162,103,.7)' }}>
+                                        Notre vision
+                                    </span>
+
+                                    {/* Citation */}
+                                    <p className="font-glacial leading-[1.6] text-[#1a1a1a] italic font-light"
+                                       style={{ fontSize: 'clamp(1.15rem, 2vw, 1.55rem)' }}>
+                                        «&thinsp;{introSection?.title || "Notre startup diffuse l'ensemble de la richesse culturelle du continent africain"}&thinsp;»
+                                    </p>
+
+                                    <div className="w-10 h-px" style={{ background: GOLD }} />
+
+                                    {/* Corps */}
+                                    <p className="font-glacial text-sm text-[#888] leading-[1.95]">
+                                        {introSection?.content ||
+                                            "Au-delà d'une simple entreprise ou d'une marque de vêtements, nous incarnons un univers contemporain de la mode africaine. Notre savoir-faire dans l'industrie textile est empreint de valeurs vertueuses, tout en embrassant l'innovation numérique."}
+                                    </p>
+
+                                    {/* Chiffres clés */}
+                                    <div className="flex gap-8 sm:gap-10 py-6 border-t border-b border-[#ede9e3]">
+                                        {[
+                                            { n: '2018', l: 'Fondée à Dakar' },
+                                            { n: '4',    l: 'Univers créatifs' },
+                                            { n: '100+', l: 'Clients satisfaits' },
+                                        ].map((s, i) => (
+                                            <div key={i}>
+                                                <p className="font-glacial text-2xl font-light" style={{ color: GOLD }}>{s.n}</p>
+                                                <p className="font-lastica text-[6px] tracking-[3px] text-[#aaa] uppercase mt-1.5">{s.l}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <Link to={introSection?.cta_href || '/apropos'} className="btn btn-gold self-start">
+                                        {introSection?.cta_label || 'NOTRE HISTOIRE'}
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
+                );
+            })()}
 
             {/* ══ TAGLINE ══════════════════════════════════════════════════ */}
             <div className="gold-strip py-8 text-center">

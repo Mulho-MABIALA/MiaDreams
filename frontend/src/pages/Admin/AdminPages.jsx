@@ -70,7 +70,7 @@ function SectionRow({ section, onEdit, onDelete, onToggle }) {
 const FIELDS_BY_TYPE = {
     hero_slide:        ['subtitle', 'title', 'content', 'cta_label', 'cta_href', 'image', 'order', 'is_active'],
     tagline:           ['content'],
-    intro:             ['title', 'content', 'cta_label', 'cta_href'],
+    intro:             ['title', 'content', 'cta_label', 'cta_href', 'video_url'],
     univers:           ['subtitle', 'title', 'content', 'cta_href', 'image', 'order', 'is_active'],
     histoire:          ['subtitle', 'content', 'image'],
     stat:              ['subtitle', 'title'],
@@ -90,6 +90,7 @@ const FIELD_LABELS = {
     cta_label: 'Bouton (label)',
     cta_href:  'Bouton (lien)',
     image:     'Image',
+    video_url: 'URL Vidéo YouTube',
     order:     'Ordre',
     is_active: 'Actif',
 };
@@ -97,7 +98,7 @@ const FIELD_LABELS = {
 function SectionForm({ section, type, page, onSave, onCancel }) {
     const fields = FIELDS_BY_TYPE[type] || ['title', 'content', 'image', 'order', 'is_active'];
     const [form, setForm] = useState(() => {
-        const init = { title: '', subtitle: '', content: '', cta_label: '', cta_href: '', order: 0, is_active: true };
+        const init = { title: '', subtitle: '', content: '', cta_label: '', cta_href: '', video_url: '', order: 0, is_active: true };
         if (section) Object.assign(init, section);
         return init;
     });
@@ -210,6 +211,22 @@ function SectionForm({ section, type, page, onSave, onCancel }) {
                                 <input type="text" value={form.cta_href} onChange={e => set('cta_href', e.target.value)}
                                     placeholder="/miaDreams" className={inputCls} />
                             </div>
+                        </div>
+                    )}
+                    {fields.includes('video_url') && (
+                        <div>
+                            <label className="block text-xs font-medium text-[#374151] mb-1.5">{FIELD_LABELS.video_url}</label>
+                            <input type="text" value={form.video_url} onChange={e => set('video_url', e.target.value)}
+                                placeholder="https://www.youtube.com/watch?v=... ou /embed/..." className={inputCls} />
+                            <p className="text-[10px] text-[#9CA3AF] mt-1">Collez l'URL YouTube normale ou l'URL d'embed — les deux formats sont acceptés.</p>
+                            {form.video_url && (
+                                <div className="mt-2 relative w-full rounded-lg overflow-hidden border border-[#E5E7EB]" style={{ paddingBottom: '56.25%' }}>
+                                    <iframe
+                                        className="absolute inset-0 w-full h-full"
+                                        src={form.video_url.includes('embed/') ? form.video_url : (() => { const m = form.video_url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m ? `https://www.youtube.com/embed/${m[1]}` : form.video_url; })()}
+                                        frameBorder="0" allowFullScreen title="Aperçu vidéo" />
+                                </div>
+                            )}
                         </div>
                     )}
                     {fields.includes('order') && (

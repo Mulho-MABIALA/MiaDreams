@@ -42,8 +42,9 @@ const HOME_INTRO = [
         page: 'home', type: 'intro', order: 1, is_active: true,
         title:     "Notre startup diffuse l'ensemble de la richesse culturelle du continent africain",
         content:   "Au-delà d'une simple entreprise ou d'une marque de vêtements, nous incarnons un univers contemporain de la mode africaine. Notre savoir-faire dans l'industrie textile du continent est empreint de valeurs vertueuses, tout en embrassant l'innovation numérique. Plaçant l'humain au cœur de notre métier, nous faisons de chaque création une expression de notre engagement envers l'excellence et l'authenticité.",
-        cta_label: 'VIEW WORK →',
+        cta_label: 'NOTRE HISTOIRE',
         cta_href:  '/apropos',
+        video_url: 'https://www.youtube.com/embed/sTfEIkU309s',
     },
 ];
 

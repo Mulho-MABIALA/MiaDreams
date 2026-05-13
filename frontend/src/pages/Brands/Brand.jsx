@@ -35,7 +35,7 @@ export default function Brand() {
                     </div>
                 )}
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(105deg, rgba(8,8,8,.9) 0%, rgba(8,8,8,.4) 60%, transparent 100%)' }} />
-                <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-24 w-full">
+                <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-10 lg:px-20 w-full">
                     <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>MIA DREAMS & CO</span>
                     <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
                         {brand.header_title || brand.name}

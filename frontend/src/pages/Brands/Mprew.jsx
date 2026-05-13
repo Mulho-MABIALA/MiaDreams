@@ -11,7 +11,7 @@ export default function Mprew() {
                     <img src="/img/index/home-image3.jpg" alt="MPREW" loading="eager" />
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
-                        <div className="max-w-2xl px-8 lg:px-24">
+                        <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
                             <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Application mobile</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
                                 MPREW<br /><span className="text-gold">APP</span>
@@ -27,9 +27,9 @@ export default function Mprew() {
             {/* CONCEPT */}
             <section className="bg-white py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                         <div className="reveal img-hover">
-                            <img src="/img/index/home-image3.jpg" className="w-full h-[500px] object-cover object-top" alt="MPREW" loading="lazy" />
+                            <img src="/img/index/home-image3.jpg" className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt="MPREW" loading="lazy" />
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">L'application</span>

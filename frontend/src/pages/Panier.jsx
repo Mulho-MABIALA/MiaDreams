@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
@@ -9,6 +10,7 @@ export default function Panier() {
     const { items, removeItem, updateQty, subtotal, clearCart } = useCart();
     const shipping = subtotal > 0 ? 2000 : 0;
     const total = subtotal + shipping;
+    const [confirmClear, setConfirmClear] = useState(false);
 
     if (items.length === 0) return (
         <Layout title="Mon panier — MIA DREAMS">
@@ -32,7 +34,7 @@ export default function Panier() {
 
     return (
         <Layout title="Mon panier — MIA DREAMS">
-            <div className="bg-[#080808] min-h-screen pt-24 pb-24 px-6 lg:px-10">
+            <div className="bg-[#080808] min-h-screen pt-20 pb-16 sm:pt-24 sm:pb-24 px-4 sm:px-6 lg:px-10">
                 <div className="max-w-5xl mx-auto">
 
                     {/* En-tête */}
@@ -46,7 +48,7 @@ export default function Panier() {
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-12 lg:gap-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_340px] gap-8 sm:gap-12 lg:gap-16">
 
                         {/* ── Articles ── */}
                         <div>
@@ -55,8 +57,7 @@ export default function Panier() {
                                     <div key={item.key} className="flex gap-5 py-7">
                                         {/* Image */}
                                         <Link to={`/boutique/${item.slug || ''}`}
-                                              className="flex-shrink-0 overflow-hidden bg-[#111] group"
-                                              style={{ width: 80, height: 100 }}>
+                                              className="flex-shrink-0 overflow-hidden bg-[#111] group w-[64px] h-[80px] sm:w-[80px] sm:h-[100px]">
                                             {item.image
                                                 ? <img src={imgSrc(item.image)} alt={item.name}
                                                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
@@ -110,16 +111,37 @@ export default function Panier() {
                                     className="font-lastica text-[7px] tracking-[3px] text-white/20 hover:text-white/45 transition-colors uppercase flex items-center gap-2">
                                     <span>←</span> Continuer les achats
                                 </Link>
-                                <button onClick={clearCart}
-                                    className="font-lastica text-[7px] tracking-[3px] text-white/15 hover:text-red-400/40 transition-colors uppercase">
-                                    Vider le panier
-                                </button>
+                                {confirmClear ? (
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-lastica text-[7px] tracking-[2px] text-white/35 uppercase">Confirmer ?</span>
+                                        <button
+                                            onClick={() => { clearCart(); setConfirmClear(false); }}
+                                            className="font-lastica text-[7px] tracking-[2px] uppercase px-3 py-1.5 transition-all"
+                                            style={{ background: '#b91c1c22', color: '#f87171', border: '1px solid #b91c1c44' }}>
+                                            Oui, vider
+                                        </button>
+                                        <button
+                                            onClick={() => setConfirmClear(false)}
+                                            className="font-lastica text-[7px] tracking-[2px] text-white/30 hover:text-white/55 uppercase transition-colors">
+                                            Annuler
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => setConfirmClear(true)}
+                                        className="font-lastica text-[7px] tracking-[3px] text-white/30 hover:text-red-400/60 transition-colors uppercase flex items-center gap-1.5">
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Vider le panier
+                                    </button>
+                                )}
                             </div>
                         </div>
 
                         {/* ── Récapitulatif ── */}
                         <div className="lg:pt-0">
-                            <div className="bg-[#0c0c0c] border border-white/[0.05] p-7">
+                            <div className="bg-[#0c0c0c] border border-white/[0.05] p-5 sm:p-7">
                                 <p className="font-lastica text-[7px] tracking-[5px] text-white/20 uppercase mb-7">Récapitulatif</p>
 
                                 <div className="space-y-3.5 mb-6">

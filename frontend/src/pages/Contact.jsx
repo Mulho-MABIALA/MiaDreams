@@ -53,12 +53,12 @@ export default function Contact() {
 
             <section className="bg-[#0d0d0d] py-20">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16">
 
                         {/* Formulaire */}
                         <div className="reveal">
                             <span className="block font-lastica text-[9px] tracking-[5px] text-gold uppercase mb-3">Formulaire</span>
-                            <h2 className="font-glacial text-3xl font-light text-white uppercase tracking-[3px] mb-8">ENVOYEZ-NOUS <span className="text-gold">UN MESSAGE</span></h2>
+                            <h2 className="font-glacial text-2xl sm:text-3xl font-light text-white uppercase tracking-[2px] sm:tracking-[3px] mb-6 sm:mb-8">ENVOYEZ-NOUS <span className="text-gold">UN MESSAGE</span></h2>
                             {success && (
                                 <div className="mb-6 border border-gold/30 bg-gold/10 px-5 py-4">
                                     <p className="font-glacial text-sm text-gold tracking-wide">{success}</p>

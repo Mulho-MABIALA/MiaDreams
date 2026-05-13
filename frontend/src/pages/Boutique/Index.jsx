@@ -154,7 +154,7 @@ export default function BoutiqueIndex() {
                           style={{ color: `${GOLD}70` }}>Collection 2026</span>
 
                     <h1 className="font-glacial text-white uppercase leading-[.92] mb-6"
-                        style={{ fontSize: 'clamp(3.5rem, 10vw, 8rem)', letterSpacing: '.04em' }}>
+                        style={{ fontSize: 'clamp(2.4rem, 10vw, 8rem)', letterSpacing: '.04em' }}>
                         NOTRE<br/><span style={{ color: GOLD, WebkitTextStroke: '0' }}>BOUTIQUE</span>
                     </h1>
 
@@ -280,9 +280,9 @@ export default function BoutiqueIndex() {
 
             {/* ════ GRILLE ════ */}
             <div className="bg-[#080808] min-h-screen">
-                <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10 sm:py-16">
                     {loading ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-12">
                             {[...Array(8)].map((_, i) => (
                                 <div key={i} className="animate-pulse">
                                     <div className="aspect-[3/4] bg-white/[0.04] mb-4" />
@@ -307,7 +307,7 @@ export default function BoutiqueIndex() {
                             )}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-12">
                             {displayed.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
                         </div>
                     )}

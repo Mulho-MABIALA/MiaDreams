@@ -44,7 +44,7 @@ export default function MesCommandes() {
 
     return (
         <Layout title="Mes commandes — MIA DREAMS">
-            <div className="bg-[#050505] min-h-screen pt-28 pb-20 px-6 lg:px-10">
+            <div className="bg-[#050505] min-h-screen pt-20 pb-12 sm:pt-28 sm:pb-20 px-4 sm:px-6 lg:px-10">
                 <div className="max-w-3xl mx-auto">
 
                     <div className="mb-10">

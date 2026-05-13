@@ -10,12 +10,12 @@ const epLabel = (p) => `${p.season ? `S${p.season} ` : ''}EP.${String(p.episode_
 function PostCard({ post, featured = false }) {
     const imgSrc = getImgSrc(post.cover_image, '/img/index/home-image7.webp');
     if (featured) return (
-        <Link to={`/blog/${post.slug}`} className="group relative overflow-hidden block h-[480px]">
+        <Link to={`/blog/${post.slug}`} className="group relative overflow-hidden block h-[320px] sm:h-[420px] lg:h-[480px]">
             <img src={imgSrc} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.5)' }} alt={post.title} loading="eager" />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,rgba(8,8,8,.9) 0%,transparent 55%)' }} />
-            <div className="absolute bottom-0 inset-x-0 p-8 lg:p-12">
-                <span className="inline-block font-lastica text-[8px] tracking-[3px] text-gold uppercase border border-gold/50 px-3 py-1 mb-5">{post.category || 'Article'} · À la une</span>
-                <h2 className="display-title text-2xl lg:text-3xl text-white leading-tight mb-4">{post.title}</h2>
+            <div className="absolute bottom-0 inset-x-0 p-5 sm:p-8 lg:p-12">
+                <span className="inline-block font-lastica text-[8px] tracking-[3px] text-gold uppercase border border-gold/50 px-3 py-1 mb-3 sm:mb-5">{post.category || 'Article'} · À la une</span>
+                <h2 className="display-title text-xl sm:text-2xl lg:text-3xl text-white leading-tight mb-3 sm:mb-4">{post.title}</h2>
                 {post.excerpt && <p className="font-glacial text-sm text-white/60 leading-relaxed max-w-2xl mb-6">{post.excerpt.slice(0, 180)}</p>}
                 <span className="btn btn-gold inline-flex">LIRE L'ARTICLE →</span>
             </div>
@@ -24,7 +24,7 @@ function PostCard({ post, featured = false }) {
     return (
         <Link to={`/blog/${post.slug}`} className="group block">
             <div className="overflow-hidden mb-4 relative">
-                <img src={imgSrc} className="w-full h-[220px] object-cover transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.75)' }} alt={post.title} loading="lazy" />
+                <img src={imgSrc} className="w-full h-[180px] sm:h-[220px] object-cover transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.75)' }} alt={post.title} loading="lazy" />
                 <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/50 transition-colors duration-400" />
             </div>
             {post.category && <span className="font-lastica text-[7px] tracking-[3px] text-gold uppercase mb-2 block">{post.category}</span>}

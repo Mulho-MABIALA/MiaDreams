@@ -28,7 +28,7 @@ function HeroCarousel({ slides }) {
                     <img src={slideImg(s)} alt="MIA DREAMS" loading={i === 0 ? 'eager' : 'lazy'} />
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
-                        <div className="max-w-2xl px-8 lg:px-24">
+                        <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
                             <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .7s .4s forwards' }}>{s.subtitle}</span>
                             <h1 className="display-title text-white mt-4 mb-5" style={{ fontSize: 'clamp(2.8rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .6s forwards' }}>
                                 {s.title}
@@ -89,7 +89,7 @@ function ServiceModal({ service, onClose }) {
                 </button>
 
                 {/* Image */}
-                <div className="relative overflow-hidden" style={{ height: 280 }}>
+                <div className="relative overflow-hidden" style={{ height: 220 }}>
                     {service.image
                         ? <img src={imgSrc(service.image)} className="w-full h-full object-cover object-top" alt={service.title} style={{ filter: 'brightness(.75)' }} />
                         : <div className="w-full h-full flex items-center justify-center" style={{ background: '#111' }}>
@@ -103,7 +103,7 @@ function ServiceModal({ service, onClose }) {
                 </div>
 
                 {/* Contenu */}
-                <div className="px-8 pb-8 -mt-4 relative z-10">
+                <div className="px-5 sm:px-8 pb-8 -mt-4 relative z-10">
                     <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">Nos services</span>
                     <h3 className="font-glacial text-2xl text-white uppercase tracking-[3px] mb-4 leading-tight">{service.title}</h3>
                     <div className="w-8 h-px mb-5" style={{ background: '#C9A84C' }} />
@@ -179,7 +179,7 @@ function TestimonialsSection({ testimonials }) {
                     )}
 
                     {/* Carte témoignage */}
-                    <div className="border border-gold/10 px-8 py-12 lg:px-16 lg:py-14 text-center relative overflow-hidden"
+                    <div className="border border-gold/10 px-5 py-10 sm:px-8 sm:py-12 lg:px-16 lg:py-14 text-center relative overflow-hidden"
                          style={{ background: 'linear-gradient(135deg, rgba(196,162,103,0.03) 0%, rgba(8,8,8,0) 60%)' }}>
 
                         {/* Guillemet décoratif */}
@@ -374,7 +374,7 @@ function FeaturedProducts({ products }) {
                     <Link to="/boutique" className="btn btn-gold mt-6 sm:mt-0 self-start sm:self-auto">VOIR LA BOUTIQUE</Link>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                     {products.map((product, i) => (
                         <Link key={product._id} to={`/boutique/${product.slug}`}
                             className="group block reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
@@ -492,7 +492,7 @@ export default function Home() {
                         {(univers.length > 0 ? univers : DEFAULT_UNIVERS).map((u, i) => {
                             const uImg = imgSrc(u.image);
                             return (
-                                <Link key={u._id || i} to={u.cta_href || u.href || '/'} className="card-editorial reveal h-[480px] lg:h-[580px] group" style={{ transitionDelay: `${i * 0.1}s` }}>
+                                <Link key={u._id || i} to={u.cta_href || u.href || '/'} className="card-editorial reveal h-[320px] sm:h-[420px] lg:h-[580px] group" style={{ transitionDelay: `${i * 0.1}s` }}>
                                     <img src={uImg} alt={u.title} loading="lazy" />
                                     <div className="card-overlay" />
                                     <span className="card-number">{u.subtitle || String(i + 1).padStart(2, '0')}</span>
@@ -558,7 +558,7 @@ export default function Home() {
                         <div className="reveal img-hover">
                             <img
                                 src={imgSrc(personalBranding?.image, '/img/index/home-image5.jpg')}
-                                className="w-full h-[450px] lg:h-auto object-cover object-top" alt="Personal Branding" loading="lazy" />
+                                className="w-full h-[300px] sm:h-[400px] lg:h-auto object-cover object-top" alt="Personal Branding" loading="lazy" />
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">{personalBranding?.subtitle || 'Nouveau'}</span>
@@ -597,7 +597,7 @@ export default function Home() {
                         <div className="reveal order-1 lg:order-2 img-hover">
                             <img
                                 src={imgSrc(ethicalFashion?.image, '/img/index/home-image6.jpg')}
-                                className="w-full h-[450px] lg:h-auto object-cover object-top" alt="Ethical Fashion" loading="lazy" />
+                                className="w-full h-[300px] sm:h-[400px] lg:h-auto object-cover object-top" alt="Ethical Fashion" loading="lazy" />
                         </div>
                     </div>
                 </div>

@@ -88,7 +88,7 @@ export default function Navbar() {
                 {/* Logo */}
                 <Link to="/" className="flex-shrink-0 group">
                     <img src="/img/logo_MIA.png" alt="MIA DREAMS"
-                         className="h-9 w-auto brightness-0 invert opacity-85 group-hover:opacity-100 transition-opacity duration-300" />
+                         className="h-7 sm:h-9 w-auto brightness-0 invert opacity-85 group-hover:opacity-100 transition-opacity duration-300" />
                 </Link>
 
                 {/* Desktop nav */}

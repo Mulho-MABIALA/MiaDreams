@@ -60,13 +60,13 @@ export default function Footer() {
     return (
         <>
             {/* Newsletter strip */}
-            <div className="gold-strip py-14">
-                <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
-                    <div className="flex flex-col lg:flex-row items-start lg:items-center gap-10">
+            <div className="gold-strip py-10 sm:py-14">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+                    <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 sm:gap-10">
                         <div className="flex-1">
                             <p className="font-lastica text-[8px] tracking-[5px] text-[#080808]/55 uppercase mb-2">Restez connecté</p>
-                            <h4 className="font-glacial text-2xl lg:text-3xl font-light text-[#080808] tracking-[4px] uppercase leading-tight">
-                                NEWSLETTER<span className="lg:ml-2">MIA DREAMS</span>
+                            <h4 className="font-glacial text-xl sm:text-2xl lg:text-3xl font-light text-[#080808] tracking-[3px] sm:tracking-[4px] uppercase leading-tight">
+                                NEWSLETTER MIA DREAMS
                             </h4>
                         </div>
                         <div className="w-full lg:w-[420px]">
@@ -77,9 +77,9 @@ export default function Footer() {
                                     <div className="flex">
                                         <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                                                placeholder="VOTRE ADRESSE EMAIL" required
-                                               className="flex-1 bg-[#080808]/12 border border-[#080808]/20 border-r-0 text-[#080808] placeholder-[#080808]/35 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-[#080808]/40 transition-colors" />
+                                               className="flex-1 min-w-0 bg-[#080808]/12 border border-[#080808]/20 border-r-0 text-[#080808] placeholder-[#080808]/35 px-4 py-3.5 sm:px-5 sm:py-4 font-glacial text-sm tracking-wide outline-none focus:border-[#080808]/40 transition-colors" />
                                         <button type="submit"
-                                                className="bg-[#080808] text-gold border-none px-6 py-4 font-glacial text-[9px] tracking-[3px] uppercase whitespace-nowrap hover:bg-[#1c1c1c] transition-colors cursor-pointer">
+                                                className="bg-[#080808] text-gold border-none px-4 sm:px-6 py-3.5 sm:py-4 font-glacial text-[9px] tracking-[2px] sm:tracking-[3px] uppercase whitespace-nowrap hover:bg-[#1c1c1c] transition-colors cursor-pointer flex-shrink-0">
                                             S'ABONNER
                                         </button>
                                     </div>
@@ -93,8 +93,8 @@ export default function Footer() {
 
             {/* Footer body */}
             <footer className="bg-[#080808]">
-                <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-14 border-b border-white/[0.06]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-12 sm:pt-16 pb-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 pb-10 sm:pb-14 border-b border-white/[0.06]">
 
                         {/* Identité */}
                         <div className="lg:col-span-4">

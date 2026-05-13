@@ -127,7 +127,7 @@ export default function Commande() {
 
     return (
         <Layout title="Finaliser ma commande — MIA DREAMS">
-            <div className="bg-[#080808] min-h-screen pt-24 pb-24 px-6 lg:px-10">
+            <div className="bg-[#080808] min-h-screen pt-20 pb-16 sm:pt-24 sm:pb-24 px-4 sm:px-6 lg:px-10">
                 <div className="max-w-5xl mx-auto">
 
                     {/* En-tête */}
@@ -137,7 +137,7 @@ export default function Commande() {
                     </div>
 
                     <form onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12 lg:gap-16">
+                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px] gap-8 sm:gap-12 lg:gap-16">
 
                             {/* ── Formulaire ── */}
                             <div className="space-y-8">
@@ -224,7 +224,7 @@ export default function Commande() {
 
                             {/* ── Récapitulatif ── */}
                             <div>
-                                <div className="bg-[#0c0c0c] border border-white/[0.05] p-7 sticky top-28">
+                                <div className="bg-[#0c0c0c] border border-white/[0.05] p-5 sm:p-7 lg:sticky lg:top-24">
                                     <p className="font-lastica text-[7px] tracking-[5px] text-white/20 uppercase mb-6">Ma commande</p>
 
                                     {/* Articles */}

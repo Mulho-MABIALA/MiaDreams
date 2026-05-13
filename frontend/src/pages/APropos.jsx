@@ -42,7 +42,7 @@ function TeamModal({ member, onClose }) {
                 </div>
 
                 {/* Infos */}
-                <div className="px-8 pb-8 -mt-6 relative z-10">
+                <div className="px-5 sm:px-8 pb-8 -mt-6 relative z-10">
                     {member.role && (
                         <span className="font-lastica text-[7px] tracking-[4px] text-gold/60 uppercase block mb-3">{member.role}</span>
                     )}
@@ -125,7 +125,7 @@ export default function APropos() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                         <div className="reveal img-hover">
-                            <img src={histoireImg} className="w-full h-[500px] object-cover object-top" alt="MIA DREAMS" loading="lazy" />
+                            <img src={histoireImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt="MIA DREAMS" loading="lazy" />
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">{h.subtitle || 'Depuis 2018'}</span>
@@ -141,7 +141,7 @@ export default function APropos() {
                                 ))
                                 : <p className="font-glacial text-sm text-white/55 leading-loose mb-8">{h.content}</p>
                             }
-                            <div className="grid grid-cols-3 gap-6">
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6">
                                 {activeStats.map((s, i) => (
                                     <div key={s._id || i} className="text-center">
                                         <p className="font-glacial text-2xl text-gold font-light">{s.subtitle}</p>

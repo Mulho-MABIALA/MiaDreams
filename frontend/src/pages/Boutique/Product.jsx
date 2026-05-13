@@ -132,7 +132,7 @@ export default function BoutiqueProduct() {
 
     return (
         <Layout title={`${product.name} — MIA DREAMS`}>
-            <div className="bg-[#050505] min-h-screen pt-24 pb-20 px-6 lg:px-10">
+            <div className="bg-[#050505] min-h-screen pt-20 pb-12 sm:pt-24 sm:pb-20 px-4 sm:px-6 lg:px-10">
                 <div className="max-w-6xl mx-auto">
 
                     {/* Breadcrumb */}
@@ -144,7 +144,7 @@ export default function BoutiqueProduct() {
                         <span className="font-lastica text-[8px] tracking-[2px] uppercase" style={{ color: GOLD }}>{product.name}</span>
                     </nav>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20">
 
                         {/* ── Galerie ── */}
                         <div className="relative">
@@ -179,17 +179,17 @@ export default function BoutiqueProduct() {
                             )}
 
                             {/* Nom */}
-                            <h1 className="font-glacial text-3xl lg:text-4xl text-white uppercase tracking-[3px] mb-5 leading-tight">
+                            <h1 className="font-glacial text-2xl sm:text-3xl lg:text-4xl text-white uppercase tracking-[2px] sm:tracking-[3px] mb-4 sm:mb-5 leading-tight">
                                 {product.name}
                             </h1>
 
                             {/* Prix */}
                             <div className="flex items-baseline gap-4 mb-5 pb-5 border-b border-white/[0.08]">
-                                <span className="font-glacial text-3xl font-semibold" style={{ color: GOLD }}>
-                                    {product.price.toLocaleString('fr-FR')} <span className="text-xl">FCFA</span>
+                                <span className="font-glacial text-2xl sm:text-3xl font-semibold" style={{ color: GOLD }}>
+                                    {product.price.toLocaleString('fr-FR')} <span className="text-lg sm:text-xl">FCFA</span>
                                 </span>
                                 {product.compare_price > product.price && (
-                                    <span className="font-glacial text-lg text-white/35 line-through">
+                                    <span className="font-glacial text-base sm:text-lg text-white/35 line-through">
                                         {product.compare_price.toLocaleString('fr-FR')} FCFA
                                     </span>
                                 )}
@@ -339,13 +339,13 @@ export default function BoutiqueProduct() {
                                 </Link>
                             </div>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
                                 {similar.map(p => (
                                     <Link key={p._id} to={`/boutique/${p.slug}`} className="group block">
                                         <div className="overflow-hidden mb-3" style={{ background: '#0d0d0d' }}>
                                             {p.image
                                                 ? <img src={imgSrc(p.image)} alt={p.name}
-                                                       className="w-full h-[220px] object-cover object-top transition-transform duration-600 group-hover:scale-105"
+                                                       className="w-full h-[160px] sm:h-[200px] lg:h-[220px] object-cover object-top transition-transform duration-600 group-hover:scale-105"
                                                        loading="lazy" />
                                                 : <div className="w-full h-[220px] bg-[#141414] flex items-center justify-center">
                                                       <svg className="w-8 h-8 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">

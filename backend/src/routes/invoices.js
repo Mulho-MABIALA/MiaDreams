@@ -397,24 +397,53 @@ router.post('/upload', async (req, res) => {
 
 // ── GET /api/invoices/:token — Servir un PDF stocké (legacy) ─────────────────
 router.get('/:token', async (req, res) => {
+    const errPage = (title, msg) => `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"/>
+<title>${title}</title>
+<style>
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:#F9FAFB;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+  .card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:48px 56px;text-align:center;max-width:480px;}
+  .icon{font-size:48px;margin-bottom:16px;}
+  h2{color:#1E110A;font-size:20px;margin:0 0 10px;}
+  p{color:#6B7280;font-size:14px;line-height:1.6;margin:0 0 28px;}
+  a{display:inline-block;background:#C9A84C;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:700;font-size:14px;}
+</style></head>
+<body><div class="card">
+  <div class="icon">🧾</div>
+  <h2>${title}</h2>
+  <p>${msg}</p>
+  <a href="https://miadreams.netlify.app">Retour à la boutique</a>
+</div></body></html>`;
+
     try {
         const inv = await TempInvoice.findOne({ token: req.params.token });
-        if (!inv) return res.status(404).send(`
-            <html><body style="font-family:sans-serif;text-align:center;padding:60px;color:#6B7280;">
-              <h2>Facture expirée</h2>
-              <p>Ce lien est expiré ou introuvable. Les factures temporaires sont valables 72 heures.</p>
-            </body></html>
-        `);
+
+        if (!inv) {
+            return res.status(404).send(errPage(
+                'Facture expirée',
+                'Ce lien de facture est expiré ou introuvable.<br/>Les liens temporaires sont valables 72 heures après la vente.'
+            ));
+        }
+
+        // Valider que les données sont bien un PDF (magic bytes %PDF)
+        const buf = Buffer.isBuffer(inv.data) ? inv.data : Buffer.from(inv.data.buffer || inv.data);
+        const magic = buf.slice(0, 4).toString('ascii');
+        if (magic !== '%PDF') {
+            return res.status(422).send(errPage(
+                'Facture corrompue',
+                'Le fichier PDF de cette facture est endommagé et ne peut pas être affiché.<br/>Contactez la boutique pour obtenir un duplicata.'
+            ));
+        }
 
         res.set({
             'Content-Type':        'application/pdf',
             'Content-Disposition': `inline; filename="${inv.filename}"`,
-            'Content-Length':      inv.data.length,
+            'Content-Length':      buf.length,
             'Cache-Control':       'private, max-age=3600',
         });
-        res.send(inv.data);
+        res.send(buf);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).send(errPage('Erreur serveur', err.message));
     }
 });
 

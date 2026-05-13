@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Layout from '../../components/Layout';
+import BrandCollections from '../../components/BrandCollections';
 
 export default function PersonalBranding() {
     return (
@@ -76,6 +77,9 @@ export default function PersonalBranding() {
                     </div>
                 </div>
             </section>
+
+            {/* COLLECTIONS DYNAMIQUES */}
+            <BrandCollections brandSlug="personal-branding" />
 
             {/* CTA */}
             <section className="bg-[#080808] py-24 text-center border-t border-gold/8">

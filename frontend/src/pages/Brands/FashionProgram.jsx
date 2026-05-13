@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Layout from '../../components/Layout';
+import BrandCollections from '../../components/BrandCollections';
 
 export default function FashionProgram() {
     return (
@@ -81,6 +82,9 @@ export default function FashionProgram() {
                     </div>
                 </div>
             </section>
+
+            {/* COLLECTIONS DYNAMIQUES */}
+            <BrandCollections brandSlug="fashion-program" />
 
             {/* CTA */}
             <section className="bg-[#080808] py-24 text-center border-t border-gold/8">

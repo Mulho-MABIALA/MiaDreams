@@ -8,7 +8,7 @@ const Collection = require('./models/Collection');
 const DEFAULT_BRANDS = [
     {
         name:         'Mia Dreams Brand',
-        slug:         'mia-dreams-brand',
+        slug:         'mia-dreams',
         href:         '/miaDreams',
         header_title: 'MIA DREAMS BRAND',
         description:  "Mia Dreams Brand est notre ligne de vêtements — une collection qui marie l'artisanat africain traditionnel aux codes de la mode contemporaine. Chaque pièce raconte une histoire.",

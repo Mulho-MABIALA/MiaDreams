@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Layout from '../../components/Layout';
+import BrandCollections from '../../components/BrandCollections';
 
 export default function Mprew() {
     return (
@@ -77,6 +78,9 @@ export default function Mprew() {
                     </div>
                 </div>
             </section>
+
+            {/* COLLECTIONS DYNAMIQUES */}
+            <BrandCollections brandSlug="mprew" />
 
             <div className="bg-[#080808] py-14 text-center border-t border-gold/8">
                 <Link to="/contact" className="btn btn-gold">REJOINDRE LA BÊTA</Link>

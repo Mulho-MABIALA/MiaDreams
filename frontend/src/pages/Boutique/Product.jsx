@@ -3,10 +3,10 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { useCart } from '../../context/CartContext';
+import { useApp } from '../../context/AppContext';
 import { imgSrc } from '../../utils/imgSrc';
 
 const GOLD = '#C9A84C';
-const WA_NUMBER = '22507000000'; // ← remplace par ton numéro CI sans le +
 
 /* ── Galerie d'images ────────────────────────────────────────── */
 function ImageGallery({ mainImage, images = [] }) {
@@ -70,6 +70,8 @@ function ImageGallery({ mainImage, images = [] }) {
 export default function BoutiqueProduct() {
     const { slug } = useParams();
     const { addItem } = useCart();
+    const { companyInfo } = useApp();
+    const waNumber = (companyInfo?.whatsapp || companyInfo?.phone || '22507000000').replace(/\D/g, '');
     const [product, setProduct] = useState(null);
     const [similar, setSimilar] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -287,7 +289,7 @@ export default function BoutiqueProduct() {
                                     </Link>
                                 </div>
                                 {/* Bouton WhatsApp */}
-                                <a href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+                                <a href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
                                     `Bonjour MIA DREAMS 👋\nJe suis intéressé(e) par : *${product.name}*` +
                                     (selectedSize  ? `\nTaille : ${selectedSize}`  : '') +
                                     (selectedColor ? `\nCouleur : ${selectedColor}` : '') +

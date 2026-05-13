@@ -1,6 +1,16 @@
+import { useApp } from '../context/AppContext';
+
 export default function WhatsAppButton() {
+    const { companyInfo } = useApp();
+
+    // Numéro dynamique depuis les paramètres (fallback sur le numéro CI par défaut)
+    const rawNumber = companyInfo?.whatsapp || companyInfo?.phone || '+221764639169';
+    const waNumber  = rawNumber.replace(/\D/g, ''); // ne garde que les chiffres
+
+    if (!waNumber) return null;
+
     return (
-        <a href="https://wa.me/221764639169" target="_blank" rel="noopener noreferrer"
+        <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer"
            aria-label="WhatsApp"
            className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
            style={{ background: '#25D366' }}>

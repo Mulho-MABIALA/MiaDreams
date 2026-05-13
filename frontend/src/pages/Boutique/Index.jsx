@@ -3,10 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { useCart } from '../../context/CartContext';
+import { useApp } from '../../context/AppContext';
 import { imgSrc } from '../../utils/imgSrc';
 
 const GOLD = '#C9A84C';
-const WA_NUMBER = '22507000000';
 
 const SORT_OPTIONS = [
     { value: 'default',    label: 'Par défaut' },
@@ -19,6 +19,8 @@ const SORT_OPTIONS = [
 /* ── Carte produit ── */
 function ProductCard({ product, index }) {
     const { addItem } = useCart();
+    const { companyInfo } = useApp();
+    const waNumber = (companyInfo?.whatsapp || companyInfo?.phone || '22507000000').replace(/\D/g, '');
     const [added, setAdded] = useState(false);
 
     const handleAdd = (e) => {
@@ -65,7 +67,7 @@ function ProductCard({ product, index }) {
                             style={{ background: added ? '#2a6e35' : GOLD, color: '#050505' }}>
                             {added ? '✓ Ajouté' : '+ Panier'}
                         </button>
-                        <a href={`https://wa.me/${WA_NUMBER}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
+                        <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
                            onClick={e => e.stopPropagation()}
                            className="w-11 flex items-center justify-center" style={{ background: '#25D366' }}>
                             <svg className="w-[17px] h-[17px]" fill="white" viewBox="0 0 24 24">

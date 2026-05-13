@@ -13,7 +13,8 @@ function useTheme() {
 }
 
 export default function Navbar() {
-    const { navBrands } = useApp();
+    const { navBrands, companyInfo } = useApp();
+    const logoSrc = companyInfo?.logo || '/img/logo_MIA.png';
     const { count: cartCount } = useCart();
     const { pathname } = useLocation();
     const navigate = useNavigate();
@@ -87,7 +88,7 @@ export default function Navbar() {
 
                 {/* Logo */}
                 <Link to="/" className="flex-shrink-0 group">
-                    <img src="/img/logo_MIA.png" alt="MIA DREAMS"
+                    <img src={logoSrc} alt={companyInfo?.name || 'MIA DREAMS'}
                          className="h-7 sm:h-9 w-auto brightness-0 invert opacity-85 group-hover:opacity-100 transition-opacity duration-300" />
                 </Link>
 

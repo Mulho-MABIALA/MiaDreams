@@ -3,15 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
 
-function useTheme() {
-    const [theme, setTheme] = useState(() => localStorage.getItem('mia_theme') || 'dark');
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('mia_theme', theme);
-    }, [theme]);
-    return { theme, toggle: () => setTheme(t => t === 'dark' ? 'light' : 'dark') };
-}
-
 export default function Navbar() {
     const { navBrands, companyInfo } = useApp();
     const logoSrc = companyInfo?.logo || '/img/logo_MIA.png';
@@ -22,7 +13,6 @@ export default function Navbar() {
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [scrolled, setScrolled] = useState(false);
-    const { theme, toggle } = useTheme();
     const searchRef = useRef(null);
 
     const isActive = (path) => pathname === path || pathname.startsWith(path + '/');
@@ -157,16 +147,6 @@ export default function Navbar() {
                         </button>
                     </li>
 
-                    {/* Thème */}
-                    <li>
-                        <button onClick={toggle} aria-label="Thème" className="nav-link text-white/45 hover:text-gold transition-colors flex items-center">
-                            {theme === 'dark'
-                                ? <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/></svg>
-                                : <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
-                            }
-                        </button>
-                    </li>
-
                     <li className="ml-3">
                         <Link to="/contact" className="btn btn-gold text-[10px] py-[.7rem] px-5">CONTACT</Link>
                     </li>
@@ -187,12 +167,6 @@ export default function Navbar() {
                     </Link>
                     <button onClick={() => setSearchOpen(o => !o)} className="text-white/50 hover:text-gold p-2.5 transition-colors">
                         <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                    </button>
-                    <button onClick={toggle} className="text-white/50 hover:text-gold p-2.5 transition-colors">
-                        {theme === 'dark'
-                            ? <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/></svg>
-                            : <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
-                        }
                     </button>
                     <button className="flex flex-col justify-center items-center w-10 h-10 gap-[5px] ml-1"
                             aria-label="Menu" onClick={() => setOpen(o => !o)}>

@@ -84,6 +84,25 @@ export default function Admin() {
     });
     const [collapsed, setCollapsed] = useState(false);
 
+    // ── Server wake-up (Render free tier cold start) ───────────────────────────
+    const [serverStatus, setServerStatus] = useState('checking'); // 'checking' | 'up' | 'waking'
+    useEffect(() => {
+        let attempts = 0;
+        let timer;
+        const ping = async () => {
+            try {
+                await axios.get('/api/health', { timeout: 6000 });
+                setServerStatus('up');
+            } catch {
+                setServerStatus(prev => prev === 'checking' && attempts === 0 ? 'waking' : prev === 'checking' ? 'waking' : prev);
+                attempts++;
+                if (attempts < 20) timer = setTimeout(ping, 5000);
+            }
+        };
+        ping();
+        return () => clearTimeout(timer);
+    }, []);
+
     // Supprimer le padding-top du body (prévu pour la nav publique)
     useEffect(() => {
         const prev = document.body.style.paddingTop;
@@ -104,6 +123,10 @@ export default function Admin() {
                     localStorage.removeItem('admin_token');
                     localStorage.removeItem('admin_user');
                     navigate('/login');
+                }
+                // Détecter 504 → serveur en veille
+                if (!err.response || err.response?.status === 504 || err.code === 'ECONNABORTED') {
+                    setServerStatus(s => s === 'up' ? 'waking' : s);
                 }
                 return Promise.reject(err);
             }
@@ -355,6 +378,51 @@ export default function Admin() {
                         </div>
                     </NavLink>
                 </header>
+
+                {/* Banner serveur en veille */}
+                {serverStatus === 'waking' && (
+                    <div style={{
+                        background: '#FEF3C7',
+                        borderBottom: '1px solid #FDE68A',
+                        padding: '9px 24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        fontSize: '12.5px',
+                        color: '#92400E',
+                        flexShrink: 0,
+                    }}>
+                        <svg style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <span>
+                            <strong>Serveur en démarrage</strong> — Le backend Render se réveille après inactivité, cela peut prendre
+                            30 à 60 secondes. Les données se chargeront automatiquement.
+                        </span>
+                        <span style={{ marginLeft: 'auto', flexShrink: 0, fontSize: '11px', color: '#B45309', opacity: 0.7 }}>
+                            Reconnexion en cours…
+                        </span>
+                    </div>
+                )}
+                {serverStatus === 'up' && (
+                    <div id="server-ok-flash" style={{
+                        background: '#F0FDF4',
+                        borderBottom: '1px solid #BBF7D0',
+                        padding: '7px 24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '12px',
+                        color: '#15803D',
+                        flexShrink: 0,
+                        animation: 'fadeOut 1s ease 3s forwards',
+                    }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Serveur connecté
+                    </div>
+                )}
 
                 {/* Content */}
                 <main className="flex-1 overflow-auto" style={{ background: '#F2F3F5' }}>

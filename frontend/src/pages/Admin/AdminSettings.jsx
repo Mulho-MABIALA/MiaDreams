@@ -36,16 +36,28 @@ export default function AdminSettings() {
     const [saved, setSaved]         = useState(false);
     const [error, setError]         = useState('');
     const [savingId, setSavingId]   = useState(null);
+    const [loading, setLoading]     = useState(true);
     const fileRef = useRef();
 
-    useEffect(() => {
-        axios.get('/api/admin/company-info')
-            .then(r => { if (r.data && Object.keys(r.data).length) setCompany(r.data); })
-            .catch(() => {});
-        axios.get('/api/admin/social-media')
-            .then(r => setSocial(r.data))
-            .catch(() => {});
-    }, []);
+    const fetchData = async (attempt = 0) => {
+        try {
+            const [ci, sm] = await Promise.all([
+                axios.get('/api/admin/company-info', { timeout: 10000 }),
+                axios.get('/api/admin/social-media',  { timeout: 10000 }),
+            ]);
+            if (ci.data && Object.keys(ci.data).length) setCompany(ci.data);
+            setSocial(sm.data || []);
+            setLoading(false);
+        } catch {
+            if (attempt < 8) {
+                setTimeout(() => fetchData(attempt + 1), 6000);
+            } else {
+                setLoading(false);
+            }
+        }
+    };
+
+    useEffect(() => { fetchData(); }, []);
 
     // Prévisualisation logo sélectionné
     const handleLogoChange = (e) => {
@@ -117,6 +129,22 @@ export default function AdminSettings() {
         Instagram: '📸', Facebook: '👤', TikTok: '🎵', YouTube: '▶️',
         LinkedIn: '💼', 'Twitter/X': '🐦', Pinterest: '📌', Snapchat: '👻',
     };
+
+    if (loading) return (
+        <div>
+            <div className="mb-6">
+                <p className="text-xs text-[#9CA3AF] uppercase tracking-widest mb-0.5">Configuration</p>
+                <h1 className="text-2xl font-semibold text-[#111827]">Paramètres</h1>
+            </div>
+            <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm p-10 flex flex-col items-center gap-4 text-center">
+                <svg style={{ animation: 'spin 1s linear infinite' }} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2.5">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                <p className="text-sm font-medium text-[#374151]">Connexion au serveur…</p>
+                <p className="text-xs text-[#9CA3AF]">Le serveur se réveille après inactivité, patientez quelques secondes.</p>
+            </div>
+        </div>
+    );
 
     return (
         <div>

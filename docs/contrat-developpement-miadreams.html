@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Contrat de Développement Web — MIA DREAMS &amp; CO</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    background: #F4F1ED;
+    color: #1a1a1a;
+    font-size: 13.5px;
+    line-height: 1.7;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    max-width: 820px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 8px 48px rgba(0,0,0,.10);
+    overflow: hidden;
+  }
+
+  /* ── HEADER ── */
+  .contract-header {
+    background: #1E110A;
+    padding: 48px 56px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .contract-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(201,168,76,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .brand-block {}
+  .brand-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    font-weight: 700;
+    color: #C9A84C;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .contract-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+  .contract-subtitle {
+    font-size: 11px;
+    color: rgba(255,255,255,.3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .contract-ref {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .ref-label { font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,.25); text-transform: uppercase; }
+  .ref-num { font-size: 14px; font-weight: 700; color: #C9A84C; font-family: monospace; margin-top: 3px; }
+  .ref-date { font-size: 11px; color: rgba(255,255,255,.3); margin-top: 4px; }
+
+  .gold-bar { height: 4px; background: linear-gradient(90deg, #6B4E10 0%, #C9A84C 25%, #E8C66A 50%, #C9A84C 75%, #6B4E10 100%); }
+
+  /* ── PARTIES ── */
+  .parties-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid #F0EBE4;
+  }
+  .party-block {
+    padding: 28px 36px;
+  }
+  .party-block:first-child { border-right: 1px solid #F0EBE4; }
+  .party-type {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #C9A84C;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F0EBE4;
+  }
+  .party-name { font-size: 15px; font-weight: 700; color: #1E110A; margin-bottom: 8px; }
+  .party-detail { font-size: 12px; color: #6B7280; line-height: 1.8; }
+  .party-detail strong { color: #374151; font-weight: 600; }
+
+  /* ── BODY ── */
+  .contract-body { padding: 0 56px 56px; }
+
+  .intro-box {
+    margin: 32px 0 36px;
+    background: #FFFBF2;
+    border: 1px solid #E8D99A;
+    border-left: 4px solid #C9A84C;
+    border-radius: 6px;
+    padding: 18px 22px;
+    font-size: 12.5px;
+    color: #5C4A1A;
+    line-height: 1.75;
+  }
+  .intro-box strong { color: #3D2E05; }
+
+  /* Articles */
+  .article {
+    margin-bottom: 32px;
+  }
+  .article-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F0EBE4;
+  }
+  .article-num {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #C9A84C;
+    flex-shrink: 0;
+    background: #FFFBF2;
+    border: 1px solid #E8D99A;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .article-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1E110A;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .article p { margin-bottom: 10px; color: #374151; }
+  .article p:last-child { margin-bottom: 0; }
+
+  ul.contract-list {
+    list-style: none;
+    margin: 10px 0;
+    padding: 0;
+  }
+  ul.contract-list li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    color: #374151;
+    border-bottom: 1px solid #F8F6F3;
+    font-size: 12.5px;
+  }
+  ul.contract-list li:last-child { border-bottom: none; }
+  ul.contract-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #C9A84C;
+    font-size: 10px;
+    top: 8px;
+  }
+  ul.contract-list li strong { color: #1E110A; font-weight: 600; }
+
+  /* Tableau financier */
+  .finance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #E5E7EB;
+  }
+  .finance-table thead tr { background: #1E110A; }
+  .finance-table thead th {
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+  }
+  .finance-table thead th:last-child { text-align: right; }
+  .finance-table tbody tr:nth-child(odd)  { background: #FAFAFA; }
+  .finance-table tbody tr:nth-child(even) { background: #fff; }
+  .finance-table td {
+    padding: 12px 16px;
+    font-size: 12.5px;
+    color: #374151;
+    border-bottom: 1px solid #F0EBE4;
+  }
+  .finance-table td:last-child { text-align: right; font-weight: 600; color: #1a1a1a; }
+  .finance-table tr.total-row td {
+    background: #FFFBF2;
+    border-top: 2px solid #C9A84C;
+    border-bottom: none;
+    font-weight: 800;
+    color: #1E110A;
+    font-size: 14px;
+  }
+  .finance-table tr.total-row td:last-child { color: #C9A84C; font-size: 16px; }
+
+  /* Échéancier */
+  .echeancier {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .echeance-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .echeance-pct { font-size: 22px; font-weight: 800; color: #C9A84C; }
+  .echeance-label { font-size: 11px; color: #6B7280; margin-top: 2px; line-height: 1.4; }
+  .echeance-amount { font-size: 12px; font-weight: 700; color: #1E110A; margin-top: 6px; }
+
+  /* Encadrés */
+  .info-box {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 12px;
+    color: #15803D;
+  }
+  .warn-box {
+    background: #FFF7ED;
+    border: 1px solid #FED7AA;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 12px;
+    color: #9A3412;
+  }
+
+  /* Signatures */
+  .signatures-section {
+    margin-top: 44px;
+    padding-top: 32px;
+    border-top: 2px solid #F0EBE4;
+  }
+  .sig-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .sig-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  .sig-block { text-align: center; }
+  .sig-party { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #C9A84C; margin-bottom: 4px; }
+  .sig-name { font-size: 13px; font-weight: 600; color: #1E110A; margin-bottom: 60px; }
+  .sig-line { border-bottom: 2px solid #1E110A; margin: 0 10%; }
+  .sig-footer { font-size: 10px; color: #9CA3AF; margin-top: 8px; }
+
+  /* Pied de page contrat */
+  .contract-footer {
+    background: #1E110A;
+    padding: 18px 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .cf-brand { font-size: 10px; letter-spacing: 3px; color: #C9A84C; text-transform: uppercase; font-weight: 700; }
+  .cf-ref { font-size: 10px; color: rgba(255,255,255,.25); font-family: monospace; }
+
+  /* Bouton impression */
+  .print-bar {
+    text-align: center;
+    padding: 24px;
+    background: #F4F1ED;
+  }
+  .btn-print {
+    background: #C9A84C;
+    color: #fff;
+    border: none;
+    padding: 13px 36px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    transition: opacity .2s;
+  }
+  .btn-print:hover { opacity: .88; }
+
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .page { box-shadow: none; border-radius: 0; margin: 0; max-width: 100%; }
+    .print-bar { display: none !important; }
+    .contract-header, .contract-footer, thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .article { page-break-inside: avoid; }
+    .signatures-section { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <button class="btn-print" onclick="window.print()">🖨&nbsp; Imprimer / Enregistrer en PDF</button>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="contract-header">
+    <div class="header-top">
+      <div class="brand-block">
+        <div class="brand-name">MIA DREAMS &amp; CO</div>
+        <div class="contract-title">Contrat de<br/>Développement Web</div>
+        <div class="contract-subtitle">Prestation de services informatiques</div>
+      </div>
+      <div class="contract-ref">
+        <div class="ref-label">Référence</div>
+        <div class="ref-num">MDC-2026-001</div>
+        <div class="ref-date">Abidjan, le 14 mai 2026</div>
+      </div>
+    </div>
+  </div>
+  <div class="gold-bar"></div>
+
+  <!-- PARTIES -->
+  <div class="parties-grid">
+    <div class="party-block">
+      <div class="party-type">Le Prestataire</div>
+      <div class="party-name">Mulho Mabiala</div>
+      <div class="party-detail">
+        <strong>Qualité :</strong> Développeur web indépendant<br/>
+        <strong>Email :</strong> imulhomabiala@gmail.com<br/>
+        <strong>Statut :</strong> Freelance / Auto-entrepreneur<br/>
+        <strong>Pays :</strong> Côte d'Ivoire
+      </div>
+    </div>
+    <div class="party-block">
+      <div class="party-type">Le Client</div>
+      <div class="party-name">MIA DREAMS &amp; CO</div>
+      <div class="party-detail">
+        <strong>Représentant :</strong> ____________________________<br/>
+        <strong>Qualité :</strong> Gérant(e) / Représentant(e) légal(e)<br/>
+        <strong>Email :</strong> ____________________________<br/>
+        <strong>Adresse :</strong> Abidjan, Côte d'Ivoire
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="contract-body">
+
+    <div class="intro-box">
+      <strong>ENTRE LES SOUSSIGNÉS :</strong><br/>
+      Le prestataire <strong>Mulho Mabiala</strong>, développeur web freelance, d'une part,<br/>
+      et la société <strong>MIA DREAMS &amp; CO</strong>, représentée par son gérant(e), d'autre part,<br/><br/>
+      Il a été convenu et arrêté ce qui suit, dans le cadre du développement d'une plateforme
+      e-commerce complète pour la maison de mode africaine MIA DREAMS &amp; CO.
+    </div>
+
+    <!-- ART 1 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 1</span>
+        <span class="article-title">Objet du contrat</span>
+      </div>
+      <p>
+        Le présent contrat a pour objet la réalisation complète d'une plateforme web e-commerce
+        sur mesure pour <strong>MIA DREAMS &amp; CO</strong>, maison de mode africaine basée à Abidjan.
+        Cette plateforme comprend un site public de présentation et de vente en ligne, ainsi qu'une
+        interface d'administration sécurisée permettant la gestion autonome de l'ensemble du contenu.
+      </p>
+      <p>
+        Le site est accessible à l'adresse : <strong>miadreams.netlify.app</strong>
+      </p>
+    </div>
+
+    <!-- ART 2 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 2</span>
+        <span class="article-title">Description des prestations réalisées</span>
+      </div>
+      <p>Le prestataire a conçu, développé et mis en production les éléments suivants :</p>
+
+      <ul class="contract-list">
+        <li><strong>Site public (frontend React.js)</strong> — Pages Home, Boutique e-commerce, Galerie, Blog/Podcast, Marques (Mia Dreams, MPREW, Fashion Program, Personal Branding), À Propos, Contact, Impact, Réservation, Panier, Commande</li>
+        <li><strong>Système de paiement &amp; commande</strong> — Panier d'achat, tunnel de commande avec saisie client, confirmation par email</li>
+        <li><strong>Interface d'administration sécurisée</strong> — Tableau de bord, gestion produits/collections, commandes, réservations, témoignages, blog, galerie, pages marques, catalogues</li>
+        <li><strong>Point de Vente (POS)</strong> — Caisse enregistreuse digitale avec catalogue produits, panier, modes de paiement (Espèces, Wave), remise, reçu thermique imprimable et envoi WhatsApp</li>
+        <li><strong>Système de facturation</strong> — Génération de factures A4 au format HTML permanent (logo, tableau des articles, total, mode de paiement)</li>
+        <li><strong>Paramètres dynamiques</strong> — Configuration en temps réel du logo, coordonnées, réseaux sociaux, marques, catalogues — synchronisés sur tout le site public</li>
+        <li><strong>Backend API REST (Node.js / Express)</strong> — Authentification JWT, gestion des fichiers (Cloudinary), base de données MongoDB, routes sécurisées</li>
+        <li><strong>Déploiement en production</strong> — Frontend sur Netlify, Backend sur Render, base de données MongoDB Atlas</li>
+        <li><strong>Intégrations tierces</strong> — WhatsApp Business (partage de reçus), Cloudinary (hébergement images), Google Fonts</li>
+      </ul>
+    </div>
+
+    <!-- ART 3 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 3</span>
+        <span class="article-title">Durée et calendrier</span>
+      </div>
+      <p>
+        Le développement de la plateforme a débuté en <strong>2025</strong> et a été livré en production
+        le <strong>14 mai 2026</strong>. La date de livraison finale est celle de la mise en ligne complète
+        et fonctionnelle de l'ensemble des modules décrits à l'article 2.
+      </p>
+      <p>
+        Une période de <strong>garantie de 30 jours</strong> court à compter de la date de livraison finale.
+        Durant cette période, le prestataire s'engage à corriger sans frais supplémentaires tout bug ou
+        dysfonctionnement lié au travail livré.
+      </p>
+    </div>
+
+    <!-- ART 4 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 4</span>
+        <span class="article-title">Rémunération et modalités de paiement</span>
+      </div>
+      <p>Le montant total de la prestation est fixé à :</p>
+
+      <table class="finance-table">
+        <thead>
+          <tr>
+            <th>Prestation</th>
+            <th>Détail</th>
+            <th>Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Conception &amp; développement frontend</strong></td>
+            <td>Site public React.js — toutes pages</td>
+            <td>180 000 FCFA</td>
+          </tr>
+          <tr>
+            <td><strong>Backend API &amp; base de données</strong></td>
+            <td>Node.js, Express, MongoDB, Auth JWT</td>
+            <td>120 000 FCFA</td>
+          </tr>
+          <tr>
+            <td><strong>Interface d'administration</strong></td>
+            <td>Dashboard complet + POS + Caisse</td>
+            <td>120 000 FCFA</td>
+          </tr>
+          <tr>
+            <td><strong>Déploiement &amp; configuration</strong></td>
+            <td>Netlify, Render, MongoDB Atlas, domaine</td>
+            <td>50 000 FCFA</td>
+          </tr>
+          <tr>
+            <td><strong>Tests, corrections &amp; livraison</strong></td>
+            <td>QA, recettes client, ajustements finaux</td>
+            <td>30 000 FCFA</td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2"><strong>TOTAL TTC</strong></td>
+            <td><strong>500 000 FCFA</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top: 16px; margin-bottom: 8px;"><strong>Échéancier de paiement :</strong></p>
+      <div class="echeancier">
+        <div class="echeance-card">
+          <div class="echeance-pct">30%</div>
+          <div class="echeance-label">À la signature du contrat (acompte)</div>
+          <div class="echeance-amount">150 000 FCFA</div>
+        </div>
+        <div class="echeance-card">
+          <div class="echeance-pct">40%</div>
+          <div class="echeance-label">À la livraison de la version bêta</div>
+          <div class="echeance-amount">200 000 FCFA</div>
+        </div>
+        <div class="echeance-card">
+          <div class="echeance-pct">30%</div>
+          <div class="echeance-label">À la mise en production finale</div>
+          <div class="echeance-amount">150 000 FCFA</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        💳 <strong>Modes de paiement acceptés :</strong> Virement bancaire, Wave, Orange Money, Espèces.
+        Tout retard de paiement supérieur à 15 jours entraîne la suspension des accès et des travaux.
+      </div>
+    </div>
+
+    <!-- ART 5 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 5</span>
+        <span class="article-title">Droits de propriété intellectuelle</span>
+      </div>
+      <p>
+        À compter du règlement intégral du montant stipulé à l'article 4, le client <strong>MIA DREAMS &amp; CO</strong>
+        devient propriétaire de l'ensemble des livrables : code source frontend, code source backend,
+        structures de bases de données, interfaces graphiques et contenus créés dans le cadre de ce projet.
+      </p>
+      <p>
+        Tant que le paiement n'est pas soldé en totalité, le prestataire conserve l'intégralité des droits
+        sur les livrables et peut en suspendre l'accès. Le prestataire conserve le droit de mentionner
+        ce projet dans son portfolio professionnel.
+      </p>
+    </div>
+
+    <!-- ART 6 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 6</span>
+        <span class="article-title">Obligations du prestataire</span>
+      </div>
+      <ul class="contract-list">
+        <li>Réaliser les travaux convenus dans les règles de l'art et selon les bonnes pratiques du développement web</li>
+        <li>Assurer la confidentialité des informations transmises par le client</li>
+        <li>Livrer un code source propre, commenté et maintenable</li>
+        <li>Corriger sans frais tout bug constaté durant la période de garantie de 30 jours (article 3)</li>
+        <li>Fournir une documentation d'utilisation de l'interface d'administration</li>
+        <li>Assurer un transfert de compétences au client pour la gestion autonome du contenu</li>
+      </ul>
+    </div>
+
+    <!-- ART 7 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 7</span>
+        <span class="article-title">Obligations du client</span>
+      </div>
+      <ul class="contract-list">
+        <li>Fournir en temps utile tous les éléments nécessaires à la réalisation du projet (textes, images, logo, identifiants de services tiers)</li>
+        <li>Régler les sommes dues aux échéances fixées à l'article 4</li>
+        <li>Valider les livrables intermédiaires dans un délai de 7 jours ouvrés après présentation</li>
+        <li>Ne pas modifier le code source sans accord préalable du prestataire durant la période de garantie</li>
+        <li>Assurer le règlement des abonnements aux services tiers nécessaires au bon fonctionnement du site (hébergement Render, MongoDB Atlas, Cloudinary, nom de domaine)</li>
+      </ul>
+    </div>
+
+    <!-- ART 8 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 8</span>
+        <span class="article-title">Responsabilités et limitations</span>
+      </div>
+      <p>
+        Le prestataire ne saurait être tenu responsable des pannes ou interruptions de service imputables
+        aux fournisseurs tiers (Netlify, Render, MongoDB Atlas, Cloudinary) ni des conséquences
+        économiques découlant d'une telle indisponibilité.
+      </p>
+      <p>
+        La responsabilité du prestataire est limitée au montant total perçu au titre du présent contrat.
+        Le prestataire n'est pas responsable des contenus publiés par le client sur la plateforme.
+      </p>
+      <div class="warn-box">
+        ⚠️ Le prestataire décline toute responsabilité en cas de perte de données résultant d'une mauvaise
+        utilisation de l'interface d'administration ou d'une absence de sauvegarde de la part du client.
+      </div>
+    </div>
+
+    <!-- ART 9 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 9</span>
+        <span class="article-title">Confidentialité</span>
+      </div>
+      <p>
+        Chaque partie s'engage à garder strictement confidentiel l'ensemble des informations,
+        documents et données échangés dans le cadre du présent contrat. Cette obligation de
+        confidentialité s'applique pendant toute la durée du contrat et pour une période de
+        <strong>3 ans</strong> après son terme, quelle qu'en soit la cause.
+      </p>
+      <p>
+        Sont notamment confidentiels : les données clients, les codes d'accès aux services,
+        les informations financières et commerciales de MIA DREAMS &amp; CO.
+      </p>
+    </div>
+
+    <!-- ART 10 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 10</span>
+        <span class="article-title">Résiliation</span>
+      </div>
+      <p>
+        En cas de manquement grave de l'une des parties à ses obligations contractuelles, non réparé
+        dans un délai de <strong>15 jours</strong> après mise en demeure par lettre recommandée ou email
+        avec accusé de réception, l'autre partie pourra résilier le présent contrat de plein droit.
+      </p>
+      <p>
+        En cas de résiliation à l'initiative du client sans faute du prestataire, les sommes déjà
+        versées restent acquises au prestataire à titre d'indemnité. En cas de résiliation à
+        l'initiative du prestataire pour défaut de paiement, l'accès au site et au code source
+        sera immédiatement suspendu jusqu'au règlement complet des sommes dues.
+      </p>
+    </div>
+
+    <!-- ART 11 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 11</span>
+        <span class="article-title">Droit applicable et règlement des litiges</span>
+      </div>
+      <p>
+        Le présent contrat est régi par le droit ivoirien. En cas de litige, les parties s'engagent
+        à rechercher en priorité une solution amiable dans un délai de <strong>30 jours</strong>
+        à compter de la notification du différend.
+      </p>
+      <p>
+        À défaut d'accord amiable, tout litige sera soumis à la compétence exclusive des tribunaux
+        d'<strong>Abidjan, Côte d'Ivoire</strong>.
+      </p>
+    </div>
+
+    <!-- ART 12 -->
+    <div class="article">
+      <div class="article-header">
+        <span class="article-num">Art. 12</span>
+        <span class="article-title">Dispositions générales</span>
+      </div>
+      <p>
+        Le présent contrat constitue l'intégralité de l'accord entre les parties et annule et remplace
+        tout accord verbal ou écrit antérieur portant sur le même objet. Toute modification devra faire
+        l'objet d'un avenant écrit signé des deux parties.
+      </p>
+      <p>
+        Si l'une quelconque des dispositions du présent contrat était déclarée nulle ou inapplicable,
+        les autres dispositions demeureront en vigueur.
+      </p>
+    </div>
+
+    <!-- SIGNATURES -->
+    <div class="signatures-section">
+      <div class="sig-title">Signatures des parties — Lu et approuvé</div>
+      <div class="sig-grid">
+        <div class="sig-block">
+          <div class="sig-party">Le Prestataire</div>
+          <div class="sig-name">Mulho Mabiala</div>
+          <div class="sig-line"></div>
+          <div class="sig-footer">Signature précédée de la mention<br/>« Lu et approuvé »</div>
+          <div style="margin-top: 16px; font-size: 11px; color: #9CA3AF;">Date : _____ / _____ / 2026</div>
+        </div>
+        <div class="sig-block">
+          <div class="sig-party">Le Client — MIA DREAMS &amp; CO</div>
+          <div class="sig-name">____________________________</div>
+          <div class="sig-line"></div>
+          <div class="sig-footer">Signature + cachet de la société<br/>précédés de la mention « Lu et approuvé »</div>
+          <div style="margin-top: 16px; font-size: 11px; color: #9CA3AF;">Date : _____ / _____ / 2026</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.contract-body -->
+
+  <!-- FOOTER -->
+  <div class="gold-bar"></div>
+  <div class="contract-footer">
+    <div class="cf-brand">MIA DREAMS &amp; CO — Contrat de Développement Web</div>
+    <div class="cf-ref">Réf. MDC-2026-001 · 14/05/2026 · Page 1/1</div>
+  </div>
+
+</div><!-- /.page -->
+
+<div class="print-bar">
+  <button class="btn-print" onclick="window.print()">🖨&nbsp; Imprimer / Enregistrer en PDF</button>
+</div>
+
+</body>
+</html>

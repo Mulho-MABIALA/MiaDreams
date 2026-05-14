@@ -72,9 +72,9 @@ export default function BrandCollections({ brandSlug }) {
                                 </h3>
                             </div>
                         </div>
-                    })}
+                    ))}
                 </div>
-                </div>
+
             </div>
         </section>
     );

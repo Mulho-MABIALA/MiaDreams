@@ -21,6 +21,7 @@ export default function Contact() {
         setProcessing(true); setErrors({}); setSuccess('');
         try {
             const res = await axios.post('/api/contact', form);
+            axios.post('/api/newsletter', { email: form.email }).catch(() => {});
             setSuccess(res.data.success);
             setForm({ name: '', email: '', phone: '', subject: '', message: '' });
         } catch (err) {

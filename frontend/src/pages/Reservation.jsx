@@ -22,6 +22,7 @@ export default function Reservation() {
         setProcessing(true); setErrors({}); setSuccess('');
         try {
             const res = await axios.post('/api/reservation', form);
+            axios.post('/api/newsletter', { email: form.email }).catch(() => {});
             setSuccess(res.data.success);
             setForm({ name: '', email: '', phone: '', service: '', preferred_date: '', preferred_time: '', message: '' });
         } catch (err) {

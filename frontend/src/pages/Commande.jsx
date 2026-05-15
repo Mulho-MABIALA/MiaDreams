@@ -86,6 +86,7 @@ export default function Commande() {
                 customer: { name: form.name, email: form.email, phone: form.phone, address: form.address, city: form.city, country: form.country },
                 subtotal, shipping_fee: shipping, total, payment_method: paymentMethod, notes: form.notes,
             });
+            axios.post('/api/newsletter', { email: form.email }).catch(() => {});
 
             if (paymentMethod === 'cash') {
                 clearCart(); navigate(`/commande/succes/${order._id}`); return;

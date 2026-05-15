@@ -22,9 +22,19 @@ router.get('/:id/download', async (req, res) => {
             return res.status(404).json({ message: 'Catalogue ou PDF introuvable' });
         }
 
-        // PDF stocké sur Cloudinary → redirection directe
+        const fileName = `${catalogue.name}.pdf`;
+        const encodedName = encodeURIComponent(fileName);
+
+        // PDF stocké sur Cloudinary → proxy pour forcer le bon nom de fichier
         if (catalogue.pdf_path.startsWith('http')) {
-            return res.redirect(catalogue.pdf_path);
+            const https = require('https');
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"; filename*=UTF-8''${encodedName}`);
+            res.setHeader('Content-Type', 'application/pdf');
+            const request = https.get(catalogue.pdf_path, (stream) => {
+                stream.pipe(res);
+            });
+            request.on('error', () => res.status(500).json({ message: 'Erreur lors du téléchargement Cloudinary' }));
+            return;
         }
 
         // Fallback : fichier local sur disque
@@ -33,7 +43,7 @@ router.get('/:id/download', async (req, res) => {
             return res.status(404).json({ message: 'Fichier PDF introuvable sur le serveur' });
         }
 
-        res.download(filePath, `${catalogue.name}.pdf`);
+        res.download(filePath, fileName);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

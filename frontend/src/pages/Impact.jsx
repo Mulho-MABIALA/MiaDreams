@@ -13,9 +13,25 @@ const DEFAULT_MVV_ICON = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.
 
 // ── Default fallback data ──────────────────────────────────────────────────────
 const DEFAULT_MVV = [
-    { subtitle: 'Mission', content: "Diffuser la richesse culturelle africaine à travers une mode éthique, innovante et accessible." },
-    { subtitle: 'Vision',  content: "Devenir la référence mondiale de la mode africaine contemporaine d'excellence." },
-    { subtitle: 'Valeurs', content: "Authenticité, excellence, durabilité, communauté — au cœur de chaque décision." },
+    {
+        subtitle: 'Vision',
+        content: "Construire une Afrique où la femme leader s'impose par la force de son identité et la puissance du digital.",
+    },
+    {
+        subtitle: 'Mission',
+        content: "Accompagner les dirigeantes et entrepreneures africaines à travers une mode authentique, un personal branding stratégique et des outils technologiques innovants.",
+    },
+    {
+        subtitle: 'Valeurs',
+        content: '',
+        bullets: [
+            { label: 'Authenticité',  text: "Préserver l'héritage culturel et l'élégance des racines dans chaque création." },
+            { label: 'Innovation',    text: "Mettre le digital et l'intelligence artificielle au service de la modernisation de l'artisanat." },
+            { label: 'Excellence',    text: "Garantir une précision stratégique et une qualité irréprochable dans l'exécution de chaque projet." },
+            { label: 'Transmission',  text: "Favoriser l'impact social en formant les artisans et en partageant les clés de la réussite entrepreneuriale." },
+            { label: 'Audace',        text: "Encourager les femmes à briser les plafonds de verre et à revendiquer leur place dans l'économie de demain." },
+        ],
+    },
 ];
 
 const DEFAULT_STATS = [
@@ -26,10 +42,36 @@ const DEFAULT_STATS = [
 ];
 
 const DEFAULT_ENGAGEMENTS = [
-    { subtitle: '01', title: 'Mode Éthique',           content: "Nous sélectionnons des matières premières durables, favorisons des processus de production respectueux de l'environnement." },
-    { subtitle: '02', title: 'Valorisation Artisanale', content: "Nous collaborons avec des artisans locaux, préservant les techniques traditionnelles tout en créant de l'emploi." },
-    { subtitle: '03', title: 'Fashion Program',        content: "Notre programme de formation accompagne la nouvelle génération de créateurs africains vers l'excellence." },
-    { subtitle: '04', title: 'Personal Branding',      content: "Nous aidons les entrepreneurs africains à développer leur identité visuelle et à affirmer leur leadership." },
+    {
+        subtitle: '01',
+        title: "L'Émancipation par le Leadership",
+        content: "Nous nous engageons à transformer le potentiel des femmes africaines en une force économique réelle. Par le biais du Personal Branding et de la maîtrise de la posture, nous accompagnons les dirigeantes vers une visibilité accrue et un impact social durable.",
+    },
+    {
+        subtitle: '02',
+        title: "L'Innovation Technologique Responsable",
+        content: "Nous faisons du digital un allié de l'artisanat. À travers notre application « Ma Petite Robe en Wax » et l'intégration de l'intelligence artificielle, nous modernisons les processus de création pour offrir des solutions de sur-mesure accessibles et performantes.",
+    },
+    {
+        subtitle: '03',
+        title: "La Préservation de l'Environnement",
+        content: "Conscientes des enjeux écologiques, nous militons pour une mode éthique et durable.",
+        bullets: [
+            "Réduction des déchets : Nous privilégions la production à la demande pour éviter les stocks invendus et le gaspillage textile.",
+            "Innovation 3D : L'utilisation de la technologie 3D nous permet de prototyper virtuellement nos créations, limitant ainsi la consommation de matières premières.",
+            "Éco-responsabilité : Nous encourageons l'usage de ressources locales et des méthodes de production à faible impact environnemental.",
+        ],
+    },
+    {
+        subtitle: '04',
+        title: "L'Impact Social et la Transmission",
+        content: "Nous nous engageons à ne laisser personne de côté dans la transition numérique. À travers nos programmes de formation, nous assurons le renforcement des capacités des artisans tailleurs, garantissant ainsi leur insertion professionnelle et la pérennité des savoir-faire locaux.",
+    },
+    {
+        subtitle: '05',
+        title: "L'Excellence et l'Authenticité",
+        content: "Chaque projet et chaque vêtement sont le reflet d'une exigence de qualité supérieure. Nous nous engageons à respecter l'héritage culturel africain tout en l'inscrivant dans une modernité sophistiquée et universelle.",
+    },
 ];
 
 export default function Impact() {
@@ -85,7 +127,19 @@ export default function Impact() {
                                         </svg>
                                     </div>
                                     <span className="font-lastica text-[9px] tracking-[4px] text-gold/60 uppercase block mb-3">{item.subtitle}</span>
-                                    <p className="font-glacial text-sm text-white/50 leading-relaxed">{item.content}</p>
+                                    {item.content && (
+                                        <p className="font-glacial text-sm text-white/50 leading-relaxed">{item.content}</p>
+                                    )}
+                                    {item.bullets && (
+                                        <ul className="space-y-3 mt-1">
+                                            {item.bullets.map(b => (
+                                                <li key={b.label} className="flex items-start gap-2.5 font-glacial text-xs text-white/45 leading-relaxed">
+                                                    <span className="w-1 h-1 rounded-full bg-gold/60 mt-1.5 flex-shrink-0" />
+                                                    <span><span className="text-white/70 font-semibold">{b.label}</span> : {b.text}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                 </div>
                             );
                         })}
@@ -115,7 +169,7 @@ export default function Impact() {
                         <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">NOS <span className="text-gold">ENGAGEMENTS</span></h2>
                         <div className="gold-line-center" />
                     </div>
-                    <div className={`grid grid-cols-1 gap-px ${activeEngagements.length <= 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2'}`}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-px">
                         {activeEngagements.map((e, i) => (
                             <div key={e._id || i}
                                  className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 p-10 transition-colors"
@@ -124,8 +178,20 @@ export default function Impact() {
                                     <span className="font-lastica text-[9px] tracking-[4px] text-gold/40">{e.subtitle}</span>
                                     <div className="flex-1 h-px bg-gold/10" />
                                 </div>
-                                <h3 className="font-glacial text-lg text-white uppercase tracking-[2px] mb-4 group-hover:text-gold transition-colors">{e.title}</h3>
-                                <p className="font-glacial text-sm text-white/40 leading-relaxed">{e.content}</p>
+                                <h3 className="font-glacial text-base text-white uppercase tracking-[2px] mb-4 group-hover:text-gold transition-colors">{e.title}</h3>
+                                {e.content && (
+                                    <p className="font-glacial text-sm text-white/40 leading-relaxed">{e.content}</p>
+                                )}
+                                {e.bullets && (
+                                    <ul className="space-y-2.5 mt-3">
+                                        {e.bullets.map((b, bi) => (
+                                            <li key={bi} className="flex items-start gap-2.5 font-glacial text-xs text-white/35 leading-relaxed">
+                                                <span className="w-1 h-1 rounded-full bg-gold/50 mt-1.5 flex-shrink-0" />
+                                                {b}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
                         ))}
                     </div>

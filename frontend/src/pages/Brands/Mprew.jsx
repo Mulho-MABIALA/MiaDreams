@@ -1,23 +1,39 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
+import { imgSrc } from '../../utils/imgSrc';
 
 export default function Mprew() {
+    const [brand, setBrand] = useState(null);
+
+    useEffect(() => {
+        axios.get('/api/brands/mprew').then(res => setBrand(res.data.brand)).catch(() => {});
+    }, []);
+
+    const heroImg     = brand?.image        ? imgSrc(brand.image) : '/img/index/home-image3.jpg';
+    const heroTitle   = brand?.header_title || 'MPREW';
+    const description = brand?.description  || "MPREW est notre application mobile dédiée à la mode africaine. Elle permet à nos clientes de découvrir, personnaliser et commander leurs tenues en tissu wax directement depuis leur smartphone.";
+
     return (
-        <Layout title="MPREW — Ma Petite Robe En Wax">
+        <Layout title={brand?.name || 'MPREW — Ma Petite Robe En Wax'}>
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
-                    <img src="/img/index/home-image3.jpg" alt="MPREW" loading="eager" />
+                    <img src={heroImg} alt={brand?.name || 'MPREW'} loading="eager" />
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
                             <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Application mobile</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
-                                MPREW<br /><span className="text-gold">APP</span>
+                                {heroTitle.includes('\n')
+                                    ? heroTitle.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{i === heroTitle.split('\n').length - 1 ? <span className="text-gold">{line}</span> : line}</span>)
+                                    : <>{heroTitle} <span className="text-gold">APP</span></>
+                                }
                             </h1>
                             <p className="font-glacial text-base text-white/55 tracking-[1px] leading-relaxed mt-5 mb-9" style={{ opacity: 0, animation: 'fadeUp .8s .7s forwards' }}>
-                                Ma Petite Robe En Wax — la mode africaine dans votre poche.
+                                {brand?.tagline || 'Ma Petite Robe En Wax — la mode africaine dans votre poche.'}
                             </p>
                         </div>
                     </div>
@@ -29,7 +45,7 @@ export default function Mprew() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                         <div className="reveal img-hover">
-                            <img src="/img/index/home-image3.jpg" className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt="MPREW" loading="lazy" />
+                            <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'MPREW'} loading="lazy" />
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">L'application</span>
@@ -38,7 +54,7 @@ export default function Mprew() {
                             </h2>
                             <div className="gold-line my-6" />
                             <p className="font-glacial text-sm text-[#777] leading-loose mb-6">
-                                MPREW est notre application mobile dédiée à la mode africaine. Elle permet à nos clientes de découvrir, personnaliser et commander leurs tenues en tissu wax directement depuis leur smartphone.
+                                {description}
                             </p>
                             <p className="font-glacial text-sm text-[#777] leading-loose mb-9">
                                 Une expérience shopping unique, alliant technologie moderne et artisanat africain traditionnel.

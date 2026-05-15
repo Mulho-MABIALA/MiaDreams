@@ -1,23 +1,39 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
+import { imgSrc } from '../../utils/imgSrc';
 
 export default function PersonalBranding() {
+    const [brand, setBrand] = useState(null);
+
+    useEffect(() => {
+        axios.get('/api/brands/personal-branding').then(res => setBrand(res.data.brand)).catch(() => {});
+    }, []);
+
+    const heroImg     = brand?.image        ? imgSrc(brand.image) : '/img/index/home-image5.jpg';
+    const heroTitle   = brand?.header_title || 'PERSONAL';
+    const description = brand?.description  || "Une méthode et un accompagnement uniques au service de votre leadership, qui vous font gagner du temps. Nous allons vous aider à développer votre propre style, dans une démarche bienveillante.";
+
     return (
-        <Layout title="Personal Branding">
+        <Layout title={brand?.name || 'Personal Branding'}>
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
-                    <img src="/img/index/home-image5.jpg" alt="Personal Branding" loading="eager" />
+                    <img src={heroImg} alt={brand?.name || 'Personal Branding'} loading="eager" />
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
                             <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Nouveau</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
-                                PERSONAL<br /><span className="text-gold">BRANDING</span>
+                                {heroTitle.includes('\n')
+                                    ? heroTitle.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{i === heroTitle.split('\n').length - 1 ? <span className="text-gold">{line}</span> : line}</span>)
+                                    : <>{heroTitle}<br /><span className="text-gold">BRANDING</span></>
+                                }
                             </h1>
                             <p className="font-glacial text-base text-white/55 tracking-[1px] leading-relaxed mt-5 mb-9" style={{ opacity: 0, animation: 'fadeUp .8s .7s forwards' }}>
-                                Développez votre style, affirmez votre leadership.
+                                {brand?.tagline || 'Développez votre style, affirmez votre leadership.'}
                             </p>
                             <div style={{ opacity: 0, animation: 'fadeUp .7s 1s forwards' }}>
                                 <Link to="/reservation" className="btn btn-gold">RÉSERVER UNE SESSION</Link>
@@ -38,7 +54,7 @@ export default function PersonalBranding() {
                             </h2>
                             <div className="gold-line my-6" />
                             <p className="font-glacial text-sm text-[#777] leading-loose mb-6">
-                                Une méthode et un accompagnement uniques au service de votre leadership, qui vous font gagner du temps. Nous allons vous aider à développer votre propre style, dans une démarche bienveillante.
+                                {description}
                             </p>
                             <p className="font-glacial text-sm text-[#777] leading-loose mb-9">
                                 Que vous soyez entrepreneur, cadre dirigeant ou créatif, notre programme de Personal Branding vous aide à construire une identité visuelle forte et cohérente qui reflète vos valeurs.
@@ -46,7 +62,7 @@ export default function PersonalBranding() {
                             <Link to="/reservation" className="btn btn-gold">COMMENCER MON ACCOMPAGNEMENT</Link>
                         </div>
                         <div className="reveal img-hover">
-                            <img src="/img/index/home-image5.jpg" className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt="Personal Branding" loading="lazy" />
+                            <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Personal Branding'} loading="lazy" />
                         </div>
                     </div>
                 </div>

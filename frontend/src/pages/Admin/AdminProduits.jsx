@@ -187,9 +187,9 @@ function ProductForm({ initial, onSave, onCancel }) {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-[#374151] mb-1.5">Collection</label>
-                    <select className={inp} value={form.collection || ''} onChange={e => set('collection', e.target.value)}>
-                        <option value="">— Aucune collection —</option>
+                    <label className="block text-xs font-medium text-[#374151] mb-1.5">Collection *</label>
+                    <select className={inp} required value={form.collection || ''} onChange={e => set('collection', e.target.value)}>
+                        <option value="">— Choisir une collection —</option>
                         {collections.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                     </select>
                 </div>

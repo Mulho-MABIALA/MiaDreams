@@ -12,12 +12,12 @@ const SOCIAL_ICONS = {
 };
 
 function SocialIcon({ platform, url }) {
-    const key = platform.toLowerCase();
-    const icon = SOCIAL_ICONS[key];
-    if (!icon) return null;
+    const key = platform.toLowerCase().replace('/', '').replace(' ', '').replace('twitter', 'twitterx');
+    const icon = SOCIAL_ICONS[key] || SOCIAL_ICONS[platform.toLowerCase()];
+    if (!icon || !url) return null;
     return (
-        <a href={url} target="_blank" rel="noopener"
-           className="w-8 h-8 flex items-center justify-center transition-all duration-300 hover:scale-110"
+        <a href={url} target="_blank" rel="noopener noreferrer"
+           className="w-8 h-8 flex items-center justify-center transition-all duration-300 hover:scale-110 rounded-sm"
            style={{ background: icon.bg }} title={platform}>
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="white"
                  dangerouslySetInnerHTML={{ __html: icon.svg }} />

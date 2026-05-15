@@ -268,58 +268,76 @@ export default function AdminSettings() {
 
             {/* ── Réseaux sociaux ── */}
             <Section title="Réseaux sociaux">
-                {social.length === 0 ? (
-                    <p className="text-sm text-[#9CA3AF] mb-4">Aucun réseau social configuré.</p>
-                ) : (
-                    <div className="space-y-3 mb-4">
-                        {social.map(s => (
-                            <div key={s._id}
-                                className="flex items-center gap-3 bg-[#F9FAFB] border border-[#F3F4F6] rounded-xl p-3">
-                                {/* Icône plateforme */}
-                                <span className="text-xl flex-shrink-0 w-8 text-center">{ICONS[s.platform] || '🌐'}</span>
+                <p className="text-xs text-[#9CA3AF] mb-4">
+                    Renseignez l'URL complète de chaque compte (ex : <span className="font-mono">https://instagram.com/miadreams</span>). Les icônes cliquables apparaîtront dans le footer du site.
+                </p>
 
-                                {/* Sélecteur plateforme */}
+                {social.length > 0 && (
+                    <div className="rounded-xl border border-[#E5E7EB] overflow-hidden mb-4">
+                        {/* En-tête tableau */}
+                        <div className="grid grid-cols-[40px_160px_1fr_90px_40px] gap-0 bg-[#F9FAFB] border-b border-[#E5E7EB] px-4 py-2.5">
+                            <div />
+                            <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider">Réseau</span>
+                            <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider">URL du compte</span>
+                            <span className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider text-center">Statut</span>
+                            <div />
+                        </div>
+
+                        {/* Lignes */}
+                        {social.map((s, idx) => (
+                            <div key={s._id}
+                                className={`grid grid-cols-[40px_160px_1fr_90px_40px] gap-0 items-center px-4 py-3 ${idx < social.length - 1 ? 'border-b border-[#F3F4F6]' : ''} hover:bg-[#FAFAFA] transition-colors`}>
+
+                                {/* Icône */}
+                                <span className="text-lg text-center">{ICONS[s.platform] || '🌐'}</span>
+
+                                {/* Plateforme */}
                                 <select value={s.platform || ''}
                                     onChange={e => updateSocial(s._id, 'platform', e.target.value)}
                                     onBlur={() => saveSocial(s)}
-                                    className={inp + ' w-36 flex-shrink-0'}>
+                                    className="text-sm text-[#374151] bg-transparent border-0 outline-none cursor-pointer font-medium pr-2 py-1 focus:bg-[#FDF8EC] focus:rounded transition-colors w-full">
                                     {PLATFORMS.map(p => (
                                         <option key={p} value={p}>{p}</option>
                                     ))}
                                 </select>
 
                                 {/* URL */}
-                                <input value={s.url || ''} placeholder="https://…"
-                                    onChange={e => updateSocial(s._id, 'url', e.target.value)}
-                                    onBlur={() => saveSocial(s)}
-                                    className={inp + ' flex-1'} />
-
-                                {/* Statut sauvegarde */}
-                                {savingId === s._id && (
-                                    <svg className="animate-spin w-3.5 h-3.5 text-[#C9A84C] flex-shrink-0" viewBox="0 0 24 24" fill="none">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"/>
-                                    </svg>
-                                )}
+                                <div className="relative pr-3">
+                                    <input value={s.url || ''}
+                                        placeholder="https://www.instagram.com/votre_compte"
+                                        onChange={e => updateSocial(s._id, 'url', e.target.value)}
+                                        onBlur={() => saveSocial(s)}
+                                        className="w-full text-sm text-[#374151] bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-3 py-2 outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 placeholder:text-[#D1D5DB] transition-colors" />
+                                    {savingId === s._id && (
+                                        <svg className="animate-spin absolute right-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#C9A84C]" viewBox="0 0 24 24" fill="none">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"/>
+                                        </svg>
+                                    )}
+                                </div>
 
                                 {/* Actif/Inactif */}
-                                <button type="button"
-                                    onClick={() => { const updated = { ...s, is_active: !s.is_active }; updateSocial(s._id, 'is_active', !s.is_active); saveSocial(updated); }}
-                                    className={`flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-lg border transition-colors ${
-                                        s.is_active
-                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                            : 'bg-[#F3F4F6] text-[#9CA3AF] border-[#E5E7EB]'
-                                    }`}>
-                                    {s.is_active ? 'Actif' : 'Inactif'}
-                                </button>
+                                <div className="flex justify-center">
+                                    <button type="button"
+                                        onClick={() => { const updated = { ...s, is_active: !s.is_active }; updateSocial(s._id, 'is_active', !s.is_active); saveSocial(updated); }}
+                                        className={`text-xs font-medium px-2.5 py-1 rounded-lg border transition-colors ${
+                                            s.is_active
+                                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                                                : 'bg-[#F3F4F6] text-[#9CA3AF] border-[#E5E7EB] hover:bg-[#E5E7EB]'
+                                        }`}>
+                                        {s.is_active ? 'Actif' : 'Inactif'}
+                                    </button>
+                                </div>
 
                                 {/* Supprimer */}
-                                <button onClick={() => deleteSocial(s._id)}
-                                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-[#FEF2F2] text-[#DC2626] hover:bg-[#FEE2E2] transition-colors border border-red-100">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
+                                <div className="flex justify-center">
+                                    <button onClick={() => deleteSocial(s._id)}
+                                        className="w-7 h-7 flex items-center justify-center rounded-lg text-[#DC2626] hover:bg-[#FEF2F2] transition-colors">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -334,7 +352,7 @@ export default function AdminSettings() {
                 </button>
 
                 <p className="text-[11px] text-[#9CA3AF] mt-3">
-                    Les modifications se sauvegardent automatiquement quand vous quittez un champ.
+                    Modifications sauvegardées automatiquement quand vous quittez un champ.
                 </p>
             </Section>
         </div>

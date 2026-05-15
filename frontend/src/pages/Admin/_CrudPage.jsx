@@ -75,7 +75,7 @@ function FileField({ f, isPdf, selectedFile, existingVal, setFiles }) {
     );
 }
 
-export default function CrudPage({ title, apiPath, fields, imageFields = [], pdfFields = [], hideHeader = false }) {
+export default function CrudPage({ title, apiPath, fields, imageFields = [], pdfFields = [], pdfDownloadApiPath = null, hideHeader = false }) {
     const [items, setItems] = useState([]);
     const [form, setForm] = useState({});
     const [files, setFiles] = useState({});
@@ -379,7 +379,9 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
                                 const pdfVal = viewing[pdfF];
                                 if (!pdfVal) return null;
                                 const field = fields.find(f => f.name === pdfF);
-                                const pdfUrl = pdfVal.startsWith('http') || pdfVal.startsWith('/') ? pdfVal : `/uploads/${pdfVal}`;
+                                const pdfUrl = pdfDownloadApiPath
+                                    ? `/api/${pdfDownloadApiPath}/${viewing._id}/download`
+                                    : (pdfVal.startsWith('http') || pdfVal.startsWith('/') ? pdfVal : `/uploads/${pdfVal}`);
                                 return (
                                     <div key={pdfF} className="py-2 border-b border-[#F3F4F6] last:border-0">
                                         <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider block mb-3">
@@ -395,14 +397,15 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
                                                 <p className="text-xs font-semibold text-[#374151]">Fichier PDF disponible</p>
                                                 <p className="text-xs text-[#9CA3AF] truncate">{pdfVal.startsWith('http') ? 'Cloudinary ✓' : pdfVal}</p>
                                             </div>
-                                            <a href={pdfUrl} target="_blank" rel="noopener noreferrer"
+                                            <a href={pdfUrl}
+                                               download={pdfDownloadApiPath ? `${viewing[fields.find(f=>f.type!=='file')?.name] || 'catalogue'}.pdf` : undefined}
+                                               target={pdfDownloadApiPath ? undefined : '_blank'}
+                                               rel="noopener noreferrer"
                                                className="flex items-center gap-1.5 text-xs font-semibold text-white bg-[#C9A84C] hover:bg-[#B8973B] px-3 py-2 rounded-lg transition-colors flex-shrink-0">
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                                                    <polyline points="15 3 21 3 21 9"/>
-                                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                 </svg>
-                                                Ouvrir
+                                                Télécharger
                                             </a>
                                         </div>
                                     </div>

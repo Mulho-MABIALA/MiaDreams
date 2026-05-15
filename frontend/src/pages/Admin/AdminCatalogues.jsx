@@ -8,5 +8,5 @@ const fields = [
 ];
 
 export default function AdminCatalogues() {
-    return <CrudPage title="Catalogues" apiPath="catalogues" fields={fields} imageFields={['cover_image']} pdfFields={['pdf_path']} />;
+    return <CrudPage title="Catalogues" apiPath="catalogues" fields={fields} imageFields={['cover_image']} pdfFields={['pdf_path']} pdfDownloadApiPath="catalogues" />;
 }

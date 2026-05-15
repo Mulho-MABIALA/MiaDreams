@@ -5,6 +5,21 @@ import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
 
+function extractYoutubeId(value) {
+    if (!value) return null;
+    const v = value.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+    try {
+        const url = new URL(v);
+        const param = url.searchParams.get('v');
+        if (param) return param;
+        const parts = url.pathname.split('/').filter(Boolean);
+        if (parts.length) return parts[parts.length - 1];
+    } catch {}
+    const m = v.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
+}
+
 export default function PersonalBranding() {
     const [brand, setBrand] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,6 +32,7 @@ export default function PersonalBranding() {
 
     const heroImg     = brand?.image        ? imgSrc(brand.image) : null;
     const heroTitle   = brand?.header_title || 'PERSONAL';
+    const youtubeId   = extractYoutubeId(brand?.youtube_id);
     const description = brand?.description  || "Une méthode et un accompagnement uniques au service de votre leadership, qui vous font gagner du temps. Nous allons vous aider à développer votre propre style, dans une démarche bienveillante.";
 
     if (loading) return (
@@ -73,11 +89,21 @@ export default function PersonalBranding() {
                             </p>
                             <Link to="/reservation" className="btn btn-gold">COMMENCER MON ACCOMPAGNEMENT</Link>
                         </div>
-                        <div className="reveal img-hover">
-                            {heroImg
-                                ? <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Personal Branding'} loading="lazy" />
-                                : <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
-                            }
+                        <div className="reveal">
+                            {youtubeId ? (
+                                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                                    <iframe
+                                        className="absolute inset-0 w-full h-full"
+                                        src={`https://www.youtube.com/embed/${youtubeId}`}
+                                        frameBorder="0" allowFullScreen loading="lazy"
+                                        title={brand?.name || 'Personal Branding'}
+                                    />
+                                </div>
+                            ) : heroImg ? (
+                                <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Personal Branding'} loading="lazy" />
+                            ) : (
+                                <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
+                            )}
                         </div>
                     </div>
                 </div>

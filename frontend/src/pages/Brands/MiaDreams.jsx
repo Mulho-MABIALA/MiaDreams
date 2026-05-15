@@ -5,6 +5,26 @@ import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
 
+/** Extrait l'ID YouTube depuis une URL complète ou un ID brut */
+function extractYoutubeId(value) {
+    if (!value) return null;
+    const v = value.trim();
+    // ID brut (11 chars alphanumériques)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+    // URL complète : ?v=XXXXX ou youtu.be/XXXXX
+    try {
+        const url = new URL(v);
+        const param = url.searchParams.get('v');
+        if (param) return param;
+        // youtu.be/XXXXX
+        const parts = url.pathname.split('/').filter(Boolean);
+        if (parts.length) return parts[parts.length - 1];
+    } catch {}
+    // fallback regex
+    const m = v.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
+}
+
 export default function MiaDreams() {
     const [brand, setBrand] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -15,9 +35,9 @@ export default function MiaDreams() {
             .catch(() => setLoading(false));
     }, []);
 
-    const heroImg    = brand?.image      ? imgSrc(brand.image) : null;
-    const heroTitle  = brand?.header_title || 'MIA DREAMS';
-    const youtubeId  = brand?.youtube_id || 'sTfEIkU309s';
+    const heroImg     = brand?.image       ? imgSrc(brand.image) : null;
+    const heroTitle   = brand?.header_title || 'MIA DREAMS';
+    const youtubeId   = extractYoutubeId(brand?.youtube_id);
     const description = brand?.description || "Mia Dreams Brand est notre ligne de vêtements — une collection qui marie l'artisanat africain traditionnel aux codes de la mode contemporaine.";
 
     if (loading) return (
@@ -57,12 +77,24 @@ export default function MiaDreams() {
             <section className="bg-white py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
+                        {/* Gauche : vidéo si dispo, sinon image, sinon fond sombre */}
                         <div className="reveal">
-                            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                                <iframe className="absolute inset-0 w-full h-full"
+                            {youtubeId ? (
+                                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                                    <iframe
+                                        className="absolute inset-0 w-full h-full"
                                         src={`https://www.youtube.com/embed/${youtubeId}`}
-                                        frameBorder="0" allowFullScreen loading="lazy" title={brand?.name || 'Mia Dreams'} />
-                            </div>
+                                        frameBorder="0" allowFullScreen loading="lazy"
+                                        title={brand?.name || 'Mia Dreams'}
+                                    />
+                                </div>
+                            ) : heroImg ? (
+                                <img src={heroImg}
+                                    className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top"
+                                    alt={brand?.name || 'Mia Dreams'} loading="lazy" />
+                            ) : (
+                                <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
+                            )}
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">La marque</span>

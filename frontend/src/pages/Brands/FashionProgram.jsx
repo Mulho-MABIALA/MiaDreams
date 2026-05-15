@@ -5,6 +5,21 @@ import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
 
+function extractYoutubeId(value) {
+    if (!value) return null;
+    const v = value.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+    try {
+        const url = new URL(v);
+        const param = url.searchParams.get('v');
+        if (param) return param;
+        const parts = url.pathname.split('/').filter(Boolean);
+        if (parts.length) return parts[parts.length - 1];
+    } catch {}
+    const m = v.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
+}
+
 export default function FashionProgram() {
     const [brand, setBrand] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,6 +32,7 @@ export default function FashionProgram() {
 
     const heroImg     = brand?.image        ? imgSrc(brand.image) : null;
     const heroTitle   = brand?.header_title || 'FASHION';
+    const youtubeId   = extractYoutubeId(brand?.youtube_id);
     const description = brand?.description  || "Notre Fashion Program est un programme de formation complet destiné aux créateurs, stylistes et entrepreneurs de la mode africaine. En quelques semaines, maîtrisez les codes du secteur.";
 
     if (loading) return (
@@ -59,11 +75,21 @@ export default function FashionProgram() {
             <section className="bg-white py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
-                        <div className="reveal img-hover">
-                            {heroImg
-                                ? <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Fashion Program'} loading="lazy" />
-                                : <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
-                            }
+                        <div className="reveal">
+                            {youtubeId ? (
+                                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                                    <iframe
+                                        className="absolute inset-0 w-full h-full"
+                                        src={`https://www.youtube.com/embed/${youtubeId}`}
+                                        frameBorder="0" allowFullScreen loading="lazy"
+                                        title={brand?.name || 'Fashion Program'}
+                                    />
+                                </div>
+                            ) : heroImg ? (
+                                <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Fashion Program'} loading="lazy" />
+                            ) : (
+                                <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
+                            )}
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">Le programme</span>

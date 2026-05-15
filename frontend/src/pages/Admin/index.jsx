@@ -12,7 +12,6 @@ import AdminContacts from './AdminContacts';
 import AdminNewsletter from './AdminNewsletter';
 import AdminTestimonials from './AdminTestimonials';
 import AdminTeam from './AdminTeam';
-import AdminServices from './AdminServices';
 import AdminInitiatives from './AdminInitiatives';
 import AdminSettings from './AdminSettings';
 import AdminProduits from './AdminProduits';
@@ -41,7 +40,6 @@ const NAV_GROUPS = [
             { to: '/admin/catalogues',   label: 'Catalogues',      icon: <IconCatalogues /> },
             { to: '/admin/temoignages',  label: 'Témoignages',     icon: <IconTestimonials /> },
             { to: '/admin/equipe',       label: 'Équipe',          icon: <IconTeam /> },
-            { to: '/admin/services',     label: 'Services',        icon: <IconServices /> },
             { to: '/admin/initiatives',  label: 'Initiatives',     icon: <IconInitiatives /> },
         ]
     },
@@ -439,7 +437,6 @@ export default function Admin() {
                             <Route path="catalogues/*" element={<AdminCatalogues />} />
                             <Route path="temoignages/*" element={<AdminTestimonials />} />
                             <Route path="equipe/*" element={<AdminTeam />} />
-                            <Route path="services/*" element={<AdminServices />} />
                             <Route path="initiatives/*" element={<AdminInitiatives />} />
                             <Route path="produits/*"   element={<AdminProduits />} />
                             <Route path="commandes/*"  element={<AdminCommandes />} />

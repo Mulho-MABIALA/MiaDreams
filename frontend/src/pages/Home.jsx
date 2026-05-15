@@ -90,51 +90,6 @@ function HeroCarousel({ slides }) {
     );
 }
 
-// ─── Modal Service ──────────────────────────────────────────────────────────────
-function ServiceModal({ service, onClose }) {
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-        const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-        window.addEventListener('keydown', onKey);
-        return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey); };
-    }, []);
-
-    return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-             style={{ background: 'rgba(8,8,8,.93)' }} onClick={onClose}>
-            <div className="relative w-full max-w-lg border border-gold/15 overflow-hidden"
-                 style={{ background: '#0d0d0d' }} onClick={e => e.stopPropagation()}>
-                <button onClick={onClose}
-                    className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center border border-white/10 text-white/30 hover:text-gold hover:border-gold/30 transition-all">
-                    ✕
-                </button>
-                <div className="relative overflow-hidden" style={{ height: 220 }}>
-                    {service.image
-                        ? <img src={imgSrc(service.image)} className="w-full h-full object-cover object-top" alt={service.title} style={{ filter: 'brightness(.75)' }} />
-                        : <div className="w-full h-full flex items-center justify-center" style={{ background: '#111' }}>
-                              <svg className="w-12 h-12 text-gold/15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                              </svg>
-                          </div>
-                    }
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,13,13,1) 0%, rgba(13,13,13,.2) 60%, transparent 100%)' }} />
-                    <div className="absolute top-0 inset-x-0 h-px bg-gold/30" />
-                </div>
-                <div className="px-5 sm:px-8 pb-8 -mt-4 relative z-10">
-                    <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">Nos services</span>
-                    <h3 className="font-glacial text-2xl text-white uppercase tracking-[3px] mb-4 leading-tight">{service.title}</h3>
-                    <div className="w-8 h-px mb-5" style={{ background: GOLD }} />
-                    {service.description && <p className="font-glacial text-sm text-white/50 leading-relaxed mb-7">{service.description}</p>}
-                    <a href="/reservation" className="inline-block font-lastica text-[8px] tracking-[3px] px-6 py-3 transition-all"
-                       style={{ background: GOLD, color: '#050505' }}>
-                        RÉSERVER UNE CONSULTATION
-                    </a>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 // ─── Témoignages ───────────────────────────────────────────────────────────────
 function TestimonialsSection({ testimonials }) {
     const [current, setCurrent] = useState(0);
@@ -377,7 +332,6 @@ export default function Home() {
     const [personalBranding, setPersonalBranding] = useState(null);
     const [ethicalFashion, setEthicalFashion]     = useState(null);
     const [blogBanner, setBlogBanner]             = useState(null);
-    const [selectedService, setSelectedService]   = useState(null);
 
     useEffect(() => {
         axios.get('/api/home').then(res => setData(res.data)).catch(() => {});
@@ -536,48 +490,108 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ══ SERVICES ════════════════════════════════════════════════ */}
-            {data.services && data.services.length > 0 && (
-                <section className="bg-texture py-24 lg:py-32">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-10">
-                        <div className="text-center mb-16 reveal">
-                            <span className="eyebrow justify-center">Ce que nous proposons</span>
-                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">
-                                NOS <span className="text-gold">SERVICES</span>
-                            </h2>
-                            <div className="gold-line-center" />
+            {/* ══ NOS PILIERS D'ACTION ═════════════════════════════════════ */}
+            <section className="bg-[#080808] py-24 lg:py-32 border-t border-gold/6">
+                <div className="max-w-7xl mx-auto px-6 lg:px-10">
+
+                    {/* En-tête */}
+                    <div className="text-center mb-16 reveal">
+                        <span className="eyebrow justify-center">Ce que nous faisons</span>
+                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">
+                            NOS PILIERS <span className="text-gold">D'ACTION</span>
+                        </h2>
+                        <div className="gold-line-center" />
+                        <p className="font-glacial text-xs text-white/30 tracking-[2px] uppercase mt-6 max-w-xl mx-auto leading-relaxed">
+                            Parce que l'impact ne commence pas par la visibilité. Il commence par l'alignement.
+                        </p>
+                    </div>
+
+                    {/* Grille 2 × 2 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-gold/8">
+
+                        {/* 1 — Mode consciente */}
+                        <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400">
+                            <div className="w-8 h-px bg-gold mb-6" />
+                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">01</span>
+                            <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
+                                Mode Consciente<br />&amp; Innovation Digitale
+                            </h3>
+                            <p className="font-glacial text-xs text-white/40 leading-relaxed mb-4">
+                                À travers <span className="text-gold/70">MIA DREAMS</span> et <span className="text-gold/70">MA PETITE ROBE EN WAX</span>, nous développons une mode africaine contemporaine intégrant :
+                            </p>
+                            <ul className="space-y-2 mb-5">
+                                {['Production à la demande', 'Digitalisation de l\'expérience client', 'Réduction du gaspillage textile', 'Valorisation des savoir-faire locaux'].map(item => (
+                                    <li key={item} className="flex items-start gap-2.5 font-glacial text-xs text-white/35">
+                                        <span className="w-1 h-1 rounded-full bg-gold/50 mt-1.5 flex-shrink-0" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className="font-glacial text-xs text-white/25 leading-relaxed italic">
+                                La mode devient un outil d'affirmation, une solution économique et environnementale.
+                            </p>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px">
-                            {data.services.map((s, i) => (
-                                <div key={s._id}
-                                     className="reveal group border border-gold/8 hover:border-gold/25 bg-[#0f0f0f] transition-colors duration-400 cursor-pointer"
-                                     style={{ transitionDelay: `${i * 0.08}s` }}
-                                     onClick={() => setSelectedService(s)}>
-                                    <div className="relative overflow-hidden">
-                                        {s.image
-                                            ? <img src={imgSrc(s.image)} className="w-full h-[200px] object-cover object-top transition-transform duration-700 group-hover:scale-105" style={{ filter: 'brightness(.7)' }} alt={s.title} loading="lazy" />
-                                            : <div className="w-full h-[200px] bg-[#161616] flex items-center justify-center">
-                                                  <svg className="w-8 h-8 text-gold/15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                                              </div>
-                                        }
-                                        <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/40 transition-colors duration-400" />
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400"
-                                             style={{ background: 'rgba(8,8,8,0.5)' }}>
-                                            <div className="border border-gold/50 px-3 py-1.5">
-                                                <span className="font-lastica text-[7px] tracking-[3px] text-gold uppercase">En savoir plus</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="p-6">
-                                        <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors duration-300">{s.title}</h3>
-                                        <p className="font-glacial text-xs text-white/35 leading-relaxed line-clamp-2">{s.description || ''}</p>
-                                    </div>
-                                </div>
-                            ))}
+
+                        {/* 2 — Image & positionnement */}
+                        <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400" style={{ transitionDelay: '0.08s' }}>
+                            <div className="w-8 h-px bg-gold mb-6" />
+                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">02</span>
+                            <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
+                                Image &amp; Positionnement<br />Stratégique
+                            </h3>
+                            <p className="font-glacial text-xs text-white/40 leading-relaxed mb-4">
+                                Nous accompagnons les leaders, entrepreneurs et dirigeants dans la construction d'une image cohérente et puissante :
+                            </p>
+                            <ul className="space-y-2 mb-5">
+                                {['Personal branding stratégique', 'Garde-robe identitaire', 'Plateformes digitales personnalisées'].map(item => (
+                                    <li key={item} className="flex items-start gap-2.5 font-glacial text-xs text-white/35">
+                                        <span className="w-1 h-1 rounded-full bg-gold/50 mt-1.5 flex-shrink-0" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className="font-glacial text-xs text-white/25 leading-relaxed italic">
+                                Parce qu'une marque forte est d'abord une identité assumée.
+                            </p>
+                        </div>
+
+                        {/* 3 — Entrepreneuriat */}
+                        <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400" style={{ transitionDelay: '0.16s' }}>
+                            <div className="w-8 h-px bg-gold mb-6" />
+                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">03</span>
+                            <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
+                                Entrepreneuriat<br />&amp; ICC
+                            </h3>
+                            <p className="font-glacial text-xs text-white/40 leading-relaxed">
+                                <span className="text-gold/70 not-italic">Mia for Startup</span> est un programme de formation de{' '}
+                                <span className="text-white/60">6 semaines transformatrices</span> conçu pour aider les entrepreneurs à structurer et accélérer leur business.
+                                À travers une approche pratique, les participants apprennent à intégrer le digital, maîtriser les fondamentaux du marketing, comprendre leur comptabilité,
+                                tout en développant leur leadership et leur capacité à lever des fonds.
+                            </p>
+                        </div>
+
+                        {/* 4 — Institutions */}
+                        <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400" style={{ transitionDelay: '0.24s' }}>
+                            <div className="w-8 h-px bg-gold mb-6" />
+                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">04</span>
+                            <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
+                                Pour les<br />Institutions
+                            </h3>
+                            <p className="font-glacial text-xs text-white/40 leading-relaxed">
+                                Mia Dreams développe des solutions à l'intersection de la{' '}
+                                <span className="text-white/60">mode responsable, du digital, de l'entrepreneuriat et du leadership féminin</span>,
+                                et sollicite les institutions souhaitant soutenir ces axes à fort impact.
+                                Nous proposons des <span className="text-white/60">interventions sur mesure</span>, adaptées aux besoins spécifiques de chaque organisation.
+                            </p>
                         </div>
                     </div>
-                </section>
-            )}
+
+                    {/* CTA */}
+                    <div className="text-center mt-12 reveal">
+                        <Link to="/reservation" className="btn btn-gold">RÉSERVER UNE CONSULTATION</Link>
+                    </div>
+                </div>
+            </section>
 
             {/* ══ PRODUITS VEDETTES ════════════════════════════════════════ */}
             <FeaturedProducts products={featured} />
@@ -836,10 +850,6 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* ══ MODAL SERVICE ════════════════════════════════════════════ */}
-            {selectedService && (
-                <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />
-            )}
         </Layout>
     );
 }

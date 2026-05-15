@@ -114,32 +114,32 @@ function CollectionHeader({ name }) {
 
 /* ── Page ── */
 export default function BoutiqueIndex() {
-    const [products,    setProducts]    = useState([]);
-    const [collections, setCollections] = useState([]);
-    const [loading,     setLoading]     = useState(true);
+    const [products, setProducts] = useState([]);
+    const [brands,   setBrands]   = useState([]);
+    const [loading,  setLoading]  = useState(true);
     const [searchParams, setSearchParams] = useSearchParams();
-    const activeCollection = searchParams.get('collection') || '';
+    const activeBrand = searchParams.get('marque') || '';
     const [search,   setSearch]   = useState('');
     const [sort,     setSort]     = useState('default');
     const [sortOpen, setSortOpen] = useState(false);
 
     useEffect(() => {
-        axios.get('/api/shop/collections').then(r => setCollections(r.data)).catch(() => {});
+        axios.get('/api/shop/brands').then(r => setBrands(r.data)).catch(() => {});
     }, []);
 
     useEffect(() => {
         setLoading(true);
         const params = {};
-        if (activeCollection) params.collection = activeCollection;
+        if (activeBrand) params.brand = activeBrand;
         axios.get('/api/shop', { params })
             .then(r => setProducts(r.data))
             .catch(() => {})
             .finally(() => setLoading(false));
-    }, [activeCollection]);
+    }, [activeBrand]);
 
-    const setCollection = (id) => {
+    const setBrand = (id) => {
         setSearch(''); setSort('default');
-        id ? setSearchParams({ collection: id }) : setSearchParams({});
+        id ? setSearchParams({ marque: id }) : setSearchParams({});
     };
 
     const displayed = useMemo(() => {
@@ -157,20 +157,21 @@ export default function BoutiqueIndex() {
         return list;
     }, [products, search, sort]);
 
-    // Groupage par collection (uniquement en mode "Tout" sans filtre actif)
+    // Groupage par marque (uniquement en mode "Tout" sans filtre actif)
     const grouped = useMemo(() => {
-        if (activeCollection || search.trim() || sort !== 'default') return null;
+        if (activeBrand || search.trim() || sort !== 'default') return null;
         const map = new Map();
         for (const p of displayed) {
-            const key  = p.collection?._id  || '__sans__';
-            const name = p.collection?.name || 'Autres';
+            const brand = p.collection?.brand;
+            const key   = brand?._id  || '__sans__';
+            const name  = brand?.name || 'Autres';
             if (!map.has(key)) map.set(key, { name, products: [] });
             map.get(key).products.push(p);
         }
         return [...map.values()];
-    }, [displayed, activeCollection, search, sort]);
+    }, [displayed, activeBrand, search, sort]);
 
-    const filterActive = !!(activeCollection || search.trim() || sort !== 'default');
+    const filterActive = !!(activeBrand || search.trim() || sort !== 'default');
 
     return (
         <Layout title="Boutique — MIA DREAMS">
@@ -233,16 +234,16 @@ export default function BoutiqueIndex() {
 
                         <div className="h-4 w-px bg-white/[0.07] hidden sm:block" />
 
-                        {/* Collections desktop */}
-                        {collections.length > 0 && (
+                        {/* Marques desktop */}
+                        {brands.length > 0 && (
                             <div className="hidden sm:flex items-center gap-0.5 overflow-x-auto">
-                                {[{ _id: '', name: 'Tout' }, ...collections].map(c => (
-                                    <button key={c._id} onClick={() => setCollection(c._id)}
+                                {[{ _id: '', name: 'Tout' }, ...brands].map(b => (
+                                    <button key={b._id} onClick={() => setBrand(b._id)}
                                         className="font-lastica text-[7px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 transition-all duration-200 rounded-sm"
-                                        style={activeCollection === c._id
+                                        style={activeBrand === b._id
                                             ? { background: GOLD, color: '#050505' }
                                             : { color: 'rgba(255,255,255,.32)' }}>
-                                        {c.name}
+                                        {b.name}
                                     </button>
                                 ))}
                             </div>
@@ -290,17 +291,17 @@ export default function BoutiqueIndex() {
                 </div>
             </div>
 
-            {/* Collections mobile */}
-            {collections.length > 0 && (
+            {/* Marques mobile */}
+            {brands.length > 0 && (
                 <div className="bg-[#080808] sm:hidden border-b border-white/[0.05] overflow-x-auto">
                     <div className="flex gap-1 px-6 py-3 w-max">
-                        {[{ _id: '', name: 'Tout' }, ...collections].map(c => (
-                            <button key={c._id} onClick={() => setCollection(c._id)}
+                        {[{ _id: '', name: 'Tout' }, ...brands].map(b => (
+                            <button key={b._id} onClick={() => setBrand(b._id)}
                                 className="font-lastica text-[7px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 rounded-sm transition-all"
-                                style={activeCollection === c._id
+                                style={activeBrand === b._id
                                     ? { background: GOLD, color: '#050505' }
                                     : { color: 'rgba(255,255,255,.32)' }}>
-                                {c.name}
+                                {b.name}
                             </button>
                         ))}
                     </div>
@@ -329,7 +330,7 @@ export default function BoutiqueIndex() {
                             </p>
                             <p className="font-glacial text-sm text-white/20 mb-8">Aucun article disponible.</p>
                             {filterActive && (
-                                <button onClick={() => { setSearch(''); setCollection(''); }}
+                                <button onClick={() => { setSearch(''); setBrand(''); }}
                                     className="font-lastica text-[8px] tracking-[3px] uppercase border border-white/[0.08] text-white/30 px-6 py-3 hover:border-white/15 transition-all">
                                     Voir tout
                                 </button>

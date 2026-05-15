@@ -3,19 +3,26 @@
  * Usage : <BrandCollections brandSlug="fashion-program" />
  */
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { imgSrc } from '../utils/imgSrc';
 
 export default function BrandCollections({ brandSlug }) {
     const [collections, setCollections] = useState([]);
+    const [brand,       setBrand]       = useState(null);
 
     useEffect(() => {
         axios.get(`/api/brands/${brandSlug}`)
-            .then(res => setCollections(res.data.collections || []))
+            .then(res => {
+                setCollections(res.data.collections || []);
+                setBrand(res.data.brand || null);
+            })
             .catch(() => {});
     }, [brandSlug]);
 
     if (collections.length === 0) return null;
+
+    const boutiqueUrl = brand ? `/boutique?marque=${brand._id}` : '/boutique';
 
     return (
         <section className="bg-[#080808] py-20 lg:py-28">
@@ -59,13 +66,19 @@ export default function BrandCollections({ brandSlug }) {
                                         </svg>
                                     </div>
                                 )}
-                                {/* Overlay hover */}
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
+                                {/* Overlay au hover avec bouton Commander */}
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-500 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
+                                    <Link to={boutiqueUrl}
+                                        className="font-lastica text-[8px] tracking-[3px] uppercase px-5 py-2.5 transition-all duration-300"
+                                        style={{ background: '#C9A84C', color: '#080808' }}>
+                                        COMMANDER
+                                    </Link>
+                                </div>
                                 {/* Barre dorée bottom */}
                                 <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gold/0 group-hover:bg-gold/60 transition-colors duration-300" />
                             </div>
 
-                            {/* Nom uniquement */}
+                            {/* Nom */}
                             <div className="mt-3">
                                 <h3 className="font-glacial text-xs text-white/70 uppercase tracking-[2px] leading-snug group-hover:text-gold transition-colors duration-300">
                                     {col.name}
@@ -73,6 +86,21 @@ export default function BrandCollections({ brandSlug }) {
                             </div>
                         </div>
                     ))}
+                </div>
+
+                {/* ── CTA bas de section ── */}
+                <div className="mt-16 lg:mt-20 text-center reveal">
+                    <div className="gold-line-center mb-8" />
+                    <p className="font-glacial text-sm text-white/40 tracking-[1px] mb-6">
+                        Découvrez tous les articles disponibles à la commande
+                    </p>
+                    <Link to={boutiqueUrl}
+                        className="inline-flex items-center gap-3 font-lastica text-[9px] tracking-[4px] uppercase px-8 py-4 border border-gold/40 text-gold hover:bg-gold hover:text-[#080808] transition-all duration-300">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        VOIR LES ARTICLES DE CETTE MARQUE
+                    </Link>
                 </div>
 
             </div>

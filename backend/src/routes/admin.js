@@ -242,6 +242,58 @@ router.use('/contacts',     crudRouter(Contact));
 router.use('/reservations', crudRouter(Reservation));
 router.use('/newsletters',  crudRouter(Newsletter));
 
+// ─── Envoi campagne newsletter ─────────────────────────────────────────────────
+router.post('/newsletter/send-campaign', async (req, res) => {
+    const nodemailer = require('nodemailer');
+    try {
+        const { subject, html_body, recipients } = req.body;
+        if (!subject || !html_body) {
+            return res.status(422).json({ message: 'Sujet et contenu requis.' });
+        }
+        if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
+            return res.status(503).json({ message: 'Email SMTP non configuré. Ajoutez MAIL_USER et MAIL_PASS dans les variables d\'environnement Render.' });
+        }
+
+        // Destinataires
+        let emails = [];
+        if (recipients === 'all' || !recipients) {
+            const subs = await Newsletter.find({}).select('email');
+            emails = subs.map(s => s.email);
+        } else if (Array.isArray(recipients)) {
+            emails = recipients;
+        }
+        if (emails.length === 0) {
+            return res.status(422).json({ message: 'Aucun destinataire trouvé.' });
+        }
+
+        const transporter = nodemailer.createTransport({
+            host:   process.env.MAIL_HOST || 'smtp.gmail.com',
+            port:   Number(process.env.MAIL_PORT) || 587,
+            secure: false,
+            auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+        });
+
+        const from = `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`;
+
+        // Envoi par lots de 10 pour ne pas saturer le SMTP
+        const BATCH = 10;
+        let sent = 0, failed = 0;
+        for (let i = 0; i < emails.length; i += BATCH) {
+            const batch = emails.slice(i, i + BATCH);
+            await Promise.allSettled(batch.map(to =>
+                transporter.sendMail({ from, to, subject, html: html_body })
+                    .then(() => sent++)
+                    .catch(() => failed++)
+            ));
+            if (i + BATCH < emails.length) await new Promise(r => setTimeout(r, 500));
+        }
+
+        res.json({ success: true, sent, failed, total: emails.length });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+});
+
 // ─── Orders (lecture + gestion statut) ────────────────────────────────────────
 router.get('/orders', async (req, res) => {
     try {

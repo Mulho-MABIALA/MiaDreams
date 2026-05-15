@@ -58,15 +58,15 @@ export default function Gallery() {
             <section className="bg-[#080808] py-16">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     {data.items.length > 0 ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1">
+                        <div className="columns-2 sm:columns-3 lg:columns-4 gap-1">
                             {data.items.map((item, i) => (
                                 <div key={item._id}
-                                     className="reveal group relative overflow-hidden cursor-pointer aspect-square"
+                                     className="reveal group relative overflow-hidden cursor-pointer break-inside-avoid mb-1 block"
                                      style={{ transitionDelay: `${(i % 8) * 0.05}s` }}
                                      onClick={() => setLightbox(item)}>
 
                                     <img src={imgSrc(item.image)}
-                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                         className="w-full h-auto block transition-transform duration-700 group-hover:scale-110"
                                          alt={item.caption || ''}
                                          loading="lazy" />
 

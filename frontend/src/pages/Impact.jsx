@@ -76,26 +76,17 @@ const DEFAULT_ENGAGEMENTS = [
 
 export default function Impact() {
     const [initiatives, setInitiatives] = useState([]);
-    const [mvv, setMvv]                 = useState([]);
     const [stats, setStats]             = useState([]);
-    const [engagements, setEngagements] = useState([]);
 
     useEffect(() => {
-        // Initiatives (legacy endpoint)
         axios.get('/api/impact').then(res => setInitiatives(res.data.initiatives || [])).catch(() => {});
-
-        // Dynamic sections
-        axios.get('/api/sections', { params: { page: 'impact', type: 'impact_mvv' } })
-            .then(r => { if (r.data.length) setMvv(r.data); }).catch(() => {});
         axios.get('/api/sections', { params: { page: 'impact', type: 'impact_stat' } })
             .then(r => { if (r.data.length) setStats(r.data); }).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'impact', type: 'impact_engagement' } })
-            .then(r => { if (r.data.length) setEngagements(r.data); }).catch(() => {});
     }, []);
 
-    const activeMvv         = mvv.length         > 0 ? mvv         : DEFAULT_MVV;
-    const activeStats       = stats.length       > 0 ? stats       : DEFAULT_STATS;
-    const activeEngagements = engagements.length > 0 ? engagements : DEFAULT_ENGAGEMENTS;
+    const activeMvv         = DEFAULT_MVV;
+    const activeStats       = stats.length > 0 ? stats : DEFAULT_STATS;
+    const activeEngagements = DEFAULT_ENGAGEMENTS;
 
     return (
         <Layout title="Notre Impact">

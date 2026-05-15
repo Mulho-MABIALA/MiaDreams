@@ -46,7 +46,8 @@ export default function Footer() {
     const emailCo  = companyInfo?.email    || 'contact@mia-dreams.com';
     const whatsapp = companyInfo?.whatsapp || companyInfo?.phone || '';
     const waNumber = whatsapp.replace(/\D/g, '');
-    const logoSrc  = companyInfo?.logo     || '/img/logo_MIA.png';
+    const logoSrc      = companyInfo?.logo     || '/img/logo_MIA.png';
+    const logoIsCustom = !!companyInfo?.logo;
 
     const handleNewsletter = async (e) => {
         e.preventDefault();
@@ -102,7 +103,7 @@ export default function Footer() {
                         {/* Identité */}
                         <div className="lg:col-span-4">
                             <img src={logoSrc} alt={companyInfo?.name || 'MIA DREAMS'}
-                                 className="h-11 w-auto mb-5 brightness-0 invert opacity-70" />
+                                 className={`h-11 w-auto mb-5 ${logoIsCustom ? 'opacity-90 object-contain' : 'brightness-0 invert opacity-70'}`} />
                             <p className="font-glacial text-[13px] text-white/35 leading-relaxed mb-8 max-w-[240px]">
                                 Maison de mode africaine d'excellence, basée à Dakar. Chaque pièce raconte une histoire.
                             </p>

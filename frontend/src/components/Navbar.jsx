@@ -5,7 +5,8 @@ import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
     const { navBrands, companyInfo } = useApp();
-    const logoSrc = companyInfo?.logo || '/img/logo_MIA.png';
+    const logoSrc      = companyInfo?.logo || '/img/logo_MIA.png';
+    const logoIsCustom = !!companyInfo?.logo;
     const { count: cartCount } = useCart();
     const { pathname } = useLocation();
     const navigate = useNavigate();
@@ -79,7 +80,7 @@ export default function Navbar() {
                 {/* Logo */}
                 <Link to="/" className="flex-shrink-0 group">
                     <img src={logoSrc} alt={companyInfo?.name || 'MIA DREAMS'}
-                         className="h-7 sm:h-9 w-auto brightness-0 invert opacity-85 group-hover:opacity-100 transition-opacity duration-300" />
+                         className={`h-7 sm:h-9 w-auto transition-opacity duration-300 group-hover:opacity-100 ${logoIsCustom ? 'opacity-100 object-contain' : 'brightness-0 invert opacity-85'}`} />
                 </Link>
 
                 {/* Desktop nav */}

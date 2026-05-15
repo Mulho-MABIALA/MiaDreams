@@ -259,11 +259,141 @@ function ProductForm({ initial, onSave, onCancel }) {
     );
 }
 
+/* ── Modale détail produit ── */
+function ProductModal({ product, onClose, onEdit }) {
+    useEffect(() => {
+        const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
+
+    const [imgIdx, setImgIdx] = useState(0);
+    const allImages = [product.image, ...(product.images || [])].filter(Boolean);
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/50 backdrop-blur-sm"
+             onClick={onClose}>
+            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-[#E5E7EB]"
+                 onClick={e => e.stopPropagation()}>
+
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] bg-[#F9FAFB]">
+                    <div>
+                        <p className="text-xs text-[#9CA3AF] uppercase tracking-widest mb-0.5">Détail produit</p>
+                        <p className="text-base font-semibold text-[#111827]">{product.name}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => { onClose(); onEdit(product); }}
+                            className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
+                            Modifier
+                        </button>
+                        {product.slug && (
+                            <a href={`${SITE_URL}/boutique/${product.slug}`} target="_blank" rel="noreferrer"
+                               className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
+                               style={{ background: '#C9A84C' }}>
+                                Voir sur le site ↗
+                            </a>
+                        )}
+                        <button onClick={onClose}
+                            className="w-8 h-8 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] flex items-center justify-center text-[#6B7280] transition-colors">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                    {/* Galerie images */}
+                    {allImages.length > 0 && (
+                        <div>
+                            <img src={imgSrc(allImages[imgIdx])} alt=""
+                                 className="w-full max-h-72 object-contain rounded-xl border border-[#E5E7EB] bg-[#F9FAFB]" />
+                            {allImages.length > 1 && (
+                                <div className="flex gap-2 mt-3 flex-wrap">
+                                    {allImages.map((img, i) => (
+                                        <img key={i} src={imgSrc(img)} alt=""
+                                             onClick={() => setImgIdx(i)}
+                                             className="w-14 h-16 object-cover rounded-lg border-2 cursor-pointer transition-all"
+                                             style={{ borderColor: i === imgIdx ? '#C9A84C' : '#E5E7EB' }} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Infos principales */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
+                            <p className="text-xs text-[#9CA3AF] uppercase tracking-wider mb-1">Prix</p>
+                            <p className="text-lg font-bold" style={{ color: '#C9A84C' }}>{(product.price || 0).toLocaleString('fr-FR')} FCFA</p>
+                            {product.compare_price > product.price && (
+                                <p className="text-xs text-[#9CA3AF] line-through">{product.compare_price.toLocaleString('fr-FR')} FCFA</p>
+                            )}
+                        </div>
+                        <div className="p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
+                            <p className="text-xs text-[#9CA3AF] uppercase tracking-wider mb-1">Stock</p>
+                            <p className="text-lg font-bold" style={{ color: product.stock === 0 ? '#DC2626' : product.stock < 5 ? '#D97706' : '#059669' }}>
+                                {product.stock} unité{product.stock !== 1 ? 's' : ''}
+                            </p>
+                            {product.stock === 0 && <p className="text-xs text-red-400">Épuisé</p>}
+                            {product.stock > 0 && product.stock < 5 && <p className="text-xs text-amber-500">Stock faible</p>}
+                        </div>
+                    </div>
+
+                    {/* Détails */}
+                    <div className="space-y-3">
+                        {[
+                            { label: 'Catégorie',   val: product.category },
+                            { label: 'Collection',  val: product.collection?.name || '—' },
+                            { label: 'Tailles',     val: Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes || '—' },
+                            { label: 'Couleurs',    val: Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '—' },
+                        ].map(({ label, val }) => (
+                            <div key={label} className="flex justify-between py-2 border-b border-[#F3F4F6] last:border-0">
+                                <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">{label}</span>
+                                <span className="text-sm text-[#374151] text-right">{val}</span>
+                            </div>
+                        ))}
+
+                        {/* Statuts */}
+                        <div className="flex justify-between py-2 border-b border-[#F3F4F6]">
+                            <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Statut</span>
+                            <div className="flex gap-2">
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${product.is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-500'}`}>
+                                    {product.is_active ? '✓ Actif' : '✗ Inactif'}
+                                </span>
+                                {product.is_featured && (
+                                    <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[#FDF8EC] text-[#C9A84C]">★ Mis en avant</span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        {product.description && (
+                            <div className="py-2">
+                                <p className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-2">Description</p>
+                                <p className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap">{product.description}</p>
+                            </div>
+                        )}
+
+                        {/* Lien */}
+                        {product.slug && (
+                            <div className="flex justify-between items-center py-2 border-t border-[#F3F4F6]">
+                                <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Lien boutique</span>
+                                <CopyBtn value={`${SITE_URL}/boutique/${product.slug}`} label="Copier le lien" />
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function AdminProduits() {
     const [products, setProducts] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editing,  setEditing]  = useState(null);
-    const [copied,   setCopied]   = useState(null); // id du produit dont le lien vient d'être copié
+    const [viewing,  setViewing]  = useState(null);
+    const [copied,   setCopied]   = useState(null);
 
     const load = () => axios.get('/api/admin/products').then(r => setProducts(r.data)).catch(() => {});
     useEffect(() => { load(); }, []);
@@ -402,14 +532,11 @@ export default function AdminProduits() {
                                         </td>
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center justify-end gap-2">
-                                                {p.slug && (
-                                                    <a href={`${SITE_URL}/boutique/${p.slug}`} target="_blank" rel="noreferrer"
-                                                        className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
-                                                        style={{ background: '#C9A84C' }}
-                                                        title="Voir sur le site">
-                                                        Voir
-                                                    </a>
-                                                )}
+                                                <button onClick={() => setViewing(p)}
+                                                    className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
+                                                    style={{ background: '#C9A84C' }}>
+                                                    Voir
+                                                </button>
                                                 <button onClick={() => handleEdit(p)}
                                                     className="text-xs font-medium text-[#374151] bg-[#F3F4F6] hover:bg-[#E5E7EB] px-3 py-1.5 rounded-lg transition-colors">
                                                     Modifier
@@ -427,6 +554,14 @@ export default function AdminProduits() {
                     </table>
                 )}
             </div>
+
+            {viewing && (
+                <ProductModal
+                    product={viewing}
+                    onClose={() => setViewing(null)}
+                    onEdit={(p) => { setViewing(null); handleEdit(p); }}
+                />
+            )}
         </div>
     );
 }

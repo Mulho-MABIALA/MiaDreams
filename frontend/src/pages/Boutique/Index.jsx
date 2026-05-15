@@ -99,30 +99,55 @@ function ProductCard({ product, index }) {
     );
 }
 
+/* ── En-tête de section collection ── */
+function CollectionHeader({ name }) {
+    return (
+        <div className="flex items-center gap-6 mb-8 mt-2">
+            <div className="flex-1 h-px" style={{ background: `${GOLD}18` }} />
+            <span className="font-lastica text-[8px] tracking-[5px] uppercase whitespace-nowrap" style={{ color: `${GOLD}80` }}>
+                {name}
+            </span>
+            <div className="flex-1 h-px" style={{ background: `${GOLD}18` }} />
+        </div>
+    );
+}
+
 /* ── Page ── */
 export default function BoutiqueIndex() {
-    const [products,   setProducts]   = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [loading,    setLoading]    = useState(true);
+    const [products,    setProducts]    = useState([]);
+    const [collections, setCollections] = useState([]);
+    const [loading,     setLoading]     = useState(true);
     const [searchParams, setSearchParams] = useSearchParams();
-    const activeCategory = searchParams.get('categorie') || '';
+    const activeCollection = searchParams.get('collection') || '';
     const [search,   setSearch]   = useState('');
     const [sort,     setSort]     = useState('default');
     const [sortOpen, setSortOpen] = useState(false);
 
-    useEffect(() => { axios.get('/api/shop/categories').then(r => setCategories(r.data)).catch(() => {}); }, []);
+    useEffect(() => {
+        axios.get('/api/shop/collections').then(r => setCollections(r.data)).catch(() => {});
+    }, []);
+
     useEffect(() => {
         setLoading(true);
         const params = {};
-        if (activeCategory) params.category = activeCategory;
-        axios.get('/api/shop', { params }).then(r => setProducts(r.data)).catch(() => {}).finally(() => setLoading(false));
-    }, [activeCategory]);
+        if (activeCollection) params.collection = activeCollection;
+        axios.get('/api/shop', { params })
+            .then(r => setProducts(r.data))
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, [activeCollection]);
 
-    const setCategory = (cat) => { setSearch(''); setSort('default'); cat ? setSearchParams({ categorie: cat }) : setSearchParams({}); };
+    const setCollection = (id) => {
+        setSearch(''); setSort('default');
+        id ? setSearchParams({ collection: id }) : setSearchParams({});
+    };
 
     const displayed = useMemo(() => {
         let list = [...products];
-        if (search.trim()) { const q = search.toLowerCase(); list = list.filter(p => p.name.toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q)); }
+        if (search.trim()) {
+            const q = search.toLowerCase();
+            list = list.filter(p => p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q));
+        }
         switch (sort) {
             case 'price_asc':  list.sort((a, b) => a.price - b.price); break;
             case 'price_desc': list.sort((a, b) => b.price - a.price); break;
@@ -132,43 +157,45 @@ export default function BoutiqueIndex() {
         return list;
     }, [products, search, sort]);
 
+    // Groupage par collection (uniquement en mode "Tout" sans filtre actif)
+    const grouped = useMemo(() => {
+        if (activeCollection || search.trim() || sort !== 'default') return null;
+        const map = new Map();
+        for (const p of displayed) {
+            const key  = p.collection?._id  || '__sans__';
+            const name = p.collection?.name || 'Autres';
+            if (!map.has(key)) map.set(key, { name, products: [] });
+            map.get(key).products.push(p);
+        }
+        return [...map.values()];
+    }, [displayed, activeCollection, search, sort]);
+
+    const filterActive = !!(activeCollection || search.trim() || sort !== 'default');
+
     return (
         <Layout title="Boutique — MIA DREAMS">
 
             {/* ════ HERO ════ */}
             <div className="relative overflow-hidden" style={{ height: '88vh', minHeight: 540 }}>
-                {/* Image de fond */}
                 <img src="/img/index/home-image2.jpg" alt=""
                      className="absolute inset-0 w-full h-full object-cover object-top"
                      style={{ filter: 'brightness(.22) saturate(.7)' }} />
-
-                {/* Dégradé bas */}
                 <div className="absolute inset-0"
                      style={{ background: 'linear-gradient(to bottom, rgba(8,8,8,0) 30%, rgba(8,8,8,1) 100%)' }} />
-
-                {/* Ligne dorée décorative gauche */}
                 <div className="absolute left-10 top-0 bottom-0 w-px hidden lg:block"
                      style={{ background: 'linear-gradient(to bottom, transparent, rgba(201,168,76,.25), transparent)' }} />
-
-                {/* Contenu centré */}
                 <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
                     <span className="font-lastica text-[7px] tracking-[10px] uppercase mb-6 block"
                           style={{ color: `${GOLD}70` }}>Collection 2026</span>
-
                     <h1 className="font-glacial text-white uppercase leading-[.92] mb-6"
                         style={{ fontSize: 'clamp(2.4rem, 10vw, 8rem)', letterSpacing: '.04em' }}>
-                        NOTRE<br/><span style={{ color: GOLD, WebkitTextStroke: '0' }}>BOUTIQUE</span>
+                        NOTRE<br/><span style={{ color: GOLD }}>BOUTIQUE</span>
                     </h1>
-
                     <div className="w-14 h-px mb-6" style={{ background: `${GOLD}50` }} />
-
                     <p className="font-glacial text-white/40 text-sm tracking-[3px] mb-12 max-w-xs">
                         Mode africaine d'excellence — pièces uniques
                     </p>
-
-                    {/* CTA scroll */}
-                    <a href="#produits"
-                       className="flex flex-col items-center gap-3 text-white/30 hover:text-gold transition-colors group">
+                    <a href="#produits" className="flex flex-col items-center gap-3 text-white/30 hover:text-gold transition-colors group">
                         <span className="font-lastica text-[7px] tracking-[4px] uppercase">Découvrir</span>
                         <div className="w-px h-10 overflow-hidden" style={{ background: 'rgba(255,255,255,.1)' }}>
                             <div className="w-full h-full" style={{
@@ -178,8 +205,6 @@ export default function BoutiqueIndex() {
                         </div>
                     </a>
                 </div>
-
-                {/* Compteur articles en bas à droite */}
                 {!loading && products.length > 0 && (
                     <div className="absolute bottom-10 right-10 text-right hidden lg:block">
                         <p className="font-lastica text-[8px] tracking-[4px] text-white/20 uppercase">{products.length} articles</p>
@@ -208,16 +233,16 @@ export default function BoutiqueIndex() {
 
                         <div className="h-4 w-px bg-white/[0.07] hidden sm:block" />
 
-                        {/* Catégories desktop */}
-                        {categories.length > 0 && (
+                        {/* Collections desktop */}
+                        {collections.length > 0 && (
                             <div className="hidden sm:flex items-center gap-0.5 overflow-x-auto">
-                                {[{ label: 'Tout', value: '' }, ...categories.map(c => ({ label: c, value: c }))].map(c => (
-                                    <button key={c.value} onClick={() => setCategory(c.value)}
+                                {[{ _id: '', name: 'Tout' }, ...collections].map(c => (
+                                    <button key={c._id} onClick={() => setCollection(c._id)}
                                         className="font-lastica text-[7px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 transition-all duration-200 rounded-sm"
-                                        style={activeCategory === c.value
+                                        style={activeCollection === c._id
                                             ? { background: GOLD, color: '#050505' }
                                             : { color: 'rgba(255,255,255,.32)' }}>
-                                        {c.label}
+                                        {c.name}
                                     </button>
                                 ))}
                             </div>
@@ -256,7 +281,7 @@ export default function BoutiqueIndex() {
                             )}
                         </div>
 
-                        {!loading && (search || sort !== 'default') && displayed.length > 0 && (
+                        {filterActive && displayed.length > 0 && (
                             <span className="font-lastica text-[7px] tracking-[2px] text-white/18 hidden sm:block">
                                 {displayed.length}
                             </span>
@@ -265,15 +290,17 @@ export default function BoutiqueIndex() {
                 </div>
             </div>
 
-            {/* Catégories mobile */}
-            {categories.length > 0 && (
+            {/* Collections mobile */}
+            {collections.length > 0 && (
                 <div className="bg-[#080808] sm:hidden border-b border-white/[0.05] overflow-x-auto">
                     <div className="flex gap-1 px-6 py-3 w-max">
-                        {[{ label: 'Tout', value: '' }, ...categories.map(c => ({ label: c, value: c }))].map(c => (
-                            <button key={c.value} onClick={() => setCategory(c.value)}
+                        {[{ _id: '', name: 'Tout' }, ...collections].map(c => (
+                            <button key={c._id} onClick={() => setCollection(c._id)}
                                 className="font-lastica text-[7px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 rounded-sm transition-all"
-                                style={activeCategory === c.value ? { background: GOLD, color: '#050505' } : { color: 'rgba(255,255,255,.32)' }}>
-                                {c.label}
+                                style={activeCollection === c._id
+                                    ? { background: GOLD, color: '#050505' }
+                                    : { color: 'rgba(255,255,255,.32)' }}>
+                                {c.name}
                             </button>
                         ))}
                     </div>
@@ -301,14 +328,27 @@ export default function BoutiqueIndex() {
                                 {search ? `"${search}"` : 'Boutique'}
                             </p>
                             <p className="font-glacial text-sm text-white/20 mb-8">Aucun article disponible.</p>
-                            {(search || activeCategory) && (
-                                <button onClick={() => { setSearch(''); setCategory(''); }}
+                            {filterActive && (
+                                <button onClick={() => { setSearch(''); setCollection(''); }}
                                     className="font-lastica text-[8px] tracking-[3px] uppercase border border-white/[0.08] text-white/30 px-6 py-3 hover:border-white/15 transition-all">
                                     Voir tout
                                 </button>
                             )}
                         </div>
+                    ) : grouped ? (
+                        /* ── Vue "Tout" : groupée par collection ── */
+                        <div className="space-y-16">
+                            {grouped.map(group => (
+                                <div key={group.name}>
+                                    <CollectionHeader name={group.name} />
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-12">
+                                        {group.products.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     ) : (
+                        /* ── Vue filtrée : grille plate ── */
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-12">
                             {displayed.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
                         </div>

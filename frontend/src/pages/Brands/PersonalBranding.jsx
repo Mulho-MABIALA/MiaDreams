@@ -7,21 +7,33 @@ import { imgSrc } from '../../utils/imgSrc';
 
 export default function PersonalBranding() {
     const [brand, setBrand] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/personal-branding').then(res => setBrand(res.data.brand)).catch(() => {});
+        axios.get('/api/brands/personal-branding')
+            .then(res => { setBrand(res.data.brand); setLoading(false); })
+            .catch(() => setLoading(false));
     }, []);
 
-    const heroImg     = brand?.image        ? imgSrc(brand.image) : '/img/index/home-image5.jpg';
+    const heroImg     = brand?.image        ? imgSrc(brand.image) : null;
     const heroTitle   = brand?.header_title || 'PERSONAL';
     const description = brand?.description  || "Une méthode et un accompagnement uniques au service de votre leadership, qui vous font gagner du temps. Nous allons vous aider à développer votre propre style, dans une démarche bienveillante.";
+
+    if (loading) return (
+        <Layout title="Personal Branding">
+            <div style={{ height: '80vh', background: '#080808' }} />
+        </Layout>
+    );
 
     return (
         <Layout title={brand?.name || 'Personal Branding'}>
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
-                    <img src={heroImg} alt={brand?.name || 'Personal Branding'} loading="eager" />
+                    {heroImg
+                        ? <img src={heroImg} alt={brand?.name || 'Personal Branding'} loading="eager" />
+                        : <div className="absolute inset-0 bg-[#0d0d0d]" />
+                    }
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
@@ -62,7 +74,10 @@ export default function PersonalBranding() {
                             <Link to="/reservation" className="btn btn-gold">COMMENCER MON ACCOMPAGNEMENT</Link>
                         </div>
                         <div className="reveal img-hover">
-                            <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Personal Branding'} loading="lazy" />
+                            {heroImg
+                                ? <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Personal Branding'} loading="lazy" />
+                                : <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
+                            }
                         </div>
                     </div>
                 </div>

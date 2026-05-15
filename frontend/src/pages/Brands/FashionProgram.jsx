@@ -7,21 +7,33 @@ import { imgSrc } from '../../utils/imgSrc';
 
 export default function FashionProgram() {
     const [brand, setBrand] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/fashion-program').then(res => setBrand(res.data.brand)).catch(() => {});
+        axios.get('/api/brands/fashion-program')
+            .then(res => { setBrand(res.data.brand); setLoading(false); })
+            .catch(() => setLoading(false));
     }, []);
 
-    const heroImg     = brand?.image        ? imgSrc(brand.image) : '/img/index/home-image4.jpg';
+    const heroImg     = brand?.image        ? imgSrc(brand.image) : null;
     const heroTitle   = brand?.header_title || 'FASHION';
     const description = brand?.description  || "Notre Fashion Program est un programme de formation complet destiné aux créateurs, stylistes et entrepreneurs de la mode africaine. En quelques semaines, maîtrisez les codes du secteur.";
+
+    if (loading) return (
+        <Layout title="Fashion Program">
+            <div style={{ height: '80vh', background: '#080808' }} />
+        </Layout>
+    );
 
     return (
         <Layout title={brand?.name || 'Fashion Program'}>
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
-                    <img src={heroImg} alt={brand?.name || 'Fashion Program'} loading="eager" />
+                    {heroImg
+                        ? <img src={heroImg} alt={brand?.name || 'Fashion Program'} loading="eager" />
+                        : <div className="absolute inset-0 bg-[#0d0d0d]" />
+                    }
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
@@ -48,7 +60,10 @@ export default function FashionProgram() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                         <div className="reveal img-hover">
-                            <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Fashion Program'} loading="lazy" />
+                            {heroImg
+                                ? <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'Fashion Program'} loading="lazy" />
+                                : <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
+                            }
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">Le programme</span>

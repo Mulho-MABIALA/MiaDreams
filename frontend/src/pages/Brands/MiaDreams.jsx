@@ -6,27 +6,47 @@ import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
 
 export default function MiaDreams() {
-    const [data, setData] = useState({ brand: null, collections: [] });
+    const [brand, setBrand] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/mia-dreams').then(res => setData(res.data)).catch(() => {});
+        axios.get('/api/brands/mia-dreams')
+            .then(res => { setBrand(res.data.brand); setLoading(false); })
+            .catch(() => setLoading(false));
     }, []);
 
-    return (
+    const heroImg    = brand?.image      ? imgSrc(brand.image) : null;
+    const heroTitle  = brand?.header_title || 'MIA DREAMS';
+    const youtubeId  = brand?.youtube_id || 'sTfEIkU309s';
+    const description = brand?.description || "Mia Dreams Brand est notre ligne de vêtements — une collection qui marie l'artisanat africain traditionnel aux codes de la mode contemporaine.";
+
+    if (loading) return (
         <Layout title="Mia Dreams Brand">
+            <div style={{ height: '80vh', background: '#080808' }} />
+        </Layout>
+    );
+
+    return (
+        <Layout title={brand?.name || 'Mia Dreams Brand'}>
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
-                    <img src="/img/index/home-image2.jpg" alt="Mia Dreams" loading="eager" />
+                    {heroImg
+                        ? <img src={heroImg} alt={brand?.name || 'Mia Dreams'} loading="eager" />
+                        : <div className="absolute inset-0 bg-[#0d0d0d]" />
+                    }
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
                             <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Maison de mode</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
-                                MIA DREAMS<br /><span className="text-gold">BRAND</span>
+                                {heroTitle.includes('\n')
+                                    ? heroTitle.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{i === heroTitle.split('\n').length - 1 ? <span className="text-gold">{line}</span> : line}</span>)
+                                    : <>{heroTitle} <span className="text-gold">BRAND</span></>
+                                }
                             </h1>
                             <p className="font-glacial text-base text-white/55 tracking-[1px] leading-relaxed mt-5 mb-9" style={{ opacity: 0, animation: 'fadeUp .8s .7s forwards' }}>
-                                Élégance africaine contemporaine — chaque pièce raconte une histoire.
+                                {brand?.tagline || "Élégance africaine contemporaine — chaque pièce raconte une histoire."}
                             </p>
                         </div>
                     </div>
@@ -40,17 +60,15 @@ export default function MiaDreams() {
                         <div className="reveal">
                             <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                                 <iframe className="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/sTfEIkU309s"
-                                        frameBorder="0" allowFullScreen loading="lazy" title="Mia Dreams" />
+                                        src={`https://www.youtube.com/embed/${youtubeId}`}
+                                        frameBorder="0" allowFullScreen loading="lazy" title={brand?.name || 'Mia Dreams'} />
                             </div>
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">La marque</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-[#1a1a1a] mt-4 leading-tight">ÉLÉGANCE <span className="text-gold">AFRICAINE</span></h2>
                             <div className="gold-line my-6" />
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-8">
-                                {data.brand?.description || "Mia Dreams Brand est notre ligne de vêtements — une collection qui marie l'artisanat africain traditionnel aux codes de la mode contemporaine."}
-                            </p>
+                            <p className="font-glacial text-sm text-[#777] leading-loose mb-8">{description}</p>
                             <Link to="/reservation" className="btn btn-gold">RÉSERVER UNE CONSULTATION</Link>
                         </div>
                     </div>

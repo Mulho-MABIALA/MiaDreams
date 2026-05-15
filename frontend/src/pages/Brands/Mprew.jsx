@@ -7,21 +7,33 @@ import { imgSrc } from '../../utils/imgSrc';
 
 export default function Mprew() {
     const [brand, setBrand] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/mprew').then(res => setBrand(res.data.brand)).catch(() => {});
+        axios.get('/api/brands/mprew')
+            .then(res => { setBrand(res.data.brand); setLoading(false); })
+            .catch(() => setLoading(false));
     }, []);
 
-    const heroImg     = brand?.image        ? imgSrc(brand.image) : '/img/index/home-image3.jpg';
+    const heroImg     = brand?.image        ? imgSrc(brand.image) : null;
     const heroTitle   = brand?.header_title || 'MPREW';
     const description = brand?.description  || "MPREW est notre application mobile dédiée à la mode africaine. Elle permet à nos clientes de découvrir, personnaliser et commander leurs tenues en tissu wax directement depuis leur smartphone.";
+
+    if (loading) return (
+        <Layout title="MPREW">
+            <div style={{ height: '80vh', background: '#080808' }} />
+        </Layout>
+    );
 
     return (
         <Layout title={brand?.name || 'MPREW — Ma Petite Robe En Wax'}>
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
-                    <img src={heroImg} alt={brand?.name || 'MPREW'} loading="eager" />
+                    {heroImg
+                        ? <img src={heroImg} alt={brand?.name || 'MPREW'} loading="eager" />
+                        : <div className="absolute inset-0 bg-[#0d0d0d]" />
+                    }
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
@@ -45,7 +57,10 @@ export default function Mprew() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                         <div className="reveal img-hover">
-                            <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'MPREW'} loading="lazy" />
+                            {heroImg
+                                ? <img src={heroImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt={brand?.name || 'MPREW'} loading="lazy" />
+                                : <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-[#111]" />
+                            }
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
                             <span className="eyebrow">L'application</span>

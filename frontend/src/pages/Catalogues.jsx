@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
-
-const imgSrc = (val) => {
-    if (!val) return '';
-    if (val.startsWith('http') || val.startsWith('/')) return val;
-    return `/uploads/${val}`;
-};
+import { imgSrc } from '../utils/imgSrc';
 
 export default function Catalogues() {
     const [catalogues, setCatalogues]   = useState([]);

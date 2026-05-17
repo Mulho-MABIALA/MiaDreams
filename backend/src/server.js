@@ -93,9 +93,28 @@ app.use('/api/*', (req, res) => {
     res.status(404).json({ message: 'Route API non trouvée' });
 });
 
-// Frontend servi séparément sur Vercel — pas de fallback React ici
+// Middleware d'erreur global — capture toutes les erreurs non gérées
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+    console.error('Erreur non gérée :', err);
+    res.status(err.status || 500).json({ message: err.message || 'Erreur serveur' });
+});
+
+// Frontend servi séparément sur Netlify — pas de fallback React ici
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });
+
+// Ping anti-sleep Render (évite le cold start de 30-50s)
+// Se ping lui-même toutes les 14 min pour rester actif sur le plan gratuit
+if (process.env.SELF_URL) {
+    const https = require('https');
+    const http  = require('http');
+    setInterval(() => {
+        const url = process.env.SELF_URL + '/api/health';
+        const lib = url.startsWith('https') ? https : http;
+        lib.get(url, () => {}).on('error', () => {});
+    }, 14 * 60 * 1000); // toutes les 14 minutes
+    console.log('✅ Ping anti-sleep activé →', process.env.SELF_URL);
+}

@@ -4,21 +4,7 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
-
-function extractYoutubeId(value) {
-    if (!value) return null;
-    const v = value.trim();
-    if (/^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
-    try {
-        const url = new URL(v);
-        const param = url.searchParams.get('v');
-        if (param) return param;
-        const parts = url.pathname.split('/').filter(Boolean);
-        if (parts.length) return parts[parts.length - 1];
-    } catch {}
-    const m = v.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return m ? m[1] : null;
-}
+import { extractYoutubeId } from '../../utils/formatters';
 
 export default function PersonalBranding() {
     const [brand, setBrand] = useState(null);

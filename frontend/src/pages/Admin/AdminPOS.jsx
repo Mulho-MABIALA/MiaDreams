@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { imgSrc } from '../../utils/imgSrc';
+import { fmt, fmtDate, inputCls } from '../../utils/formatters';
+import Spinner from '../../components/Spinner';
 
 const GOLD  = '#C9A84C';
 const GREEN = '#22c55e';
@@ -9,20 +12,7 @@ const MODES = [
     { value: 'wave',    label: 'Wave',    icon: '📱' },
 ];
 
-const inp = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
-
-const fmt     = (n) => Number(n || 0).toLocaleString('fr-FR') + ' FCFA';
-const fmtDate = (d) => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-const imgSrc  = (img) => img ? (img.startsWith('http') || img.startsWith('/') ? img : `/uploads/${img}`) : null;
-
-function Spinner({ small }) {
-    return (
-        <svg className={`animate-spin text-[#C9A84C] ${small ? 'w-3.5 h-3.5' : 'w-5 h-5'}`} viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"/>
-        </svg>
-    );
-}
+const inp = inputCls;
 
 // ─── Ticket thermique (impression rapide) ─────────────────────────────────────
 function printReceipt(order, remiseMt) {

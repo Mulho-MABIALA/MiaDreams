@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import { imgSrc } from '../utils/imgSrc';
 
 const SOURCE_LABEL = { gallery: 'Photo', collection: 'Collection', product: 'Produit' };
 
@@ -14,12 +15,6 @@ export default function Gallery() {
         if (selectedBrand) params.brand = selectedBrand;
         axios.get('/api/gallery', { params }).then(res => setData(res.data)).catch(() => {});
     }, [selectedBrand]);
-
-    const imgSrc = (image) => {
-        if (!image) return '';
-        if (image.startsWith('http') || image.startsWith('/img')) return image;
-        return `/uploads/${image}`;
-    };
 
     return (
         <Layout title="Galerie">

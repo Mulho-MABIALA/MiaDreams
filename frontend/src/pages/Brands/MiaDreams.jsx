@@ -4,26 +4,7 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
-
-/** Extrait l'ID YouTube depuis une URL complète ou un ID brut */
-function extractYoutubeId(value) {
-    if (!value) return null;
-    const v = value.trim();
-    // ID brut (11 chars alphanumériques)
-    if (/^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
-    // URL complète : ?v=XXXXX ou youtu.be/XXXXX
-    try {
-        const url = new URL(v);
-        const param = url.searchParams.get('v');
-        if (param) return param;
-        // youtu.be/XXXXX
-        const parts = url.pathname.split('/').filter(Boolean);
-        if (parts.length) return parts[parts.length - 1];
-    } catch {}
-    // fallback regex
-    const m = v.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return m ? m[1] : null;
-}
+import { extractYoutubeId } from '../../utils/formatters';
 
 export default function MiaDreams() {
     const [brand, setBrand] = useState(null);

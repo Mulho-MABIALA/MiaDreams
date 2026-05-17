@@ -1,20 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-const imgSrc = (img) => img ? (img.startsWith('http') || img.startsWith('/') ? img : `/uploads/${img}`) : null;
-
-const inputCls = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
-
-function Spinner() {
-    return (
-        <svg className="animate-spin w-4 h-4 text-[#C9A84C]" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"/>
-        </svg>
-    );
-}
+import { imgSrc } from '../../utils/imgSrc';
+import { inputCls } from '../../utils/formatters';
+import Spinner from '../../components/Spinner';
 
 // ─── Section Row (display) ───────────────────────────────────────────────────
 

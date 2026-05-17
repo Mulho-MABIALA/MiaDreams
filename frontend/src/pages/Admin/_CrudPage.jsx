@@ -1,23 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
-const inputCls = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
-
-// Génère un slug depuis un texte (même logique que le backend)
-const toSlug = (str) =>
-    str.toLowerCase()
-       .normalize('NFD').replace(/[̀-ͯ]/g, '') // enlève les accents
-       .replace(/[^a-z0-9\s-]/g, '')
-       .trim()
-       .replace(/\s+/g, '-')
-       .replace(/-+/g, '-');
-
-// Gère les URLs Cloudinary (https://...) ET les anciens noms de fichiers locaux
-const imgSrc = (val) => {
-    if (!val) return '';
-    if (val.startsWith('http') || val.startsWith('/')) return val;
-    return `/uploads/${val}`;
-};
+import { imgSrc } from '../../utils/imgSrc';
+import { toSlug, inputCls } from '../../utils/formatters';
 
 /* ── Champ fichier (image ou PDF) ───────────────────────────────────────────── */
 function FileField({ f, isPdf, selectedFile, existingVal, setFiles }) {

@@ -10,6 +10,8 @@ const express = require('express');
 const crypto  = require('crypto');
 const router  = express.Router();
 const Order   = require('../models/Order');
+const authMiddleware = require('../middleware/auth');
+const { paymentLimiter } = require('../middleware/rateLimiter');
 
 const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
 const BACKEND  = process.env.BACKEND_URL  || 'http://localhost:5000';
@@ -280,10 +282,10 @@ router.post('/free-money/webhook', async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  CONFIRMATION MANUELLE (admin)
+//  CONFIRMATION MANUELLE (admin authentifié uniquement)
 // ─────────────────────────────────────────────────────────────────────────────
 
-router.patch('/confirm/:orderId', async (req, res) => {
+router.patch('/confirm/:orderId', authMiddleware, async (req, res) => {
     try {
         const order = await Order.findByIdAndUpdate(
             req.params.orderId,

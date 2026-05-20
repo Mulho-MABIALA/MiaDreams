@@ -2,9 +2,11 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const fs = require('fs');
 const express = require('express');
-const cors = require('cors');
+const cors    = require('cors');
+const helmet  = require('helmet');
 const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/auth');
+const { apiLimiter } = require('./middleware/rateLimiter');
 const seedAdmin    = require('./seed');
 const seedBrands   = require('./seedBrands');
 const seedSections = require('./seedSections');
@@ -21,14 +23,42 @@ connectDB().then(async () => {
     await seedSections();
 });
 
-// CORS : accepte toutes les origines connues + reflect pour credentials
+// ── Sécurité HTTP headers (helmet) ──────────────────────────────────────────
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }, // permet les images externes
+    contentSecurityPolicy: false, // géré côté frontend (Netlify)
+}));
+
+// ── CORS : origines autorisées explicitement ─────────────────────────────────
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
+
+// Origines par défaut si non configurées
+if (!ALLOWED_ORIGINS.length) {
+    ALLOWED_ORIGINS.push(
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://miadreams.netlify.app',
+    );
+}
+
 app.use(cors({
-    origin: true,        // reflète l'origine de la requête → compatible credentials
+    origin: (origin, cb) => {
+        // Autorise les requêtes sans origin (Postman, mobile, server-to-server)
+        if (!origin) return cb(null, true);
+        if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+        cb(new Error(`CORS: origine non autorisée — ${origin}`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.options('*', cors()); // pré-vol OPTIONS sur toutes les routes
+app.options('*', cors());
+
+// ── Rate limiting global sur toutes les routes /api ──────────────────────────
+app.use('/api/', apiLimiter);
 
 // Capture le corps brut pour vérification de signature webhook (Wave)
 app.use(express.json({

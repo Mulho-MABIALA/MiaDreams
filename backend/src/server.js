@@ -123,13 +123,21 @@ app.use('/api/*', (req, res) => {
     res.status(404).json({ message: 'Route API non trouvée' });
 });
 
+// Sert le build React (frontend/dist/) — mode Docker monolithique
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+    // SPA fallback — toutes les routes non-API renvoient index.html
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendDist, 'index.html'));
+    });
+}
+
 // Middleware d'erreur global — capture toutes les erreurs non gérées
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     console.error('Erreur non gérée :', err);
     res.status(err.status || 500).json({ message: err.message || 'Erreur serveur' });
 });
-
-// Frontend servi séparément sur Netlify — pas de fallback React ici
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {

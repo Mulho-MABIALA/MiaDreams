@@ -1,0 +1,26 @@
+# ── Phusion Passenger — toutes les requêtes vers Node.js ────────────────────
+# Ce fichier force Apache à transmettre TOUTES les requêtes au process Node.js
+# géré par Passenger, y compris les routes /api/* et les assets /assets/*.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Conserver l'en-tête Authorization (JWT)
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Laisser passer les vrais fichiers statiques présents sur disque
+    # (uploads, public/, etc.) — Passenger ne les gère pas
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Laisser passer les vrais répertoires
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Tout le reste → Passenger/Node.js
+    # (pas de rewrite physique : Passenger est activé au niveau vhost,
+    #  cette règle évite qu'Apache retourne 404 "File not found" pour
+    #  les routes virtuelles comme /api/health)
+    RewriteRule ^ - [L]
+</IfModule>

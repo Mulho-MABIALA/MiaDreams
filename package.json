@@ -1,0 +1,14 @@
+{
+  "name": "miadreams",
+  "version": "1.0.0",
+  "description": "MIA DREAMS & CO — Application complète (backend + frontend)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "build": "cd frontend && npm install && npm run build",
+    "install-backend": "cd backend && npm install --omit=dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

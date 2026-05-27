@@ -5,17 +5,23 @@
 
     RewriteEngine On
 
-    # Handle Authorization Header
+    # Conserver l'en-tête Authorization (JWT Bearer token)
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Supprimer le slash final (sauf pour les vrais dossiers)
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    # Servir les vrais fichiers statiques directement (images, fonts, etc.)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Servir les vrais répertoires directement
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Tout le reste → Passenger/Node.js (ne pas rediriger vers index.php)
+    RewriteRule ^ - [L]
 </IfModule>

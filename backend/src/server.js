@@ -81,6 +81,7 @@ app.use(express.static(path.join(__dirname, '../../public')));
 
 // Routes API — chaque require est blindé pour ne pas crasher le serveur
 const routes = [
+    ['/api/deploy',       './routes/deploy'],   // ← webhook GitHub auto-deploy
     ['/api/auth',         './routes/auth'],
     ['/api/settings',     './routes/settings'],
     ['/api/home',         './routes/home'],

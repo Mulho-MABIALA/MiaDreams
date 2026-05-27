@@ -63,7 +63,14 @@ router.post('/', (req, res) => {
         return res.status(401).json({ message: 'Signature invalide' });
     }
 
-    // 2. Ignorer les pushs sur les branches autres que main
+    // 2. Répondre au ping GitHub (envoyé à la création du webhook)
+    const event = req.headers['x-github-event'];
+    if (event === 'ping') {
+        log('Ping GitHub reçu — webhook actif ✅');
+        return res.json({ message: 'pong — webhook opérationnel' });
+    }
+
+    // Ignorer les pushs sur les branches autres que main
     const ref = req.body?.ref || '';
     if (ref && ref !== 'refs/heads/main') {
         return res.json({ message: `Branche ignorée : ${ref}` });

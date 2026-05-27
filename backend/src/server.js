@@ -41,6 +41,8 @@ if (!ALLOWED_ORIGINS.length) {
         'http://localhost:5173',
         'http://localhost:3000',
         'https://miadreams.netlify.app',
+        'https://mia-dreams.com',
+        'http://mia-dreams.com',
     );
 }
 

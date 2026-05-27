@@ -25,8 +25,9 @@ connectDB().then(async () => {
 
 // ── Sécurité HTTP headers (helmet) ──────────────────────────────────────────
 app.use(helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' }, // permet les images externes
-    contentSecurityPolicy: false, // géré côté frontend (Netlify)
+    crossOriginResourcePolicy: { policy: 'cross-origin' },   // permet les images externes
+    contentSecurityPolicy: false,                             // géré côté frontend
+    crossOriginEmbedderPolicy: false,                        // autorise YouTube / Vimeo / Maps dans les iframes
 }));
 
 // ── CORS : origines autorisées explicitement ─────────────────────────────────

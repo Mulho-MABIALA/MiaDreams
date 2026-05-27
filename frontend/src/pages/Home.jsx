@@ -372,24 +372,47 @@ export default function Home() {
 
             {/* ══ MANIFESTE ════════════════════════════════════════════════ */}
             {(() => {
-                const rawUrl  = introSection?.video_url || 'https://www.youtube.com/embed/sTfEIkU309s';
-                const embedUrl = rawUrl.includes('embed/')
-                    ? rawUrl
-                    : (() => { const m = rawUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m ? `https://www.youtube.com/embed/${m[1]}` : rawUrl; })();
+                // Construit l'URL embed seulement si une vidéo est configurée dans le dashboard
+                const rawUrl   = introSection?.video_url || '';
+                const embedUrl = rawUrl
+                    ? (rawUrl.includes('embed/')
+                        ? rawUrl
+                        : (() => { const m = rawUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m ? `https://www.youtube.com/embed/${m[1]}?rel=0&modestbranding=1` : rawUrl; })())
+                    : '';
 
                 return (
                     <section className="bg-white py-20 lg:py-28">
                         <div className="max-w-7xl mx-auto px-6 lg:px-10">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-28 items-center">
 
-                                {/* ── Vidéo ── */}
+                                {/* ── Vidéo ou placeholder ── */}
                                 <div className="reveal">
-                                    <div className="relative w-full shadow-lg" style={{ paddingBottom: '56.25%' }}>
-                                        <iframe
-                                            className="absolute inset-0 w-full h-full"
-                                            src={embedUrl}
-                                            frameBorder="0" allowFullScreen loading="lazy" title="MIA DREAMS" />
-                                    </div>
+                                    {embedUrl ? (
+                                        <div className="relative w-full shadow-lg" style={{ paddingBottom: '56.25%' }}>
+                                            <iframe
+                                                className="absolute inset-0 w-full h-full"
+                                                src={embedUrl}
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                allowFullScreen loading="lazy" title="MIA DREAMS" />
+                                        </div>
+                                    ) : (
+                                        /* Placeholder — ajoute une vidéo dans le dashboard (Section › Intro › video_url) */
+                                        <div className="relative w-full shadow-lg flex items-center justify-center"
+                                             style={{ paddingBottom: '56.25%', background: '#f5f3f0' }}>
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                                                <svg className="w-12 h-12 opacity-20" fill="none" stroke="#1a1a1a" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"
+                                                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"
+                                                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                <p className="font-lastica text-[7px] tracking-[3px] text-[#aaa] uppercase">
+                                                    Vidéo non configurée
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                     {/* Trait doré décoratif sous la vidéo */}
                                     <div className="flex items-center gap-3 mt-5">
                                         <div className="h-px flex-1" style={{ background: '#e8e3da' }} />

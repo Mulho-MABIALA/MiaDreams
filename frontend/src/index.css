@@ -299,7 +299,11 @@ body {
    HERO CAROUSEL
 ══════════════════════════════════════ */
 .hero-carousel {
-    position: relative; height: 100vh; min-height: 620px; overflow: hidden;
+    position: relative; height: 100svh; min-height: 580px; overflow: hidden;
+}
+/* Fallback pour les navigateurs sans svh */
+@supports not (height: 100svh) {
+    .hero-carousel { height: 100vh; }
 }
 .hero-slide {
     position: absolute; inset: 0; opacity: 0;
@@ -308,8 +312,14 @@ body {
 .hero-slide.active { opacity: 1; }
 .hero-slide img {
     width: 100%; height: 100%;
-    object-fit: cover; object-position: center top;
+    object-fit: cover;
+    object-position: center 30%; /* légèrement au-dessus du centre — bon compromis desktop */
     animation: kb 14s ease forwards;
+}
+/* Mobile : centrer les images pour les photos uploadées via le dashboard */
+@media (max-width: 640px) {
+    .hero-carousel { min-height: 480px; }
+    .hero-slide img { object-position: center center; }
 }
 .hero-slide .overlay {
     position: absolute; inset: 0;

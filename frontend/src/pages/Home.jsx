@@ -22,7 +22,12 @@ const DEFAULT_UNIVERS = [
 
 // ─── Hero Carousel ─────────────────────────────────────────────────────────────
 function HeroCarousel({ slides }) {
-    const list = slides.length > 0 ? slides : DEFAULT_SLIDES;
+    // slides === null  → API pas encore répondue → skeleton (pas de flash des DEFAULT_SLIDES)
+    // slides === []    → API a répondu, aucune slide en base → DEFAULT_SLIDES
+    // slides = [...]   → slides du dashboard
+    const isLoading = slides === null;
+    const list = (slides === null || slides.length === 0) ? DEFAULT_SLIDES : slides;
+
     const [current, setCurrent] = useState(0);
     const timerRef = useRef(null);
     const goTo = (n) => setCurrent((n + list.length) % list.length);
@@ -30,7 +35,19 @@ function HeroCarousel({ slides }) {
         clearInterval(timerRef.current);
         timerRef.current = setInterval(() => setCurrent(c => (c + 1) % list.length), 5500);
     };
-    useEffect(() => { startAuto(); return () => clearInterval(timerRef.current); }, [list.length]);
+    useEffect(() => {
+        if (!isLoading) { setCurrent(0); startAuto(); }
+        return () => clearInterval(timerRef.current);
+    }, [list.length, isLoading]);
+
+    // Skeleton sombre pendant le chargement — évite le flash des vieilles images
+    if (isLoading) return (
+        <div className="hero-carousel" style={{ background: '#060606' }}>
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div style={{ width: 1, height: 48, background: 'rgba(196,162,103,.25)', animation: 'pulse 1.8s ease-in-out infinite' }} />
+            </div>
+        </div>
+    );
 
     return (
         <div className="hero-carousel">
@@ -325,7 +342,7 @@ function FeaturedProducts({ products }) {
 export default function Home() {
     const [data, setData]                         = useState({ services: [], testimonials: [] });
     const [featured, setFeatured]                 = useState([]);
-    const [heroSlides, setHeroSlides]             = useState([]);
+    const [heroSlides, setHeroSlides]             = useState(null); // null = chargement en cours
     const [univers, setUnivers]                   = useState([]);
     const [introSection, setIntro]                = useState(null);
     const [tagline, setTagline]                   = useState('');

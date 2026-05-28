@@ -82,7 +82,7 @@ export default function Admin() {
     });
     const [collapsed, setCollapsed] = useState(false);
 
-    // ── Server wake-up (Render free tier cold start) ───────────────────────────
+    // ── Server wake-up (cold start Passenger / idle process) ─────────────────
     const [serverStatus, setServerStatus] = useState('checking'); // 'checking' | 'up' | 'waking'
     useEffect(() => {
         let attempts = 0;
@@ -394,8 +394,8 @@ export default function Admin() {
                             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                         </svg>
                         <span>
-                            <strong>Serveur en démarrage</strong> — Le backend Render se réveille après inactivité, cela peut prendre
-                            30 à 60 secondes. Les données se chargeront automatiquement.
+                            <strong>Serveur en démarrage</strong> — Le serveur se réveille après une période d'inactivité, cela peut prendre
+                            quelques secondes. Les données se chargeront automatiquement.
                         </span>
                         <span style={{ marginLeft: 'auto', flexShrink: 0, fontSize: '11px', color: '#B45309', opacity: 0.7 }}>
                             Reconnexion en cours…

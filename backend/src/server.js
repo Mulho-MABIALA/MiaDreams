@@ -148,8 +148,8 @@ const server = app.listen(PORT, () => {
     console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });
 
-// Ping anti-sleep Render (évite le cold start de 30-50s)
-// Se ping lui-même toutes les 14 min pour rester actif sur le plan gratuit
+// Ping anti-sleep Passenger (évite que le process Node.js soit tué après 5 min d'inactivité)
+// Se ping lui-même toutes les 4 min — en dessous du PassengerPoolIdleTime par défaut (300s)
 if (process.env.SELF_URL) {
     const https = require('https');
     const http  = require('http');
@@ -157,6 +157,6 @@ if (process.env.SELF_URL) {
         const url = process.env.SELF_URL + '/api/health';
         const lib = url.startsWith('https') ? https : http;
         lib.get(url, () => {}).on('error', () => {});
-    }, 14 * 60 * 1000); // toutes les 14 minutes
+    }, 4 * 60 * 1000); // toutes les 4 minutes
     console.log('✅ Ping anti-sleep activé →', process.env.SELF_URL);
 }

@@ -1,19 +1,32 @@
 const express      = require('express');
 const router       = express.Router();
 const Reservation  = require('../models/Reservation');
+const Service      = require('../models/Service');
 const { formLimiter } = require('../middleware/rateLimiter');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const clean = (str, max = 500) =>
     typeof str === 'string' ? str.trim().replace(/<[^>]*>/g, '').substring(0, max) : '';
 
-const SERVICES = [
+// Fallback si aucun service en base
+const DEFAULT_SERVICES = [
     'Coaching', 'Personal Branding', 'Fashion Program',
     'Confection', 'Consulting', 'Autre',
 ];
 
-// GET /api/reservation/services
-router.get('/services', (req, res) => res.json(SERVICES));
+// GET /api/reservation/services — retourne les services actifs depuis la DB admin
+router.get('/services', async (req, res) => {
+    try {
+        const services = await Service.find({ is_active: true }).sort('order').select('title');
+        if (services.length > 0) {
+            return res.json(services.map(s => s.title));
+        }
+        // Fallback si aucun service configuré dans l'admin
+        res.json(DEFAULT_SERVICES);
+    } catch {
+        res.json(DEFAULT_SERVICES);
+    }
+});
 
 // POST /api/reservation — rate limitée
 router.post('/', formLimiter, async (req, res) => {
@@ -30,7 +43,12 @@ router.post('/', formLimiter, async (req, res) => {
             return res.status(422).json({ errors: { message: 'Champs obligatoires manquants.' } });
         if (!EMAIL_REGEX.test(email))
             return res.status(422).json({ errors: { email: 'Adresse email invalide.' } });
-        if (!SERVICES.includes(service))
+        // Valider le service par rapport à la DB (ou le fallback)
+        const dbServices = await Service.find({ is_active: true }).select('title');
+        const validServices = dbServices.length > 0
+            ? dbServices.map(s => s.title)
+            : DEFAULT_SERVICES;
+        if (!validServices.includes(service))
             return res.status(422).json({ errors: { service: 'Service non reconnu.' } });
 
         const reservation = await Reservation.create({

@@ -421,7 +421,7 @@ body {
 .input-mia {
     width: 100%;
     background: rgba(255,255,255,.03);
-    border: none; border-bottom: 1px solid rgba(255,255,255,.12);
+    border: none; border-bottom: 1px solid rgba(255,255,255,.22);
     color: #fff;
     font-family: 'GlacialIndifference', sans-serif;
     font-size: .875rem; letter-spacing: .05em;
@@ -429,13 +429,13 @@ body {
     outline: none;
     transition: border-color .3s ease;
 }
-.input-mia:focus { border-bottom-color: rgba(196,162,103,.5); }
-.input-mia::placeholder { color: rgba(255,255,255,.2); }
+.input-mia:focus { border-bottom-color: rgba(196,162,103,.75); }
+.input-mia::placeholder { color: rgba(255,255,255,.35); }
 
 .input-label {
     font-family: 'Lastica', serif;
     font-size: 7px; letter-spacing: 4px;
-    text-transform: uppercase; color: rgba(196,162,103,.5);
+    text-transform: uppercase; color: rgba(196,162,103,.75);
     display: block; margin-bottom: .4rem;
 }
 

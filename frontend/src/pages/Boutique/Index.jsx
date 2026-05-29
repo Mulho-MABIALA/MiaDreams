@@ -226,7 +226,7 @@ export default function BoutiqueIndex() {
                             </svg>
                             <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                                    placeholder="Rechercher…"
-                                   className="flex-1 bg-transparent text-white/55 font-glacial text-xs tracking-[1px] outline-none placeholder:text-white/18 border-b border-transparent focus:border-white/12 transition-colors py-1" />
+                                   className="flex-1 bg-transparent text-white/75 font-glacial text-xs tracking-[1px] outline-none placeholder:text-white/35 border-b border-transparent focus:border-white/25 transition-colors py-1" />
                             {search && (
                                 <button onClick={() => setSearch('')} className="text-white/20 hover:text-white/50 text-sm transition-colors">✕</button>
                             )}
@@ -242,7 +242,7 @@ export default function BoutiqueIndex() {
                                         className="font-lastica text-[7px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 transition-all duration-200 rounded-sm"
                                         style={activeBrand === b._id
                                             ? { background: GOLD, color: '#050505' }
-                                            : { color: 'rgba(255,255,255,.32)' }}>
+                                            : { color: 'rgba(255,255,255,.50)' }}>
                                         {b.name}
                                     </button>
                                 ))}
@@ -254,7 +254,7 @@ export default function BoutiqueIndex() {
                         {/* Tri */}
                         <div className="relative flex-shrink-0">
                             <button onClick={() => setSortOpen(o => !o)}
-                                className="flex items-center gap-2 font-lastica text-[7px] tracking-[2px] uppercase text-white/35 hover:text-white/60 transition-colors">
+                                className="flex items-center gap-2 font-lastica text-[7px] tracking-[2px] uppercase text-white/55 hover:text-white/80 transition-colors">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" d="M3 6h18M7 12h10M11 18h2"/>
                                 </svg>
@@ -272,7 +272,7 @@ export default function BoutiqueIndex() {
                                         {SORT_OPTIONS.map(opt => (
                                             <button key={opt.value} onClick={() => { setSort(opt.value); setSortOpen(false); }}
                                                 className="w-full text-left px-5 py-2.5 font-glacial text-xs tracking-[.5px] flex items-center gap-3 transition-colors"
-                                                style={{ color: sort === opt.value ? GOLD : 'rgba(255,255,255,.4)' }}>
+                                                style={{ color: sort === opt.value ? GOLD : 'rgba(255,255,255,.6)' }}>
                                                 <span className="w-3 text-center">{sort === opt.value ? '—' : ''}</span>
                                                 {opt.label}
                                             </button>
@@ -325,10 +325,10 @@ export default function BoutiqueIndex() {
                     ) : displayed.length === 0 ? (
                         <div className="text-center py-36">
                             <div className="w-8 h-px mx-auto mb-8" style={{ background: `${GOLD}30` }} />
-                            <p className="font-glacial text-2xl text-white/20 uppercase tracking-[6px] mb-4">
+                            <p className="font-glacial text-2xl text-white/40 uppercase tracking-[6px] mb-4">
                                 {search ? `"${search}"` : 'Boutique'}
                             </p>
-                            <p className="font-glacial text-sm text-white/20 mb-8">Aucun article disponible.</p>
+                            <p className="font-glacial text-sm text-white/40 mb-8">Aucun article disponible.</p>
                             {filterActive && (
                                 <button onClick={() => { setSearch(''); setBrand(''); }}
                                     className="font-lastica text-[8px] tracking-[3px] uppercase border border-white/[0.08] text-white/30 px-6 py-3 hover:border-white/15 transition-all">

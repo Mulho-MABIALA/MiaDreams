@@ -69,27 +69,27 @@ export default function Contact() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <input type="text" placeholder="VOTRE NOM *" value={form.name} onChange={e => set('name', e.target.value)} required
-                                               className="w-full bg-transparent border border-white/15 text-white placeholder-white/25 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
+                                               className="w-full bg-transparent border border-white/25 text-white placeholder-white/35 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
                                         {errors.name && <p className="text-red-400 text-xs mt-1 font-glacial">{errors.name}</p>}
                                     </div>
                                     <div>
                                         <input type="email" placeholder="VOTRE EMAIL *" value={form.email} onChange={e => set('email', e.target.value)} required
-                                               className="w-full bg-transparent border border-white/15 text-white placeholder-white/25 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
+                                               className="w-full bg-transparent border border-white/25 text-white placeholder-white/35 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
                                         {errors.email && <p className="text-red-400 text-xs mt-1 font-glacial">{errors.email}</p>}
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <input type="tel" placeholder="TÉLÉPHONE" value={form.phone} onChange={e => set('phone', e.target.value)}
-                                           className="w-full bg-transparent border border-white/15 text-white placeholder-white/25 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
+                                           className="w-full bg-transparent border border-white/25 text-white placeholder-white/35 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
                                     <div>
                                         <input type="text" placeholder="SUJET *" value={form.subject} onChange={e => set('subject', e.target.value)} required
-                                               className="w-full bg-transparent border border-white/15 text-white placeholder-white/25 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
+                                               className="w-full bg-transparent border border-white/25 text-white placeholder-white/35 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors" />
                                         {errors.subject && <p className="text-red-400 text-xs mt-1 font-glacial">{errors.subject}</p>}
                                     </div>
                                 </div>
                                 <div>
                                     <textarea rows={6} placeholder="VOTRE MESSAGE *" value={form.message} onChange={e => set('message', e.target.value)} required
-                                              className="w-full bg-transparent border border-white/15 text-white placeholder-white/25 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors resize-none" />
+                                              className="w-full bg-transparent border border-white/25 text-white placeholder-white/35 px-5 py-4 font-glacial text-sm tracking-wide outline-none focus:border-gold/50 transition-colors resize-none" />
                                     {errors.message && <p className="text-red-400 text-xs mt-1 font-glacial">{errors.message}</p>}
                                 </div>
                                 <button type="submit" disabled={processing}

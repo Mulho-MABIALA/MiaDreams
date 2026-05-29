@@ -307,7 +307,7 @@ export default function BoutiqueProduct() {
 
                             {/* Infos livraison */}
                             <div className="pt-6 border-t border-white/[0.08] space-y-4">
-                                <p className="font-lastica text-[7px] tracking-[4px] text-white/30 uppercase mb-3">Informations</p>
+                                <p className="font-lastica text-[7px] tracking-[4px] text-white/50 uppercase mb-3">Informations</p>
                                 {[
                                     { icon: 'M5 13l4 4L19 7', text: 'Livraison à domicile à Abidjan et environs' },
                                     { icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z', text: 'WhatsApp : +225 07 00 00 00 00' },
@@ -319,7 +319,7 @@ export default function BoutiqueProduct() {
                                                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon}/>
                                             </svg>
                                         </div>
-                                        <p className="font-glacial text-sm text-white/55">{item.text}</p>
+                                        <p className="font-glacial text-sm text-white/70">{item.text}</p>
                                     </div>
                                 ))}
                             </div>
@@ -331,7 +331,7 @@ export default function BoutiqueProduct() {
                         <section className="mt-24 pt-16 border-t border-white/[0.07]">
                             <div className="flex items-center gap-6 mb-12">
                                 <div>
-                                    <p className="font-lastica text-[7px] tracking-[5px] text-white/30 uppercase mb-1">Vous aimerez aussi</p>
+                                    <p className="font-lastica text-[7px] tracking-[5px] text-white/50 uppercase mb-1">Vous aimerez aussi</p>
                                     <h2 className="font-glacial text-2xl text-white uppercase tracking-[4px]">Articles <span style={{ color: GOLD }}>similaires</span></h2>
                                 </div>
                                 <div className="flex-1 h-px bg-white/[0.06]" />

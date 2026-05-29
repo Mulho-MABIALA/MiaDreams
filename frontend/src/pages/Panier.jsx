@@ -15,13 +15,13 @@ export default function Panier() {
     if (items.length === 0) return (
         <Layout title="Mon panier — MIA DREAMS">
             <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center gap-5 px-6">
-                <div className="w-16 h-16 border border-white/[0.06] flex items-center justify-center mb-2">
-                    <svg className="w-6 h-6 text-white/15" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
+                <div className="w-16 h-16 border border-white/[0.15] flex items-center justify-center mb-2">
+                    <svg className="w-6 h-6 text-white/35" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
                 </div>
-                <p className="font-lastica text-[8px] tracking-[6px] text-white/20 uppercase">Panier vide</p>
-                <p className="font-glacial text-sm text-white/20 text-center max-w-[220px] leading-relaxed">
+                <p className="font-lastica text-[8px] tracking-[6px] text-white/45 uppercase">Panier vide</p>
+                <p className="font-glacial text-sm text-white/40 text-center max-w-[220px] leading-relaxed">
                     Découvrez nos créations et ajoutez vos favoris.
                 </p>
                 <Link to="/boutique" className="mt-4 font-lastica text-[8px] tracking-[4px] uppercase px-7 py-3.5"
@@ -38,12 +38,12 @@ export default function Panier() {
                 <div className="max-w-5xl mx-auto">
 
                     {/* En-tête */}
-                    <div className="flex items-end justify-between mb-12 pb-6 border-b border-white/[0.05]">
+                    <div className="flex items-end justify-between mb-12 pb-6 border-b border-white/[0.10]">
                         <div>
-                            <span className="font-lastica text-[7px] tracking-[5px] text-white/15 uppercase block mb-2">Shopping</span>
+                            <span className="font-lastica text-[7px] tracking-[5px] text-white/35 uppercase block mb-2">Shopping</span>
                             <h1 className="font-glacial text-3xl lg:text-4xl text-white/80 uppercase tracking-[4px]">Mon Panier</h1>
                         </div>
-                        <span className="font-lastica text-[8px] tracking-[3px] text-white/20 uppercase">
+                        <span className="font-lastica text-[8px] tracking-[3px] text-white/45 uppercase">
                             {items.length} article{items.length > 1 ? 's' : ''}
                         </span>
                     </div>
@@ -52,7 +52,7 @@ export default function Panier() {
 
                         {/* ── Articles ── */}
                         <div>
-                            <div className="space-y-0 divide-y divide-white/[0.04]">
+                            <div className="space-y-0 divide-y divide-white/[0.08]">
                                 {items.map((item, idx) => (
                                     <div key={item.key} className="flex gap-5 py-7">
                                         {/* Image */}
@@ -78,20 +78,20 @@ export default function Panier() {
                                             </div>
 
                                             <div className="flex flex-wrap gap-x-3 gap-y-0.5 mb-4">
-                                                {item.size  && <span className="font-glacial text-[11px] text-white/25">Taille : {item.size}</span>}
-                                                {item.color && <span className="font-glacial text-[11px] text-white/25">{item.color}</span>}
+                                                {item.size  && <span className="font-glacial text-[11px] text-white/50">Taille : {item.size}</span>}
+                                                {item.color && <span className="font-glacial text-[11px] text-white/50">{item.color}</span>}
                                             </div>
 
                                             <div className="flex items-center justify-between">
                                                 {/* Quantité */}
-                                                <div className="flex items-center border border-white/[0.08]">
+                                                <div className="flex items-center border border-white/[0.15]">
                                                     <button onClick={() => updateQty(item.key, item.quantity - 1)}
-                                                        className="w-8 h-8 text-white/30 hover:text-white/60 transition-colors font-light text-lg leading-none">
+                                                        className="w-8 h-8 text-white/50 hover:text-white/80 transition-colors font-light text-lg leading-none">
                                                         −
                                                     </button>
-                                                    <span className="w-8 text-center font-glacial text-sm text-white/55">{item.quantity}</span>
+                                                    <span className="w-8 text-center font-glacial text-sm text-white/75">{item.quantity}</span>
                                                     <button onClick={() => updateQty(item.key, item.quantity + 1)}
-                                                        className="w-8 h-8 text-white/30 hover:text-white/60 transition-colors font-light text-lg leading-none">
+                                                        className="w-8 h-8 text-white/50 hover:text-white/80 transition-colors font-light text-lg leading-none">
                                                         +
                                                     </button>
                                                 </div>
@@ -106,9 +106,9 @@ export default function Panier() {
                                 ))}
                             </div>
 
-                            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/[0.04]">
+                            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/[0.08]">
                                 <Link to="/boutique"
-                                    className="font-lastica text-[7px] tracking-[3px] text-white/20 hover:text-white/45 transition-colors uppercase flex items-center gap-2">
+                                    className="font-lastica text-[7px] tracking-[3px] text-white/40 hover:text-white/70 transition-colors uppercase flex items-center gap-2">
                                     <span>←</span> Continuer les achats
                                 </Link>
                                 {confirmClear ? (
@@ -141,23 +141,23 @@ export default function Panier() {
 
                         {/* ── Récapitulatif ── */}
                         <div className="lg:pt-0">
-                            <div className="bg-[#0c0c0c] border border-white/[0.05] p-5 sm:p-7">
-                                <p className="font-lastica text-[7px] tracking-[5px] text-white/20 uppercase mb-7">Récapitulatif</p>
+                            <div className="bg-[#0c0c0c] border border-white/[0.12] p-5 sm:p-7">
+                                <p className="font-lastica text-[7px] tracking-[5px] text-white/45 uppercase mb-7">Récapitulatif</p>
 
                                 <div className="space-y-3.5 mb-6">
                                     <div className="flex justify-between">
-                                        <span className="font-glacial text-sm text-white/35">Sous-total</span>
-                                        <span className="font-glacial text-sm text-white/60">{subtotal.toLocaleString('fr-FR')} FCFA</span>
+                                        <span className="font-glacial text-sm text-white/55">Sous-total</span>
+                                        <span className="font-glacial text-sm text-white/75">{subtotal.toLocaleString('fr-FR')} FCFA</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-glacial text-sm text-white/35">Livraison</span>
-                                        <span className="font-glacial text-sm text-white/60">{shipping.toLocaleString('fr-FR')} FCFA</span>
+                                        <span className="font-glacial text-sm text-white/55">Livraison</span>
+                                        <span className="font-glacial text-sm text-white/75">{shipping.toLocaleString('fr-FR')} FCFA</span>
                                     </div>
                                 </div>
 
-                                <div className="border-t border-white/[0.05] pt-5 mb-7">
+                                <div className="border-t border-white/[0.10] pt-5 mb-7">
                                     <div className="flex justify-between items-baseline">
-                                        <span className="font-glacial text-sm text-white/60">Total</span>
+                                        <span className="font-glacial text-sm text-white/75">Total</span>
                                         <span className="font-glacial text-xl font-medium" style={{ color: GOLD }}>
                                             {total.toLocaleString('fr-FR')} <span className="text-sm">FCFA</span>
                                         </span>
@@ -171,8 +171,8 @@ export default function Panier() {
                                 </Link>
 
                                 {/* Modes de paiement */}
-                                <div className="mt-6 pt-5 border-t border-white/[0.04]">
-                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/15 uppercase mb-3 text-center">Paiements acceptés</p>
+                                <div className="mt-6 pt-5 border-t border-white/[0.08]">
+                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/35 uppercase mb-3 text-center">Paiements acceptés</p>
                                     <div className="flex items-center justify-center gap-4">
                                         {/* Wave logo */}
                                         <div className="flex items-center gap-1.5 opacity-30 hover:opacity-50 transition-opacity">

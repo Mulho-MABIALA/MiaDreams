@@ -282,6 +282,139 @@ router.post('/free-money/webhook', async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  CINETPAY — agrégateur CI (Wave, Orange Money, MTN, Moov, Free Money, Carte)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/payment/cinetpay/init
+ * Crée une session de paiement CinetPay et retourne le lien de la page de paiement.
+ *
+ * Variables d'environnement à ajouter dans Plesk :
+ *   CINETPAY_API_KEY  → Dashboard CinetPay → Mon compte → Clés API
+ *   CINETPAY_SITE_ID  → Dashboard CinetPay → Mon compte → Site ID
+ *
+ * Dashboard CinetPay : https://dashboard.cinetpay.com
+ */
+router.post('/cinetpay/init', async (req, res) => {
+    const { orderId } = req.body;
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) return res.status(404).json({ message: 'Commande introuvable' });
+
+        if (!process.env.CINETPAY_API_KEY || !process.env.CINETPAY_SITE_ID) {
+            return res.status(503).json({ message: 'Paiement en ligne non configuré. Contactez-nous par WhatsApp.' });
+        }
+
+        // CinetPay exige prénom et nom séparés
+        const parts     = (order.customer.name || 'Client MIA').trim().split(' ');
+        const firstName = parts[0]              || 'Client';
+        const lastName  = parts.slice(1).join(' ') || 'MIA';
+
+        const payload = {
+            apikey:                process.env.CINETPAY_API_KEY,
+            site_id:               process.env.CINETPAY_SITE_ID,
+            transaction_id:        String(order._id),           // unique, max 50 chars
+            amount:                Math.round(order.total),
+            currency:              'XOF',
+            description:           `Commande ${order.order_number} — MIA DREAMS`,
+            notify_url:            `${BACKEND}/api/payment/cinetpay/webhook`,
+            return_url:            `${FRONTEND}/commande/succes/${orderId}`,
+            cancel_url:            `${FRONTEND}/commande/erreur/${orderId}`,
+            customer_name:         lastName,
+            customer_surname:      firstName,
+            customer_email:        order.customer.email   || 'client@miadreams.com',
+            customer_phone_number: order.customer.phone   || '',
+            customer_address:      order.customer.address || 'Abidjan',
+            customer_city:         order.customer.city    || 'Abidjan',
+            customer_country:      'CI',
+            customer_state:        'CI',
+            customer_zip_code:     '00225',
+            channels:              'ALL',   // Wave, OM, MTN, Moov, Free, Carte…
+            metadata:              String(orderId),
+        };
+
+        const response = await fetch('https://api-checkout.cinetpay.com/v2/payment', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (data.code !== '201') {
+            console.error('CinetPay API error:', data);
+            throw new Error(data.message || `Erreur CinetPay (code ${data.code})`);
+        }
+
+        // Sauvegarder la référence de transaction
+        await Order.findByIdAndUpdate(orderId, {
+            payment_ref:    String(order._id),
+            payment_status: 'pending',
+        });
+
+        res.json({ payment_url: data.data.payment_url });
+    } catch (e) {
+        console.error('CinetPay init error:', e.message);
+        res.status(500).json({ message: e.message });
+    }
+});
+
+/**
+ * POST /api/payment/cinetpay/webhook  (IPN — Instant Payment Notification)
+ * CinetPay appelle cette URL après chaque transaction.
+ *
+ * ⚠️  À configurer dans le Dashboard CinetPay :
+ *   → Mon compte → Paramètres → IPN URL :
+ *     https://miadreams.jokkocloud.com/api/payment/cinetpay/webhook
+ *
+ * On vérifie TOUJOURS le statut via l'API avant de confirmer
+ * (ne jamais faire confiance aux données brutes de l'IPN).
+ */
+router.post('/cinetpay/webhook', async (req, res) => {
+    // Répondre 200 immédiatement — CinetPay attend une réponse rapide
+    res.json({ received: true });
+
+    try {
+        const { cpm_trans_id } = req.body;
+        if (!cpm_trans_id) return;
+
+        // Vérification du statut réel via l'API CinetPay
+        const verifyRes = await fetch('https://api-checkout.cinetpay.com/v2/payment/check', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                apikey:         process.env.CINETPAY_API_KEY,
+                site_id:        process.env.CINETPAY_SITE_ID,
+                transaction_id: cpm_trans_id,
+            }),
+        });
+
+        const verify  = await verifyRes.json();
+        const status  = verify.data?.status;
+        const orderId = verify.data?.metadata;
+
+        if (!orderId) {
+            console.warn('CinetPay IPN: metadata (orderId) absent', verify);
+            return;
+        }
+
+        if (verify.code === '00' && status === 'ACCEPTED') {
+            const order = await Order.findByIdAndUpdate(
+                orderId,
+                { payment_status: 'paid', order_status: 'confirmed' },
+                { new: true }
+            );
+            if (order) console.log(`✅ CinetPay — Paiement confirmé : ${order.order_number}`);
+        } else if (['REFUSED', 'CANCELLED'].includes(status)) {
+            await Order.findByIdAndUpdate(orderId, { payment_status: 'failed' });
+            console.log(`❌ CinetPay — Paiement ${status} : ${cpm_trans_id}`);
+        }
+    } catch (e) {
+        console.error('Erreur IPN CinetPay:', e.message);
+    }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  CONFIRMATION MANUELLE (admin authentifié uniquement)
 // ─────────────────────────────────────────────────────────────────────────────
 

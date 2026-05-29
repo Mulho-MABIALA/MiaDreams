@@ -7,23 +7,25 @@ import { imgSrc } from '../utils/imgSrc';
 
 const GOLD = '#C9A84C';
 
-/* ── Logo Wave SVG officiel ── */
-function WaveLogo({ size = 32 }) {
+/* ── Logo CinetPay ── */
+function CinetPayLogo({ size = 36 }) {
     return (
-        <svg width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="200" height="200" rx="44" fill="#1D63ED"/>
-            <path d="M30 100 C50 55, 75 55, 90 100 C105 145, 125 145, 145 100 C160 60, 175 60, 185 80"
-                  stroke="white" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        </svg>
+        <div style={{ width: size, height: size, background: 'linear-gradient(135deg,#FF6B00,#FF9A00)', borderRadius: 8 }}
+             className="flex items-center justify-center flex-shrink-0">
+            <svg width={size * 0.56} height={size * 0.56} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+        </div>
     );
 }
 
 const PAYMENT_METHODS = [
     {
-        id: 'wave',
-        label: 'Wave',
-        desc: "Paiement instantané via l'application Wave CI",
-        logo: <WaveLogo size={36} />,
+        id: 'cinetpay',
+        label: 'Paiement en ligne',
+        desc: 'Wave CI · Orange Money · MTN · Moov · Free Money · Carte bancaire',
+        logo: <CinetPayLogo size={36} />,
     },
     {
         id: 'cash',
@@ -53,10 +55,9 @@ export default function Commande() {
     const [form, setForm] = useState({
         name: '', email: '', phone: '', address: '', city: 'Abidjan', country: "Côte d'Ivoire", notes: ''
     });
-    const [paymentMethod, setPaymentMethod] = useState('wave');
+    const [paymentMethod, setPaymentMethod] = useState('cinetpay');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [paymentInfo, setPaymentInfo] = useState(null);
 
     const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -92,39 +93,16 @@ export default function Commande() {
                 clearCart(); navigate(`/commande/succes/${order._id}`); return;
             }
 
-            const { data: payment } = await axios.post('/api/payment/wave/init', { orderId: order._id, phone: form.phone });
+            // CinetPay — redirige vers la page de paiement (Wave, OM, MTN, Moov, Free, Carte…)
+            const { data: payment } = await axios.post('/api/payment/cinetpay/init', { orderId: order._id });
 
-            if (payment.checkout_url) {
-                clearCart(); window.location.href = payment.checkout_url;
-            } else if (payment.status === 'instructions') {
-                setPaymentInfo({ message: payment.message, orderId: order._id, orderNumber: payment.order_number });
-                clearCart();
+            if (payment.payment_url) {
+                clearCart(); window.location.href = payment.payment_url;
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer.');
         } finally { setLoading(false); }
     };
-
-    /* Instructions paiement manuel */
-    if (paymentInfo) return (
-        <Layout title="Instructions de paiement">
-            <div className="min-h-screen bg-[#080808] flex items-center justify-center px-6 pt-20">
-                <div className="max-w-sm w-full border border-white/[0.05] p-10 text-center bg-[#0c0c0c]">
-                    <div className="flex justify-center mb-6"><WaveLogo size={48} /></div>
-                    <p className="font-lastica text-[7px] tracking-[4px] text-white/20 uppercase mb-2">Instructions Wave</p>
-                    <p className="font-lastica text-[8px] tracking-[3px] mb-6" style={{ color: GOLD }}>
-                        Commande {paymentInfo.orderNumber}
-                    </p>
-                    <p className="font-glacial text-sm text-white/45 leading-relaxed mb-8">{paymentInfo.message}</p>
-                    <Link to={`/commande/succes/${paymentInfo.orderId}`}
-                        className="block w-full py-4 font-lastica text-[8px] tracking-[3px] uppercase text-center"
-                        style={{ background: GOLD, color: '#050505' }}>
-                        J'AI PAYÉ →
-                    </Link>
-                </div>
-            </div>
-        </Layout>
-    );
 
     return (
         <Layout title="Finaliser ma commande — MIA DREAMS">
@@ -283,7 +261,7 @@ export default function Commande() {
                                                 </svg>
                                                 Traitement…
                                             </span>
-                                        ) : paymentMethod === 'wave' ? 'PAYER AVEC WAVE →' : 'CONFIRMER LA COMMANDE →'}
+                                        ) : paymentMethod === 'cinetpay' ? 'PAYER EN LIGNE →' : 'CONFIRMER LA COMMANDE →'}
                                     </button>
 
                                     <Link to="/panier"

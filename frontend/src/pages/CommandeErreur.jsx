@@ -11,7 +11,7 @@ export default function CommandeErreur() {
 
     useEffect(() => {
         if (id) {
-            axios.get(`/api/orders/${id}`)
+            axios.get(`/api/orders/public/${id}`)
                 .then(r => setOrder(r.data))
                 .catch(() => {});
         }

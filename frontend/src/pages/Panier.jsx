@@ -172,25 +172,34 @@ export default function Panier() {
 
                                 {/* Modes de paiement */}
                                 <div className="mt-6 pt-5 border-t border-white/[0.08]">
-                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/35 uppercase mb-3 text-center">Paiements acceptés</p>
-                                    <div className="flex items-center justify-center gap-4">
-                                        {/* Wave logo */}
-                                        <div className="flex items-center gap-1.5 opacity-30 hover:opacity-50 transition-opacity">
-                                            <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
-                                                <rect width="40" height="40" rx="8" fill="#1D63ED"/>
-                                                <path d="M8 20c2-5 4-8 7-8s4 5 5 8 2 5 5 5 5-3 7-8" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                                            </svg>
-                                            <span className="font-lastica text-[7px] tracking-[2px] text-white uppercase">Wave</span>
+                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/50 uppercase mb-3 text-center">Paiements acceptés</p>
+                                    <div className="flex items-center justify-center gap-3 flex-wrap">
+                                        {/* Wave */}
+                                        <div className="flex items-center gap-1 opacity-65 hover:opacity-90 transition-opacity">
+                                            <svg width="16" height="16" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="7" fill="#1D63ED"/><path d="M8 20c2-5 4-8 7-8s4 5 5 8 2 5 5 5 5-3 7-8" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"/></svg>
+                                            <span className="font-lastica text-[6px] tracking-[1px] text-white/70 uppercase">Wave</span>
                                         </div>
-                                        <div className="w-px h-4 bg-white/[0.08]" />
+                                        <div className="w-px h-3 bg-white/[0.12]" />
+                                        {/* Orange Money */}
+                                        <div className="flex items-center gap-1 opacity-65 hover:opacity-90 transition-opacity">
+                                            <div style={{ width:16, height:16, background:'#FF6600', borderRadius:4 }} className="flex items-center justify-center">
+                                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><circle cx="12" cy="12" r="5"/></svg>
+                                            </div>
+                                            <span className="font-lastica text-[6px] tracking-[1px] text-white/70 uppercase">Orange</span>
+                                        </div>
+                                        <div className="w-px h-3 bg-white/[0.12]" />
+                                        {/* MTN */}
+                                        <div className="flex items-center gap-1 opacity-65 hover:opacity-90 transition-opacity">
+                                            <div style={{ width:16, height:16, background:'#FFCC00', borderRadius:4 }} className="flex items-center justify-center">
+                                                <span className="font-bold text-[7px] text-black leading-none">M</span>
+                                            </div>
+                                            <span className="font-lastica text-[6px] tracking-[1px] text-white/70 uppercase">MTN</span>
+                                        </div>
+                                        <div className="w-px h-3 bg-white/[0.12]" />
                                         {/* Espèces */}
-                                        <div className="flex items-center gap-1.5 opacity-30 hover:opacity-50 transition-opacity">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                                                <rect x="2" y="6" width="20" height="12" rx="2"/>
-                                                <circle cx="12" cy="12" r="3"/>
-                                                <path d="M6 12h.01M18 12h.01"/>
-                                            </svg>
-                                            <span className="font-lastica text-[7px] tracking-[2px] text-white uppercase">Espèces</span>
+                                        <div className="flex items-center gap-1 opacity-65 hover:opacity-90 transition-opacity">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.75)" strokeWidth="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+                                            <span className="font-lastica text-[6px] tracking-[1px] text-white/70 uppercase">Espèces</span>
                                         </div>
                                     </div>
                                 </div>

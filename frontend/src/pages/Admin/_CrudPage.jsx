@@ -71,7 +71,19 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
     const load = () => axios.get(`/api/admin/${apiPath}`).then(r => setItems(r.data)).catch(() => {});
     useEffect(() => { load(); }, [apiPath]);
 
-    const openNew = () => { setEditing(null); setForm({}); setFiles({}); setShowForm(true); };
+    const openNew = () => {
+        // Pré-remplir les champs select avec leur première option (évite les créations avec statut vide)
+        const initialForm = {};
+        fields.forEach(f => {
+            if (f.type === 'select' && f.options?.length > 0) {
+                initialForm[f.name] = f.defaultValue ?? f.options[0].value;
+            }
+        });
+        setEditing(null);
+        setForm(initialForm);
+        setFiles({});
+        setShowForm(true);
+    };
     const openEdit = (item) => { setEditing(item._id); setForm({ ...item }); setFiles({}); setShowForm(true); };
     const cancel = () => { setShowForm(false); setEditing(null); setForm({}); setFiles({}); };
 

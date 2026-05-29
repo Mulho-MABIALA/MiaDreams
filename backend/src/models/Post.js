@@ -11,7 +11,7 @@ const postSchema = new mongoose.Schema({
     cover_image:  String,
     reading_time: Number,
     is_featured:  { type: Boolean, default: false },
-    is_published: { type: Boolean, default: false },
+    is_published: { type: Boolean, default: true },
     published_at: Date,
 }, { timestamps: true });
 

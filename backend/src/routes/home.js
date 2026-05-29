@@ -6,6 +6,7 @@ const Testimonial = require('../models/Testimonial');
 // GET /api/home
 router.get('/', async (req, res) => {
     try {
+        res.set('Cache-Control', 'no-store');
         const [services, testimonials] = await Promise.all([
             Service.find({ is_active: true }).sort('order'),
             Testimonial.find({ is_active: true }).sort('order'),

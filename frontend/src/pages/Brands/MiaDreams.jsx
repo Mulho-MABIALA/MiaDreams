@@ -11,7 +11,7 @@ export default function MiaDreams() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/mia-dreams')
+        axios.get('/api/brands/mia-dreams', { params: { _t: Date.now() } })
             .then(res => { setBrand(res.data.brand); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);

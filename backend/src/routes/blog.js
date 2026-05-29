@@ -5,8 +5,9 @@ const Post = require('../models/Post');
 // GET /api/blog
 router.get('/', async (req, res) => {
     try {
+        res.set('Cache-Control', 'no-store');
         const { category, search, page = 1, limit = 9 } = req.query;
-        const query = { is_published: true };
+        const query = { is_published: { $ne: false } };
 
         if (category) query.category = category;
         if (search) {
@@ -24,10 +25,10 @@ router.get('/', async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
 
-        const featured = await Post.findOne({ is_published: true, is_featured: true })
+        const featured = await Post.findOne({ is_published: { $ne: false }, is_featured: true })
             .sort({ published_at: -1 });
 
-        const categories = await Post.distinct('category', { is_published: true });
+        const categories = await Post.distinct('category', { is_published: { $ne: false } });
 
         res.json({
             featured,
@@ -47,11 +48,12 @@ router.get('/', async (req, res) => {
 // GET /api/blog/:slug
 router.get('/:slug', async (req, res) => {
     try {
-        const post = await Post.findOne({ slug: req.params.slug, is_published: true });
+        res.set('Cache-Control', 'no-store');
+        const post = await Post.findOne({ slug: req.params.slug, is_published: { $ne: false } });
         if (!post) return res.status(404).json({ message: 'Article introuvable' });
 
         const related = await Post.find({
-            is_published: true,
+            is_published: { $ne: false },
             _id: { $ne: post._id },
             category: post.category,
         }).limit(3).sort({ published_at: -1 });

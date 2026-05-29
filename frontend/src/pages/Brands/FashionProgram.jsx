@@ -11,7 +11,7 @@ export default function FashionProgram() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/fashion-program')
+        axios.get('/api/brands/fashion-program', { params: { _t: Date.now() } })
             .then(res => { setBrand(res.data.brand); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);

@@ -11,7 +11,7 @@ export default function Brand() {
 
     useEffect(() => {
         setLoading(true);
-        axios.get(`/api/brands/${slug}`)
+        axios.get(`/api/brands/${slug}`, { params: { _t: Date.now() } })
             .then(res => { setData(res.data); setLoading(false); })
             .catch(() => setLoading(false));
     }, [slug]);

@@ -11,7 +11,7 @@ export default function PersonalBranding() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/personal-branding')
+        axios.get('/api/brands/personal-branding', { params: { _t: Date.now() } })
             .then(res => { setBrand(res.data.brand); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);

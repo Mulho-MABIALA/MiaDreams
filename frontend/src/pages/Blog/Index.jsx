@@ -48,14 +48,14 @@ export default function BlogIndex() {
     const search = searchParams.get('search') || '';
 
     useEffect(() => {
-        const params = { page };
+        const params = { page, _t: Date.now() };
         if (category) params.category = category;
         if (search) params.search = search;
         axios.get('/api/blog', { params }).then(res => setData(res.data)).catch(() => {});
     }, [category, search, page]);
 
     useEffect(() => {
-        axios.get('/api/podcasts').then(res => { setPodcasts(res.data.podcasts); setLatestPodcast(res.data.latestPodcast); }).catch(() => {});
+        axios.get('/api/podcasts', { params: { _t: Date.now() } }).then(res => { setPodcasts(res.data.podcasts); setLatestPodcast(res.data.latestPodcast); }).catch(() => {});
     }, []);
 
     const filterCategory = (cat) => {

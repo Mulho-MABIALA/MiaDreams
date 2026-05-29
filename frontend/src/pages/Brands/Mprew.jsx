@@ -11,7 +11,7 @@ export default function Mprew() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/brands/mprew')
+        axios.get('/api/brands/mprew', { params: { _t: Date.now() } })
             .then(res => { setBrand(res.data.brand); setLoading(false); })
             .catch(() => setLoading(false));
     }, []);

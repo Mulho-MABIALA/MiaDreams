@@ -7,7 +7,8 @@ const Catalogue = require('../models/Catalogue');
 // GET /api/catalogues
 router.get('/', async (req, res) => {
     try {
-        const catalogues = await Catalogue.find({ is_active: true }).sort('order');
+        res.set('Cache-Control', 'no-store');
+        const catalogues = await Catalogue.find({ is_active: { $ne: false } }).sort('order');
         res.json(catalogues);
     } catch (err) {
         res.status(500).json({ message: err.message });

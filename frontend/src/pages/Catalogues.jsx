@@ -12,7 +12,7 @@ export default function Catalogues() {
     const inputRef                      = useRef(null);
 
     useEffect(() => {
-        axios.get('/api/catalogues').then(res => setCatalogues(res.data)).catch(() => {});
+        axios.get('/api/catalogues', { params: { _t: Date.now() } }).then(res => setCatalogues(res.data)).catch(() => {});
     }, []);
 
     const openGate = (cat) => {

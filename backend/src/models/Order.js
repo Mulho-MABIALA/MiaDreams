@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
     subtotal:       { type: Number, required: true },
     shipping_fee:   { type: Number, default: 0 },
     total:          { type: Number, required: true },
-    payment_method: { type: String, enum: ['wave', 'orange_money', 'free_money', 'cash'], required: true },
+    payment_method: { type: String, enum: ['wave', 'orange_money', 'free_money', 'cinetpay', 'cash'], required: true },
     payment_status: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
     payment_ref:    String,
     order_status:   { type: String, enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'], default: 'pending' },

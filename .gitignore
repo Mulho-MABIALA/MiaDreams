@@ -3,8 +3,8 @@ node_modules/
 .env.*
 !.env.example
 
-# Build outputs
-frontend/dist/
+# Build outputs — inclus dans git pour déploiement Jokko/Passenger
+# frontend/dist/
 uploads/
 
 # Logs

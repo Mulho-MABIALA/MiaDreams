@@ -26,7 +26,7 @@ export default function CommandeSucces() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`/api/orders/${id}`)
+        axios.get(`/api/orders/public/${id}`)
             .then(r => setOrder(r.data))
             .catch(() => {})
             .finally(() => setLoading(false));

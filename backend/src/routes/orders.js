@@ -85,6 +85,16 @@ router.get('/track/:number', async (req, res) => {
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
+// GET /api/orders/public/:id — détail client (public, champs limités)
+router.get('/public/:id', async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id)
+            .select('order_number order_status payment_status items subtotal shipping_fee total customer createdAt payment_method notes');
+        if (!order) return res.status(404).json({ message: 'Commande introuvable' });
+        res.json(order);
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
 // GET /api/orders/:id — détail complet (admin seulement)
 router.get('/:id', authMiddleware, async (req, res) => {
     try {
@@ -94,13 +104,15 @@ router.get('/:id', authMiddleware, async (req, res) => {
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
-// GET /api/orders/email/:email — historique par email (admin seulement)
-router.get('/email/:email', authMiddleware, async (req, res) => {
+// GET /api/orders/email/:email — historique par email (public, pour les clients)
+router.get('/email/:email', async (req, res) => {
     try {
-        const email = req.params.email.toLowerCase().trim();
+        const email = decodeURIComponent(req.params.email).toLowerCase().trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
             return res.status(400).json({ message: 'Email invalide' });
-        const orders = await Order.find({ 'customer.email': email }).sort({ createdAt: -1 }).limit(20);
+        const orders = await Order.find({ 'customer.email': email })
+            .select('order_number order_status payment_status items subtotal shipping_fee total customer createdAt payment_method')
+            .sort({ createdAt: -1 }).limit(20);
         res.json(orders);
     } catch (e) { res.status(500).json({ message: e.message }); }
 });

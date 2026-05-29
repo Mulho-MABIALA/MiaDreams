@@ -7,7 +7,8 @@ const Product = require('../models/Product');
 // GET /api/brands
 router.get('/', async (req, res) => {
     try {
-        const brands = await Brand.find({ is_active: true }).sort('order');
+        res.set('Cache-Control', 'no-store');
+        const brands = await Brand.find({ is_active: { $ne: false } }).sort('order');
         res.json(brands);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -17,14 +18,15 @@ router.get('/', async (req, res) => {
 // GET /api/brands/:slug — brand + collections + products
 router.get('/:slug', async (req, res) => {
     try {
-        const brand = await Brand.findOne({ slug: req.params.slug, is_active: true });
+        res.set('Cache-Control', 'no-store');
+        const brand = await Brand.findOne({ slug: req.params.slug, is_active: { $ne: false } });
         if (!brand) return res.status(404).json({ message: 'Marque introuvable' });
 
-        const collections = await Collection.find({ brand: brand._id }).sort('order');
+        const collections = await Collection.find({ brand: brand._id, is_active: { $ne: false } }).sort('order');
         const collectionIds = collections.map(c => c._id);
         const products = await Product.find({
             collection: { $in: collectionIds },
-            is_active: true,
+            is_active: { $ne: false },
         }).sort('order');
 
         // Attacher les produits à chaque collection

@@ -11,8 +11,9 @@ router.get('/', async (req, res) => {
         const { brand } = req.query;
 
         // Filtres par brand
-        const colQuery  = { is_active: true, image: { $exists: true, $ne: '' } };
-        const galQuery  = { is_active: true };
+        res.set('Cache-Control', 'no-store');
+        const colQuery  = { is_active: { $ne: false }, image: { $exists: true, $ne: '' } };
+        const galQuery  = { is_active: { $ne: false } };
         if (brand) { colQuery.brand = brand; galQuery.brand = brand; }
 
         const [galleryItems, brands, collections, products] = await Promise.all([
@@ -22,14 +23,14 @@ router.get('/', async (req, res) => {
                 .populate('collection', 'name'),
 
             // Marques actives pour les filtres
-            Brand.find({ is_active: true }).sort('order'),
+            Brand.find({ is_active: { $ne: false } }).sort('order'),
 
             // Collections avec image
             Collection.find(colQuery).sort('order')
                 .populate('brand', 'name slug _id'),
 
             // Produits actifs avec image
-            Product.find({ is_active: true, image: { $exists: true, $ne: '' } }).sort('order')
+            Product.find({ is_active: { $ne: false }, image: { $exists: true, $ne: '' } }).sort('order')
                 .populate({
                     path: 'collection',
                     populate: { path: 'brand', select: 'name slug _id' },

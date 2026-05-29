@@ -41,8 +41,8 @@ const PAYMENT_METHODS = [
     },
 ];
 
-const inp = "w-full bg-[#080808] border border-white/[0.06] text-white/65 font-glacial text-sm px-4 py-3 outline-none focus:border-gold/25 transition-colors placeholder:text-white/15 rounded-none";
-const label = "font-lastica text-[7px] tracking-[3px] text-white/25 uppercase block mb-2";
+const inp = "w-full bg-[#0d0d0d] border border-white/[0.18] text-white/90 font-glacial text-sm px-4 py-3 outline-none focus:border-gold/50 transition-colors placeholder:text-white/25 rounded-none";
+const label = "font-lastica text-[7px] tracking-[3px] text-white/50 uppercase block mb-2";
 
 export default function Commande() {
     const { items, subtotal, clearCart } = useCart();
@@ -146,9 +146,9 @@ export default function Commande() {
                                 {/* Infos client */}
                                 <div>
                                     <div className="flex items-center gap-4 mb-6">
-                                        <span className="font-lastica text-[7px] tracking-[5px] text-white/20 uppercase">01</span>
-                                        <div className="h-px flex-1 bg-white/[0.04]" />
-                                        <span className="font-lastica text-[7px] tracking-[4px] text-white/20 uppercase">Vos informations</span>
+                                        <span className="font-lastica text-[7px] tracking-[5px] text-white/40 uppercase">01</span>
+                                        <div className="h-px flex-1 bg-white/[0.08]" />
+                                        <span className="font-lastica text-[7px] tracking-[4px] text-white/40 uppercase">Vos informations</span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="sm:col-span-2">
@@ -187,9 +187,9 @@ export default function Commande() {
                                 {/* Mode de paiement */}
                                 <div>
                                     <div className="flex items-center gap-4 mb-6">
-                                        <span className="font-lastica text-[7px] tracking-[5px] text-white/20 uppercase">02</span>
-                                        <div className="h-px flex-1 bg-white/[0.04]" />
-                                        <span className="font-lastica text-[7px] tracking-[4px] text-white/20 uppercase">Mode de paiement</span>
+                                        <span className="font-lastica text-[7px] tracking-[5px] text-white/40 uppercase">02</span>
+                                        <div className="h-px flex-1 bg-white/[0.08]" />
+                                        <span className="font-lastica text-[7px] tracking-[4px] text-white/40 uppercase">Mode de paiement</span>
                                     </div>
                                     <div className="space-y-3">
                                         {PAYMENT_METHODS.map(m => (
@@ -226,7 +226,7 @@ export default function Commande() {
                             {/* ── Récapitulatif ── */}
                             <div>
                                 <div className="bg-[#0c0c0c] border border-white/[0.05] p-5 sm:p-7 lg:sticky lg:top-24">
-                                    <p className="font-lastica text-[7px] tracking-[5px] text-white/20 uppercase mb-6">Ma commande</p>
+                                    <p className="font-lastica text-[7px] tracking-[5px] text-white/45 uppercase mb-6">Ma commande</p>
 
                                     {/* Articles */}
                                     <div className="space-y-4 mb-6">
@@ -239,11 +239,11 @@ export default function Commande() {
                                                     }
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-glacial text-xs text-white/55 uppercase tracking-[.5px] truncate leading-snug">{item.name}</p>
-                                                    {item.size && <p className="font-glacial text-[10px] text-white/20 mt-0.5">T. {item.size}</p>}
-                                                    <p className="font-glacial text-[10px] text-white/20">× {item.quantity}</p>
+                                                    <p className="font-glacial text-xs text-white/75 uppercase tracking-[.5px] truncate leading-snug">{item.name}</p>
+                                                    {item.size && <p className="font-glacial text-[10px] text-white/40 mt-0.5">T. {item.size}</p>}
+                                                    <p className="font-glacial text-[10px] text-white/40">× {item.quantity}</p>
                                                 </div>
-                                                <span className="font-glacial text-xs text-white/45 flex-shrink-0">
+                                                <span className="font-glacial text-xs text-white/65 flex-shrink-0">
                                                     {(item.price * item.quantity).toLocaleString('fr-FR')} F
                                                 </span>
                                             </div>
@@ -253,15 +253,15 @@ export default function Commande() {
                                     {/* Totaux */}
                                     <div className="border-t border-white/[0.05] pt-5 space-y-3 mb-7">
                                         <div className="flex justify-between">
-                                            <span className="font-glacial text-sm text-white/30">Sous-total</span>
-                                            <span className="font-glacial text-sm text-white/50">{subtotal.toLocaleString('fr-FR')} FCFA</span>
+                                            <span className="font-glacial text-sm text-white/50">Sous-total</span>
+                                            <span className="font-glacial text-sm text-white/70">{subtotal.toLocaleString('fr-FR')} FCFA</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="font-glacial text-sm text-white/30">Livraison</span>
-                                            <span className="font-glacial text-sm text-white/50">{shipping.toLocaleString('fr-FR')} FCFA</span>
+                                            <span className="font-glacial text-sm text-white/50">Livraison</span>
+                                            <span className="font-glacial text-sm text-white/70">{shipping.toLocaleString('fr-FR')} FCFA</span>
                                         </div>
-                                        <div className="flex justify-between pt-3 border-t border-white/[0.05]">
-                                            <span className="font-glacial text-sm text-white/60">Total</span>
+                                        <div className="flex justify-between pt-3 border-t border-white/[0.08]">
+                                            <span className="font-glacial text-sm text-white/75">Total</span>
                                             <span className="font-glacial text-lg font-medium" style={{ color: GOLD }}>
                                                 {total.toLocaleString('fr-FR')} <span className="text-sm">FCFA</span>
                                             </span>

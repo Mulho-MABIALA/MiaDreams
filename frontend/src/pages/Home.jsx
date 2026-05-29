@@ -351,15 +351,17 @@ export default function Home() {
     const [blogBanner, setBlogBanner]             = useState(null);
 
     useEffect(() => {
-        axios.get('/api/home').then(res => setData(res.data)).catch(() => {});
-        axios.get('/api/shop', { params: { featured: '1', limit: 8 } }).then(r => setFeatured(r.data)).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'home', type: 'hero_slide' } }).then(r => setHeroSlides(r.data)).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'home', type: 'univers' } }).then(r => setUnivers(r.data)).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'home', type: 'intro' } }).then(r => { if (r.data[0]) setIntro(r.data[0]); }).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'home', type: 'tagline' } }).then(r => { if (r.data[0]) setTagline(r.data[0].content); }).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'home', type: 'personal_branding' } }).then(r => { if (r.data[0]) setPersonalBranding(r.data[0]); }).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'home', type: 'ethical_fashion' } }).then(r => { if (r.data[0]) setEthicalFashion(r.data[0]); }).catch(() => {});
-        axios.get('/api/sections', { params: { page: 'home', type: 'blog_banner' } }).then(r => { if (r.data[0]) setBlogBanner(r.data[0]); }).catch(() => {});
+        const t = Date.now();
+        const sec = (type) => axios.get('/api/sections', { params: { page: 'home', type, _t: t } });
+        axios.get('/api/home', { params: { _t: t } }).then(res => setData(res.data)).catch(() => {});
+        axios.get('/api/shop', { params: { featured: '1', limit: 8, _t: t } }).then(r => setFeatured(r.data)).catch(() => {});
+        sec('hero_slide').then(r => setHeroSlides(r.data)).catch(() => {});
+        sec('univers').then(r => setUnivers(r.data)).catch(() => {});
+        sec('intro').then(r => { if (r.data[0]) setIntro(r.data[0]); }).catch(() => {});
+        sec('tagline').then(r => { if (r.data[0]) setTagline(r.data[0].content); }).catch(() => {});
+        sec('personal_branding').then(r => { if (r.data[0]) setPersonalBranding(r.data[0]); }).catch(() => {});
+        sec('ethical_fashion').then(r => { if (r.data[0]) setEthicalFashion(r.data[0]); }).catch(() => {});
+        sec('blog_banner').then(r => { if (r.data[0]) setBlogBanner(r.data[0]); }).catch(() => {});
     }, []);
 
     const activeUnivers = univers.length > 0 ? univers : DEFAULT_UNIVERS;

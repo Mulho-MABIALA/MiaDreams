@@ -96,6 +96,8 @@ router.post('/', (req, res) => {
         // Récupérer le dernier code (reset hard = ignore les modifs locales)
         `git -C "${APP_ROOT}" fetch origin main`,
         `git -C "${APP_ROOT}" reset --hard origin/main`,
+        // Installer les dépendances backend si nécessaire (nouveaux packages)
+        `cd "${APP_ROOT}/backend" && ${npm} install --prefer-offline 2>&1`,
         // Installer les dépendances frontend si nécessaire + rebuilder
         `cd "${APP_ROOT}/frontend" && ${npm} install --prefer-offline 2>&1 && ${npm} run build 2>&1`,
     ].join(' && ');

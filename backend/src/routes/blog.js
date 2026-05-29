@@ -5,7 +5,7 @@ const Post = require('../models/Post');
 // GET /api/blog
 router.get('/', async (req, res) => {
     try {
-        res.set('Cache-Control', 'no-store');
+        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
         const { category, search, page = 1, limit = 9 } = req.query;
         const query = { is_published: { $ne: false } };
 
@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
 // GET /api/blog/:slug
 router.get('/:slug', async (req, res) => {
     try {
-        res.set('Cache-Control', 'no-store');
+        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
         const post = await Post.findOne({ slug: req.params.slug, is_published: { $ne: false } });
         if (!post) return res.status(404).json({ message: 'Article introuvable' });
 

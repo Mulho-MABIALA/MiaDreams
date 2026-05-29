@@ -1,7 +1,8 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const fs = require('fs');
-const express = require('express');
+const express    = require('express');
+const compression = require('compression');
 const cors    = require('cors');
 const helmet  = require('helmet');
 const connectDB = require('./config/db');
@@ -12,6 +13,7 @@ const seedBrands   = require('./seedBrands');
 const seedSections = require('./seedSections');
 
 const app = express();
+app.use(compression()); // gzip — réduit la taille des réponses de ~70%
 
 // Créer le dossier uploads/ s'il n'existe pas
 const uploadsDir = path.join(__dirname, '../../uploads');

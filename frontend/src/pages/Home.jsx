@@ -351,17 +351,20 @@ export default function Home() {
     const [blogBanner, setBlogBanner]             = useState(null);
 
     useEffect(() => {
-        const t = Date.now();
-        const sec = (type) => axios.get('/api/sections', { params: { page: 'home', type, _t: t } });
-        axios.get('/api/home', { params: { _t: t } }).then(res => setData(res.data)).catch(() => {});
-        axios.get('/api/shop', { params: { featured: '1', limit: 8, _t: t } }).then(r => setFeatured(r.data)).catch(() => {});
-        sec('hero_slide').then(r => setHeroSlides(r.data)).catch(() => {});
-        sec('univers').then(r => setUnivers(r.data)).catch(() => {});
-        sec('intro').then(r => { if (r.data[0]) setIntro(r.data[0]); }).catch(() => {});
-        sec('tagline').then(r => { if (r.data[0]) setTagline(r.data[0].content); }).catch(() => {});
-        sec('personal_branding').then(r => { if (r.data[0]) setPersonalBranding(r.data[0]); }).catch(() => {});
-        sec('ethical_fashion').then(r => { if (r.data[0]) setEthicalFashion(r.data[0]); }).catch(() => {});
-        sec('blog_banner').then(r => { if (r.data[0]) setBlogBanner(r.data[0]); }).catch(() => {});
+        // 1 seul appel API au lieu de 8 séparés → chargement ~4x plus rapide
+        axios.get('/api/home/full').then(r => {
+            const d = r.data;
+            setData({ services: d.services, testimonials: d.testimonials });
+            setHeroSlides(d.heroSlides);
+            setUnivers(d.univers);
+            if (d.intro)            setIntro(d.intro);
+            if (d.tagline)          setTagline(d.tagline.content);
+            if (d.personalBranding) setPersonalBranding(d.personalBranding);
+            if (d.ethicalFashion)   setEthicalFashion(d.ethicalFashion);
+            if (d.blogBanner)       setBlogBanner(d.blogBanner);
+        }).catch(() => {});
+        // Produits mis en avant — appel séparé car peut changer fréquemment
+        axios.get('/api/shop', { params: { featured: '1', limit: 8 } }).then(r => setFeatured(r.data)).catch(() => {});
     }, []);
 
     const activeUnivers = univers.length > 0 ? univers : DEFAULT_UNIVERS;

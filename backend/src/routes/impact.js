@@ -6,7 +6,7 @@ const Initiative = require('../models/Initiative');
 // GET /api/impact
 router.get('/', async (req, res) => {
     try {
-        res.set('Cache-Control', 'no-store');
+        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
         const [sections, initiatives] = await Promise.all([
             Section.find({ page: 'impact', is_active: { $ne: false } }).sort('order'),
             Initiative.find({ is_active: true }).sort('order'),

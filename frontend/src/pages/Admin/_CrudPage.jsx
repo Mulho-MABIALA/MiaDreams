@@ -175,9 +175,9 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
                                             onChange={e => {
                                                 const val = e.target.value;
                                                 const hasSlugField = fields.some(x => x.name === 'slug');
-                                                if (f.name === 'name' && hasSlugField && !editing) {
-                                                    // Auto-génère le slug depuis le nom (seulement en création)
-                                                    setForm(p => ({ ...p, name: val, slug: toSlug(val) }));
+                                                if ((f.name === 'name' || f.name === 'title') && hasSlugField && !editing) {
+                                                    // Auto-génère le slug depuis le nom/titre (seulement en création)
+                                                    setForm(p => ({ ...p, [f.name]: val, slug: toSlug(val) }));
                                                 } else {
                                                     setForm(p => ({ ...p, [f.name]: val }));
                                                 }

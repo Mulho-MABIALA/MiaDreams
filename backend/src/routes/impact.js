@@ -7,7 +7,7 @@ const Initiative = require('../models/Initiative');
 router.get('/', async (req, res) => {
     try {
         const [sections, initiatives] = await Promise.all([
-            Section.find({ page: 'impact', is_active: true }).sort('order'),
+            Section.find({ page: 'impact', is_active: { $ne: false } }).sort('order'),
             Initiative.find({ is_active: true }).sort('order'),
         ]);
         res.json({ sections, initiatives });

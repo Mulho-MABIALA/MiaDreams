@@ -5,7 +5,7 @@ const Section = require('../models/Section');
 // GET /api/sections?page=home&type=hero_slide
 router.get('/', async (req, res) => {
     try {
-        const filter = { is_active: true };
+        const filter = { is_active: { $ne: false } };
         if (req.query.page) filter.page = req.query.page;
         if (req.query.type) filter.type  = req.query.type;
         const sections = await Section.find(filter).sort({ order: 1, createdAt: 1 });

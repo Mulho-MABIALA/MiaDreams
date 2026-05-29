@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { useApp } from '../../context/AppContext';
 
 const inp = "w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-3 py-2.5 rounded-lg outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF]";
 
@@ -28,6 +29,7 @@ function Field({ label, hint, children }) {
 const PLATFORMS = ['Instagram', 'Facebook', 'TikTok', 'YouTube', 'LinkedIn', 'Twitter/X', 'Pinterest', 'Snapchat'];
 
 export default function AdminSettings() {
+    const { refetchSettings } = useApp();
     const [company, setCompany]     = useState({ name: '', tagline: '', email: '', phone: '', whatsapp: '', address: '' });
     const [social, setSocial]       = useState([]);
     const [logoFile, setLogoFile]   = useState(null);
@@ -91,6 +93,8 @@ export default function AdminSettings() {
             if (fileRef.current) fileRef.current.value = '';
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
+            // Rafraîchir le contexte global pour que le client voie les changements immédiatement
+            refetchSettings();
         } catch (err) {
             setError(err.response?.data?.message || 'Erreur lors de la sauvegarde');
         } finally { setSaving(false); }
@@ -102,7 +106,11 @@ export default function AdminSettings() {
 
     const saveSocial = async (item) => {
         setSavingId(item._id);
-        try { await axios.put(`/api/admin/social-media/${item._id}`, item); }
+        try {
+            await axios.put(`/api/admin/social-media/${item._id}`, item);
+            // Rafraîchir le contexte global (liens footer côté client)
+            refetchSettings();
+        }
         catch { /* silencieux */ }
         finally { setSavingId(null); }
     };
@@ -113,6 +121,7 @@ export default function AdminSettings() {
                 platform: 'Instagram', url: '', order: social.length,
             });
             setSocial(p => [...p, r.data]);
+            refetchSettings();
         } catch (err) {
             alert(err.response?.data?.message || 'Erreur lors de l\'ajout');
         }
@@ -122,6 +131,7 @@ export default function AdminSettings() {
         if (!confirm('Supprimer ce réseau ?')) return;
         await axios.delete(`/api/admin/social-media/${id}`).catch(() => {});
         setSocial(p => p.filter(s => s._id !== id));
+        refetchSettings();
     };
 
     // Icônes réseaux

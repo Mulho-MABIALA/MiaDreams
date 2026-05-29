@@ -12,10 +12,14 @@ export function AppProvider({ children }) {
     });
     const [flash, setFlash] = useState(null);
 
-    useEffect(() => {
+    const refetchSettings = () => {
         axios.get('/api/settings')
             .then(res => setSettings(res.data))
             .catch(() => {});
+    };
+
+    useEffect(() => {
+        refetchSettings();
     }, []);
 
     const showFlash = (msg, type = 'success') => {
@@ -24,7 +28,7 @@ export function AppProvider({ children }) {
     };
 
     return (
-        <AppContext.Provider value={{ ...settings, flash, showFlash }}>
+        <AppContext.Provider value={{ ...settings, flash, showFlash, refetchSettings }}>
             {children}
         </AppContext.Provider>
     );

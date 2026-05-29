@@ -93,8 +93,9 @@ router.post('/', (req, res) => {
     const npm    = fs.existsSync(npmBin) ? `"${npmBin}"` : 'npm';
 
     const commands = [
-        // Récupérer le dernier code
-        `git -C "${APP_ROOT}" pull origin main`,
+        // Récupérer le dernier code (reset hard = ignore les modifs locales)
+        `git -C "${APP_ROOT}" fetch origin main`,
+        `git -C "${APP_ROOT}" reset --hard origin/main`,
         // Installer les dépendances frontend si nécessaire + rebuilder
         `cd "${APP_ROOT}/frontend" && ${npm} install --prefer-offline 2>&1 && ${npm} run build 2>&1`,
     ].join(' && ');

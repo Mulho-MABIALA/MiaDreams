@@ -8,11 +8,12 @@ const Catalogue = require('../models/Catalogue');
 // GET /api/settings — données globales (navbar, footer)
 router.get('/', async (req, res) => {
     try {
+        res.set('Cache-Control', 'no-store');
         const [companyInfo, socialMediaLinks, navBrands, navCatalogues] = await Promise.all([
             CompanyInfo.findOne(),
             SocialMedia.find({ is_active: true }).sort('order'),
-            Brand.find({ is_active: true }).sort('order'),
-            Catalogue.find({ is_active: true }).sort('order').limit(5),
+            Brand.find({ is_active: { $ne: false } }).sort('order'),
+            Catalogue.find({ is_active: { $ne: false } }).sort('order').limit(5),
         ]);
 
         res.json({ companyInfo, socialMediaLinks, navBrands, navCatalogues });

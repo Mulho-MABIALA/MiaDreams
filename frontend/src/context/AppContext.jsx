@@ -13,7 +13,7 @@ export function AppProvider({ children }) {
     const [flash, setFlash] = useState(null);
 
     const refetchSettings = () => {
-        axios.get('/api/settings')
+        axios.get('/api/settings', { params: { _t: Date.now() } })
             .then(res => setSettings(res.data))
             .catch(() => {});
     };

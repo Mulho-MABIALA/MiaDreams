@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
         const { brand } = req.query;
 
         // Filtres par brand
-        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+        res.set('Cache-Control', 'no-cache');
         const colQuery  = { is_active: { $ne: false }, image: { $exists: true, $ne: '' } };
         const galQuery  = { is_active: { $ne: false } };
         if (brand) { colQuery.brand = brand; galQuery.brand = brand; }

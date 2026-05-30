@@ -8,7 +8,7 @@ const Product     = require('../models/Product');
 // GET /api/home — données de base (services + témoignages)
 router.get('/', async (req, res) => {
     try {
-        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+        res.set('Cache-Control', 'no-cache');
         const [services, testimonials] = await Promise.all([
             Service.find({ is_active: true }).sort('order'),
             Testimonial.find({ is_active: true }).sort('order'),

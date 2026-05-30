@@ -8,7 +8,7 @@ const Brand      = require('../models/Brand');
 router.get('/', async (req, res) => {
     try {
         const { category, collection, brand, featured, q, limit = 200 } = req.query;
-        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+        res.set('Cache-Control', 'no-cache');
         const filter = { is_active: { $ne: false } };
         if (category)   filter.category   = category;
         if (collection) filter.collection = collection;

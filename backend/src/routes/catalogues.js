@@ -7,7 +7,7 @@ const Catalogue = require('../models/Catalogue');
 // GET /api/catalogues
 router.get('/', async (req, res) => {
     try {
-        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+        res.set('Cache-Control', 'no-cache');
         const catalogues = await Catalogue.find({ is_active: { $ne: false } }).sort('order');
         res.json(catalogues);
     } catch (err) {

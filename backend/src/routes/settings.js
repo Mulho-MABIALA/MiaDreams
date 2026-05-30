@@ -8,7 +8,7 @@ const Catalogue = require('../models/Catalogue');
 // GET /api/settings — données globales (navbar, footer)
 router.get('/', async (req, res) => {
     try {
-        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+        res.set('Cache-Control', 'no-cache');
         const [companyInfo, socialMediaLinks, navBrands, navCatalogues] = await Promise.all([
             CompanyInfo.findOne(),
             SocialMedia.find({ is_active: true }).sort('order'),

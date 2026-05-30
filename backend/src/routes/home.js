@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 // GET /api/home/full — toutes les sections en un seul appel (perf)
 router.get('/full', async (req, res) => {
     try {
-        res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+        res.set('Cache-Control', 'no-cache');   // contenu modifié par admin → toujours frais
         const sectionFilter = { page: 'home', is_active: { $ne: false } };
 
         const [

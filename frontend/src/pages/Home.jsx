@@ -352,7 +352,7 @@ export default function Home() {
 
     useEffect(() => {
         // 1 seul appel API au lieu de 8 séparés → chargement ~4x plus rapide
-        axios.get('/api/home/full').then(r => {
+        axios.get('/api/home/full', { params: { _t: Date.now() } }).then(r => {
             const d = r.data;
             setData({ services: d.services, testimonials: d.testimonials });
             setHeroSlides(d.heroSlides);

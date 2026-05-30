@@ -433,7 +433,7 @@ export default function AdminPages() {
                 </svg>
                 <p className="text-sm text-blue-700">
                     Cliquez sur une section pour l'ouvrir et gérer ses éléments.
-                    Les modifications sont visibles sur le site après actualisation.
+                    Les modifications sont visibles immédiatement sur le site (rechargez la page publique).
                 </p>
             </div>
 

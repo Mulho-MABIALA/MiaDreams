@@ -46,6 +46,7 @@ import Commande from './pages/Commande';
 import CommandeSucces from './pages/CommandeSucces';
 import CommandeErreur from './pages/CommandeErreur';
 import MesCommandes from './pages/MesCommandes';
+import CommandeSuivi from './pages/CommandeSuivi';
 import NotFound from './pages/NotFound';
 
 function ScrollToTop() {
@@ -82,6 +83,8 @@ export default function App() {
                 <Route path="/commande/succes/:id"  element={<CommandeSucces />} />
                 <Route path="/commande/erreur/:id"  element={<CommandeErreur />} />
                 <Route path="/mes-commandes"     element={<MesCommandes />} />
+                <Route path="/commande/suivi"           element={<CommandeSuivi />} />
+                <Route path="/commande/suivi/:number"   element={<CommandeSuivi />} />
                 <Route path="/login"             element={<Login />} />
                 <Route path="/admin/*"           element={<Admin />} />
                 <Route path="*"                 element={<NotFound />} />

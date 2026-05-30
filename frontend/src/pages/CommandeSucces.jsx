@@ -154,17 +154,24 @@ export default function CommandeSucces() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        <Link to="/boutique"
-                            className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase transition-all hover:brightness-110"
+                    <div className="flex flex-col gap-3">
+                        <Link to={`/commande/suivi/${order.order_number}`}
+                            className="w-full py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase transition-all hover:brightness-110"
                             style={{ background: GOLD, color: '#050505' }}>
-                            CONTINUER LES ACHATS
+                            SUIVRE MA COMMANDE →
                         </Link>
-                        <Link to="/mes-commandes"
-                            className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase border transition-all"
-                            style={{ borderColor: `${GOLD}30`, color: `${GOLD}60` }}>
-                            MES COMMANDES
-                        </Link>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <Link to="/boutique"
+                                className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase border transition-all"
+                                style={{ borderColor: `${GOLD}30`, color: `${GOLD}60` }}>
+                                CONTINUER LES ACHATS
+                            </Link>
+                            <Link to="/mes-commandes"
+                                className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase border transition-all"
+                                style={{ borderColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.25)' }}>
+                                MES COMMANDES
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

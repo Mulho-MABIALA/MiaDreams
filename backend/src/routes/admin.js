@@ -23,6 +23,7 @@ const Reservation = require('../models/Reservation');
 const Newsletter = require('../models/Newsletter');
 const Order = require('../models/Order');
 const CaisseTransaction = require('../models/CaisseTransaction');
+const { notifyStatusUpdate } = require('../utils/notify');
 
 // ── Cloudinary (stockage cloud permanent) ─────────────────────────────────────
 const cloudinary = require('cloudinary').v2;
@@ -361,6 +362,12 @@ router.patch('/orders/:id', async (req, res) => {
                 notes:         `Remboursement automatique suite à annulation de commande.`,
             });
             console.log(`💸 Sortie caisse créée (remboursement) pour ${order.order_number}`);
+        }
+
+        // ── Email client si statut commande a changé ──
+        const statusChanged = order_status && order_status !== before.order_status;
+        if (statusChanged) {
+            notifyStatusUpdate(order).catch(e => console.error('Status email error:', e.message));
         }
 
         res.json(order);

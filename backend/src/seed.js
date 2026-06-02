@@ -6,9 +6,15 @@ const Admin = require('./models/Admin');
 
 async function seedAdmin() {
     try {
-        const email    = process.env.ADMIN_EMAIL    || 'admin@miadreams.com';
-        const password = process.env.ADMIN_PASSWORD || 'Admin@2024';
-        const name     = process.env.ADMIN_NAME     || 'Admin MiaDreams';
+        const email    = process.env.ADMIN_EMAIL;
+        const password = process.env.ADMIN_PASSWORD;
+        const name     = process.env.ADMIN_NAME || 'Admin MiaDreams';
+
+        // Refuser de créer un admin avec des credentials par défaut connus
+        if (!email || !password) {
+            console.warn('⚠️  ADMIN_EMAIL / ADMIN_PASSWORD non configurés — seed admin ignoré. Configurez ces variables d\'environnement.');
+            return;
+        }
 
         // Chercher par email ET vérifier s'il existe déjà n'importe quel admin
         const count = await Admin.countDocuments({});

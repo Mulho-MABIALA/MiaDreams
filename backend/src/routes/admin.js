@@ -154,7 +154,7 @@ const crudRouter = (Model, fields = []) => {
                 // Si aucun nouveau fichier envoyé et pas de valeur dans req.body → garder l'existant
                 if (data[f] === undefined && existing[f]) data[f] = existing[f];
             });
-            const doc = await Model.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: false });
+            const doc = await Model.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
             res.json(doc);
         } catch(e){ res.status(400).json({message:e.message}); }
     });

@@ -13,7 +13,10 @@ router.get('/', async (req, res) => {
         if (category)   filter.category   = category;
         if (collection) filter.collection = collection;
         if (featured === '1') filter.is_featured = true;
-        if (q) filter.name = { $regex: q, $options: 'i' };
+        if (q) {
+            const safeQ = q.substring(0, 100).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            filter.name = { $regex: safeQ, $options: 'i' };
+        }
 
         // Filtre par marque → chercher les collections de cette marque
         if (brand) {

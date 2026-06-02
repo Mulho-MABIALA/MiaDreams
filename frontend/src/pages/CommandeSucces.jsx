@@ -26,7 +26,9 @@ export default function CommandeSucces() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`/api/orders/public/${id}`)
+        // Récupérer le numéro de commande stocké lors du checkout (anti-IDOR)
+        const orderNumber = sessionStorage.getItem(`order_num_${id}`) || '';
+        axios.get(`/api/orders/public/${id}`, { params: { orderNumber } })
             .then(r => setOrder(r.data))
             .catch(() => {})
             .finally(() => setLoading(false));

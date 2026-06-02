@@ -85,30 +85,36 @@ router.post('/wave/init', async (req, res) => {
  * → Copier le "Webhook Secret" dans WAVE_WEBHOOK_SECRET
  */
 router.post('/wave/webhook', async (req, res) => {
-    // ── Vérification signature HMAC-SHA256 ──
-    const waveSig    = req.headers['wave-signature'] || '';
+    // ── Vérification signature HMAC-SHA256 — OBLIGATOIRE ──
     const webhookKey = process.env.WAVE_WEBHOOK_SECRET;
+    const waveSig    = req.headers['wave-signature'] || '';
 
-    if (webhookKey && waveSig) {
-        try {
-            // Format Wave : "t=<timestamp>,v1=<signature>"
-            const parts     = Object.fromEntries(waveSig.split(',').map(p => p.split('=')));
-            const timestamp = parts.t;
-            const signature = parts.v1;
-            // req.rawBody capturé par express.json({ verify }) dans server.js
-            const rawBody   = req.rawBody ? req.rawBody.toString() : JSON.stringify(req.body);
-            const expected  = crypto
-                .createHmac('sha256', webhookKey)
-                .update(`${timestamp}.${rawBody}`)
-                .digest('hex');
+    if (!webhookKey) {
+        console.error('❌ WAVE_WEBHOOK_SECRET non configuré — webhook rejeté');
+        return res.status(401).json({ message: 'Webhook non configuré' });
+    }
+    if (!waveSig) {
+        console.warn('⚠️  Wave webhook : en-tête X-Wave-Signature manquant');
+        return res.status(401).json({ message: 'Signature manquante' });
+    }
+    try {
+        // Format Wave : "t=<timestamp>,v1=<signature>"
+        const parts     = Object.fromEntries(waveSig.split(',').map(p => p.split('=')));
+        const timestamp = parts.t;
+        const signature = parts.v1;
+        const rawBody   = req.rawBody ? req.rawBody.toString() : JSON.stringify(req.body);
+        const expected  = crypto
+            .createHmac('sha256', webhookKey)
+            .update(`${timestamp}.${rawBody}`)
+            .digest('hex');
 
-            if (expected !== signature) {
-                console.warn('⚠️  Wave webhook signature invalide');
-                return res.status(401).json({ message: 'Signature invalide' });
-            }
-        } catch (e) {
-            console.error('Erreur vérification signature Wave:', e.message);
+        if (!timestamp || !signature || expected !== signature) {
+            console.warn('⚠️  Wave webhook signature invalide');
+            return res.status(401).json({ message: 'Signature invalide' });
         }
+    } catch (e) {
+        console.error('Erreur vérification signature Wave:', e.message);
+        return res.status(401).json({ message: 'Erreur vérification signature' });
     }
 
     try {
@@ -219,7 +225,14 @@ router.post('/orange-money/init', async (req, res) => {
  */
 router.post('/orange-money/webhook', async (req, res) => {
     try {
-        const { reference, status, txnid } = req.body;
+        const { reference, status, txnid, merchant_key } = req.body;
+
+        // Vérification : le merchant_key doit correspondre à notre clé
+        const expectedKey = process.env.ORANGE_MONEY_MERCHANT_KEY;
+        if (expectedKey && merchant_key !== expectedKey) {
+            console.warn('⚠️  Orange Money webhook : merchant_key invalide');
+            return res.status(401).json({ message: 'Non autorisé' });
+        }
         console.log('Orange Money webhook reçu:', { reference, status, txnid });
 
         if (status === 'SUCCESS') {
@@ -270,6 +283,13 @@ router.post('/free-money/init', async (req, res) => {
 
 router.post('/free-money/webhook', async (req, res) => {
     try {
+        // Vérification par token secret dans l'URL (?secret=...)
+        const expectedSecret = process.env.FREE_MONEY_WEBHOOK_SECRET;
+        if (!expectedSecret || req.query.secret !== expectedSecret) {
+            console.warn('⚠️  Free Money webhook : secret invalide');
+            return res.status(401).json({ message: 'Non autorisé' });
+        }
+
         const { reference, status } = req.body;
         if (status === 'SUCCESS') {
             await Order.findByIdAndUpdate(reference, {
@@ -375,8 +395,15 @@ router.post('/cinetpay/webhook', async (req, res) => {
     res.json({ received: true });
 
     try {
-        const { cpm_trans_id } = req.body;
+        const { cpm_trans_id, cpm_site_id } = req.body;
         if (!cpm_trans_id) return;
+
+        // Vérifier que le site_id correspond au nôtre
+        const ourSiteId = process.env.CINETPAY_SITE_ID;
+        if (ourSiteId && cpm_site_id && String(cpm_site_id) !== String(ourSiteId)) {
+            console.warn('⚠️  CinetPay webhook : site_id invalide', cpm_site_id);
+            return;
+        }
 
         // Vérification du statut réel via l'API CinetPay
         const verifyRes = await fetch('https://api-checkout.cinetpay.com/v2/payment/check', {

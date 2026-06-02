@@ -132,8 +132,8 @@ router.post('/', (req, res) => {
     });
 });
 
-// ── GET /api/deploy/status — vérifie que le webhook est actif ─────────────────
-router.get('/status', (req, res) => {
+// ── GET /api/deploy/status — vérifie que le webhook est actif (admin seulement) ─
+router.get('/status', require('../middleware/auth'), (req, res) => {
     let lastLines = '';
     try {
         const content = fs.readFileSync(LOG_FILE, 'utf8');

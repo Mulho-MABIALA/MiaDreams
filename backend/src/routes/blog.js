@@ -11,10 +11,11 @@ router.get('/', async (req, res) => {
 
         if (category) query.category = category;
         if (search) {
+            const safeSearch = search.substring(0, 100).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             query.$or = [
-                { title: { $regex: search, $options: 'i' } },
-                { excerpt: { $regex: search, $options: 'i' } },
-                { content: { $regex: search, $options: 'i' } },
+                { title:   { $regex: safeSearch, $options: 'i' } },
+                { excerpt: { $regex: safeSearch, $options: 'i' } },
+                { content: { $regex: safeSearch, $options: 'i' } },
             ];
         }
 

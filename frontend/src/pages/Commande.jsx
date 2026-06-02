@@ -89,6 +89,9 @@ export default function Commande() {
             });
             axios.post('/api/newsletter', { email: form.email }).catch(() => {});
 
+            // Stocker le numéro de commande pour la page de succès (anti-IDOR)
+            sessionStorage.setItem(`order_num_${order._id}`, order.order_number);
+
             if (paymentMethod === 'cash') {
                 clearCart(); navigate(`/commande/succes/${order._id}`); return;
             }

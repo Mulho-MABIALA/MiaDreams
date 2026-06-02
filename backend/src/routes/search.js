@@ -4,15 +4,18 @@ const Post = require('../models/Post');
 const Brand = require('../models/Brand');
 const Product = require('../models/Product');
 
+/** Échappe les caractères spéciaux regex pour éviter l'injection */
+const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // GET /api/search?q=...
 router.get('/', async (req, res) => {
     try {
-        const q = (req.query.q || '').trim();
+        const q = (req.query.q || '').trim().substring(0, 100);
         if (q.length < 2) {
             return res.json({ posts: [], brands: [], products: [], query: q });
         }
 
-        const regex = { $regex: q, $options: 'i' };
+        const regex = { $regex: escapeRegex(q), $options: 'i' };
 
         const [posts, brands, products] = await Promise.all([
             Post.find({ is_published: true, $or: [{ title: regex }, { excerpt: regex }] }).limit(6),

@@ -165,7 +165,9 @@ router.post('/vente', async (req, res) => {
 // ── POST /api/caisse — créer une transaction ──────────────────────────────────
 router.post('/', async (req, res) => {
     try {
-        const tx = await CaisseTransaction.create(req.body);
+        // Sécurité : ne pas passer req.body directement (mass assignment)
+        const { type, montant, categorie, description, date, mode_paiement, reference, notes } = req.body;
+        const tx = await CaisseTransaction.create({ type, montant, categorie, description, date, mode_paiement, reference, notes });
         res.status(201).json(tx);
     } catch (e) { res.status(400).json({ message: e.message }); }
 });
@@ -173,7 +175,9 @@ router.post('/', async (req, res) => {
 // ── PUT /api/caisse/:id — modifier ────────────────────────────────────────────
 router.put('/:id', async (req, res) => {
     try {
-        const tx = await CaisseTransaction.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        // Sécurité : ne pas passer req.body directement (mass assignment)
+        const { type, montant, categorie, description, date, mode_paiement, reference, notes } = req.body;
+        const tx = await CaisseTransaction.findByIdAndUpdate(req.params.id, { type, montant, categorie, description, date, mode_paiement, reference, notes }, { new: true, runValidators: true });
         if (!tx) return res.status(404).json({ message: 'Transaction introuvable' });
         res.json(tx);
     } catch (e) { res.status(400).json({ message: e.message }); }

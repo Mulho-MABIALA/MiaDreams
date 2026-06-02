@@ -347,27 +347,39 @@ function buildInvoiceHTML(order) {
 }
 
 // ── GET /api/invoices/order/:id — Facture HTML depuis une commande ─────────────
-// Route publique : accessible via le lien WhatsApp sans authentification
+// Anti-IDOR : accès par ObjectId nécessite le numéro de commande en query param
+// (accessible via le lien WhatsApp généré côté admin qui inclut ?orderNumber=...)
 router.get('/order/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        // Chercher par _id (ObjectId) ou order_number
         const isObjectId = /^[a-f\d]{24}$/i.test(id);
         const order = isObjectId
             ? await Order.findById(id)
-            : await Order.findOne({ order_number: id });
+            : await Order.findOne({ order_number: id.toUpperCase() });
 
         if (!order) return res.status(404).send(`
             <html><body style="font-family:sans-serif;text-align:center;padding:60px;color:#6B7280;">
-              <h2>Facture introuvable</h2>
-              <p>La commande ${id} n'existe pas ou a été supprimée.</p>
+              <h2>Facture introuvable</h2><p>La commande n'existe pas ou a été supprimée.</p>
             </body></html>
         `);
+
+        // Si accès par ObjectId (énumérable), vérifier que le demandeur connaît le numéro
+        if (isObjectId) {
+            const { orderNumber } = req.query;
+            if (!orderNumber || order.order_number !== orderNumber.toUpperCase().trim()) {
+                return res.status(403).send(`
+                    <html><body style="font-family:sans-serif;text-align:center;padding:60px;color:#6B7280;">
+                      <h2>Accès non autorisé</h2>
+                      <p>Le numéro de commande est requis pour accéder à cette facture.</p>
+                    </body></html>
+                `);
+            }
+        }
 
         res.set('Content-Type', 'text/html; charset=utf-8');
         res.send(buildInvoiceHTML(order));
     } catch (err) {
-        res.status(500).send(`<html><body><p>Erreur : ${err.message}</p></body></html>`);
+        res.status(500).send(`<html><body><p>Erreur serveur</p></body></html>`);
     }
 });
 

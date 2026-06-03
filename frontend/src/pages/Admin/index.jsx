@@ -83,17 +83,21 @@ export default function Admin() {
     const [collapsed, setCollapsed] = useState(false);
 
     // ── Server wake-up (cold start Passenger / idle process) ─────────────────
-    const [serverStatus, setServerStatus] = useState('checking'); // 'checking' | 'up' | 'waking'
+    // N'affiche "Serveur connecté" que si le serveur avait du mal à répondre
+    const [serverStatus, setServerStatus] = useState('idle'); // 'idle' | 'waking' | 'up'
     useEffect(() => {
         let attempts = 0;
         let timer;
         const ping = async () => {
             try {
                 await axios.get('/api/health', { timeout: 6000 });
-                setServerStatus('up');
+                // Si c'était en train de se réveiller → confirmer
+                // Si premier ping réussi → ne rien afficher (serveur déjà prêt)
+                setServerStatus(prev => prev === 'waking' ? 'up' : 'idle');
             } catch {
-                setServerStatus(prev => prev === 'checking' && attempts === 0 ? 'waking' : prev === 'checking' ? 'waking' : prev);
                 attempts++;
+                // N'afficher le banner de démarrage qu'après le 1er échec
+                setServerStatus('waking');
                 if (attempts < 20) timer = setTimeout(ping, 5000);
             }
         };

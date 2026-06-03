@@ -197,19 +197,8 @@ function InvoiceModal({ order, onClose }) {
 
         // Totaux
         y += 5;
-        const shipping = order.shipping_fee || 0;
-        const subtotal = order.subtotal || order.total - shipping;
-        if (shipping > 0) {
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            doc.setTextColor(100, 100, 100);
-            doc.text('Sous-total', 140, y);
-            doc.text(`${subtotal.toLocaleString('fr-FR')} FCFA`, W - M, y, { align: 'right' });
-            y += 7;
-            doc.text('Livraison', 140, y);
-            doc.text(`${shipping.toLocaleString('fr-FR')} FCFA`, W - M, y, { align: 'right' });
-            y += 5;
-        }
+        const shipping = 0;
+        const subtotal = order.subtotal || order.total;
 
         doc.setDrawColor(...gold);
         doc.setLineWidth(0.8);
@@ -270,8 +259,8 @@ Merci pour votre confiance ! 🙏✨`;
 
     const emailBody = `Bonjour ${order.customer.name},\n\nVeuillez trouver ci-joint votre facture ${order.order_number} pour un montant de ${order.total.toLocaleString('fr-FR')} FCFA.\n\nMerci de votre confiance.\nMIA DREAMS & CO`;
     const mailtoUrl = `mailto:${order.customer.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-    const subtotal = order.subtotal || order.total - (order.shipping_fee || 0);
-    const shipping = order.shipping_fee || 0;
+    const subtotal = order.subtotal || order.total;
+    const shipping = 0;
 
     return (
         <div className="fixed inset-0 z-[9999] overflow-y-auto" style={{ background: 'rgba(0,0,0,0.92)' }}>
@@ -361,10 +350,6 @@ Merci pour votre confiance ! 🙏✨`;
                     </table>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '36px' }}>
                         <div style={{ width: '260px' }}>
-                            {shipping > 0 && <>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px', color: '#666' }}><span>Sous-total</span><span>{subtotal.toLocaleString('fr-FR')} FCFA</span></div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px', color: '#666' }}><span>Livraison</span><span>{shipping.toLocaleString('fr-FR')} FCFA</span></div>
-                            </>}
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderTop: '2px solid #C9A84C', fontSize: '16px', fontWeight: '700', color: '#C9A84C' }}>
                                 <span>TOTAL</span><span>{order.total.toLocaleString('fr-FR')} FCFA</span>
                             </div>

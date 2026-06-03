@@ -8,8 +8,8 @@ const GOLD = '#C9A84C';
 
 export default function Panier() {
     const { items, removeItem, updateQty, subtotal, clearCart } = useCart();
-    const shipping = subtotal > 0 ? 2000 : 0;
-    const total = subtotal + shipping;
+    const shipping = 0;
+    const total = subtotal;
     const [confirmClear, setConfirmClear] = useState(false);
 
     if (items.length === 0) return (
@@ -148,10 +148,6 @@ export default function Panier() {
                                     <div className="flex justify-between">
                                         <span className="font-glacial text-sm text-white/55">Sous-total</span>
                                         <span className="font-glacial text-sm text-white/75">{subtotal.toLocaleString('fr-FR')} FCFA</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-glacial text-sm text-white/55">Livraison</span>
-                                        <span className="font-glacial text-sm text-white/75">{shipping.toLocaleString('fr-FR')} FCFA</span>
                                     </div>
                                 </div>
 

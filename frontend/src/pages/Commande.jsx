@@ -49,8 +49,8 @@ const label = "font-lastica text-[7px] tracking-[3px] text-white/50 uppercase bl
 export default function Commande() {
     const { items, subtotal, clearCart } = useCart();
     const navigate = useNavigate();
-    const shipping = subtotal > 0 ? 2000 : 0;
-    const total = subtotal + shipping;
+    const shipping = 0;
+    const total = subtotal;
 
     const [form, setForm] = useState({
         name: '', email: '', phone: '', address: '', city: 'Abidjan', country: "Côte d'Ivoire", notes: ''
@@ -236,10 +236,6 @@ export default function Commande() {
                                         <div className="flex justify-between">
                                             <span className="font-glacial text-sm text-white/50">Sous-total</span>
                                             <span className="font-glacial text-sm text-white/70">{subtotal.toLocaleString('fr-FR')} FCFA</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="font-glacial text-sm text-white/50">Livraison</span>
-                                            <span className="font-glacial text-sm text-white/70">{shipping.toLocaleString('fr-FR')} FCFA</span>
                                         </div>
                                         <div className="flex justify-between pt-3 border-t border-white/[0.08]">
                                             <span className="font-glacial text-sm text-white/75">Total</span>

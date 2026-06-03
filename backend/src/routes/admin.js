@@ -127,10 +127,17 @@ async function processImages(req, res, next) {
                     file.cloudinary = true;
                     console.log(`📄 PDF uploadé sur Cloudinary : ${result.secure_url}`);
                 } else {
-                    // Fallback disque local : déplacer vers uploads/
+                    // Fallback disque local : copier puis supprimer (évite EXDEV cross-device)
                     const destPath = path.join(UPLOADS, file.filename);
-                    fs.renameSync(file.path, destPath);
-                    // file.filename est déjà correct (le nom multer)
+                    if (!fs.existsSync(UPLOADS)) fs.mkdirSync(UPLOADS, { recursive: true });
+                    try {
+                        fs.renameSync(file.path, destPath);
+                    } catch (e) {
+                        if (e.code === 'EXDEV') {
+                            fs.copyFileSync(file.path, destPath);
+                            try { fs.unlinkSync(file.path); } catch (_) {}
+                        } else { throw e; }
+                    }
                 }
             }
         }));

@@ -129,10 +129,6 @@ export default function CommandeSucces() {
                                 <span className="font-glacial text-white/35">Sous-total</span>
                                 <span className="font-glacial text-white/45">{order.subtotal.toLocaleString('fr-FR')} FCFA</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="font-glacial text-white/35">Livraison</span>
-                                <span className="font-glacial text-white/45">{order.shipping_fee.toLocaleString('fr-FR')} FCFA</span>
-                            </div>
                             <div className="flex justify-between">
                                 <span className="font-glacial text-sm text-white/70">Total</span>
                                 <span className="font-glacial text-base font-medium" style={{ color: GOLD }}>

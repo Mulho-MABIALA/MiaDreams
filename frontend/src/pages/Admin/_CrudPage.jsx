@@ -273,6 +273,7 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
                                     <>
                                         <input
                                             type={f.type || 'text'}
+                                            required={!!f.required}
                                             value={form[f.name] ?? ''}
                                             onChange={e => {
                                                 const val = e.target.value;

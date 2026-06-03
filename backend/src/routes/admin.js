@@ -95,10 +95,19 @@ async function processImages(req, res, next) {
                 // ── Traitement PDF ────────────────────────────────────────
                 if (CLOUDINARY_READY) {
                     // Upload PDF vers Cloudinary en tant que ressource "raw"
+                    // Timeout 2 minutes pour les gros PDFs
                     const result = await new Promise((resolve, reject) => {
+                        const timeout = setTimeout(() => {
+                            reject(new Error('Délai dépassé lors de l\'upload du PDF vers Cloudinary (>2 min). Réessayez ou utilisez un PDF plus léger.'));
+                        }, 2 * 60 * 1000);
+
                         cloudinary.uploader.upload_stream(
-                            { folder: 'miadreams', resource_type: 'raw' },
-                            (err, res) => err ? reject(err) : resolve(res)
+                            { folder: 'miadreams', resource_type: 'raw', timeout: 120000 },
+                            (err, res) => {
+                                clearTimeout(timeout);
+                                if (err) reject(new Error(`Cloudinary PDF upload : ${err.message}`));
+                                else resolve(res);
+                            }
                         ).end(file.buffer);
                     });
 

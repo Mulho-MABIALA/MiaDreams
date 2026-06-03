@@ -87,22 +87,61 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
     const openEdit = (item) => { setEditing(item._id); setForm({ ...item }); setFiles({}); setShowForm(true); };
     const cancel = () => { setShowForm(false); setEditing(null); setForm({}); setFiles({}); };
 
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadLabel,   setUploadLabel]   = useState('');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setUploadProgress(0);
+        setUploadLabel('Préparation…');
+
+        // ── Validation taille fichiers avant envoi ────────────────────────────
+        const MAX_SIZE = 30 * 1024 * 1024; // 30 Mo
+        for (const [fieldName, file] of Object.entries(files)) {
+            if (file.size > MAX_SIZE) {
+                alert(`Le fichier "${file.name}" dépasse la limite de 30 Mo (taille : ${(file.size / 1024 / 1024).toFixed(1)} Mo). Réduisez la taille du PDF avant de l'uploader.`);
+                setLoading(false);
+                return;
+            }
+        }
+
         try {
             const fd = new FormData();
             Object.entries(form).forEach(([k, v]) => {
-                // Exclure les champs image ET pdf (envoyés uniquement via files si nouveau fichier sélectionné)
                 if (v !== undefined && v !== null && !imageFields.includes(k) && !pdfFields.includes(k) && k !== '_id' && k !== '__v') fd.append(k, v);
             });
             Object.entries(files).forEach(([k, v]) => fd.append(k, v));
-            const cfg = { headers: { 'Content-Type': 'multipart/form-data' } };
+
+            const hasPdf = Object.keys(files).some(k => pdfFields.includes(k));
+            setUploadLabel(hasPdf ? 'Upload du PDF en cours…' : 'Enregistrement…');
+
+            const cfg = {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: 3 * 60 * 1000, // 3 minutes pour les gros PDFs
+                onUploadProgress: (evt) => {
+                    const pct = Math.round((evt.loaded * 100) / (evt.total || 1));
+                    setUploadProgress(pct);
+                    if (pct < 100) setUploadLabel(`Upload… ${pct}%`);
+                    else setUploadLabel('Traitement sur le serveur…');
+                },
+            };
+
             if (editing) await axios.put(`/api/admin/${apiPath}/${editing}`, fd, cfg);
-            else await axios.post(`/api/admin/${apiPath}`, fd, cfg);
+            else         await axios.post(`/api/admin/${apiPath}`, fd, cfg);
+
             await load(); cancel();
-        } catch (err) { alert(err.response?.data?.message || 'Erreur'); }
-        finally { setLoading(false); }
+        } catch (err) {
+            const msg = err.response?.data?.message
+                || (err.code === 'ECONNABORTED' ? 'Délai dépassé — le fichier est peut-être trop volumineux ou la connexion est lente. Réessayez.' : null)
+                || err.message
+                || 'Une erreur est survenue. Vérifiez votre connexion et réessayez.';
+            alert(msg);
+        } finally {
+            setLoading(false);
+            setUploadProgress(0);
+            setUploadLabel('');
+        }
     };
 
     const handleDelete = async (id) => {
@@ -196,15 +235,36 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
                                 )}
                             </div>
                         ))}
-                        <div className="sm:col-span-2 flex gap-3 pt-2 border-t border-[#F3F4F6]">
-                            <button type="submit" disabled={loading}
-                                className="bg-[#C9A84C] hover:bg-[#B8973B] text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50 shadow-sm">
-                                {loading ? 'Enregistrement…' : 'Enregistrer'}
-                            </button>
-                            <button type="button" onClick={cancel}
-                                className="border border-[#E5E7EB] text-[#374151] text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-[#F9FAFB] transition-colors">
-                                Annuler
-                            </button>
+                        <div className="sm:col-span-2 pt-2 border-t border-[#F3F4F6]">
+                            {/* Barre de progression upload */}
+                            {loading && uploadProgress > 0 && (
+                                <div className="mb-3">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-xs text-[#9CA3AF]">{uploadLabel}</span>
+                                        <span className="text-xs font-medium text-[#C9A84C]">{uploadProgress}%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#C9A84C] rounded-full transition-all duration-300"
+                                             style={{ width: `${uploadProgress}%` }} />
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex gap-3">
+                                <button type="submit" disabled={loading}
+                                    className="bg-[#C9A84C] hover:bg-[#B8973B] text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50 shadow-sm flex items-center gap-2">
+                                    {loading && (
+                                        <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                                        </svg>
+                                    )}
+                                    {loading ? (uploadLabel || 'Enregistrement…') : 'Enregistrer'}
+                                </button>
+                                <button type="button" onClick={cancel} disabled={loading}
+                                    className="border border-[#E5E7EB] text-[#374151] text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-[#F9FAFB] transition-colors disabled:opacity-50">
+                                    Annuler
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import axios from 'axios';
@@ -32,6 +32,41 @@ export default function Footer() {
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
     const [subError, setSubError] = useState('');
+
+    // ── Gate email pour téléchargement catalogue ───────────────────────────────
+    const [dlGate, setDlGate]     = useState(null);   // catalogue sélectionné
+    const [dlEmail, setDlEmail]   = useState('');
+    const [dlStatus, setDlStatus] = useState('idle'); // idle | loading | done | error
+    const [dlError, setDlError]   = useState('');
+    const dlInputRef = useRef(null);
+
+    const openDlGate = (cat) => {
+        setDlGate(cat); setDlEmail(''); setDlStatus('idle'); setDlError('');
+        setTimeout(() => dlInputRef.current?.focus(), 80);
+    };
+    const closeDlGate = () => { setDlGate(null); setDlStatus('idle'); };
+
+    const handleDlSubmit = async (e) => {
+        e.preventDefault();
+        if (!dlEmail.trim()) return;
+        setDlStatus('loading'); setDlError('');
+        try {
+            await axios.post('/api/newsletter', { email: dlEmail.trim() });
+        } catch (err) {
+            const msg = err.response?.data?.message || '';
+            if (!msg.toLowerCase().includes('déjà') && !msg.toLowerCase().includes('exist')) {
+                setDlError(msg || 'Une erreur est survenue.');
+                setDlStatus('error');
+                return;
+            }
+        }
+        setDlStatus('done');
+        const a = document.createElement('a');
+        a.href = `/api/catalogues/${dlGate._id}/download`;
+        a.download = `${dlGate.name}.pdf`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(closeDlGate, 1800);
+    };
 
     const defaultBrands = [
         { name: 'Mia Dreams', href: '/miaDreams' },
@@ -185,13 +220,13 @@ export default function Footer() {
                                 {navCatalogues && navCatalogues.length > 0
                                     ? navCatalogues.slice(0, 5).map(c => (
                                         <li key={c._id}>
-                                            <a href={`/api/catalogues/${c._id}/download`}
-                                               className="font-glacial text-[13px] text-white/35 tracking-wide hover:text-gold transition-colors duration-250 inline-flex items-center gap-2">
+                                            <button onClick={() => openDlGate(c)}
+                                               className="font-glacial text-[13px] text-white/35 tracking-wide hover:text-gold transition-colors duration-250 inline-flex items-center gap-2 text-left">
                                                 <svg className="w-2.5 h-2.5 text-gold/30 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                 </svg>
                                                 {c.name}
-                                            </a>
+                                            </button>
                                         </li>
                                     ))
                                     : <li className="font-glacial text-[13px] text-white/20">Aucun catalogue</li>
@@ -221,6 +256,63 @@ export default function Footer() {
                     </div>
                 </div>
             </footer>
+        {/* ── Modale email catalogue (footer) ─────────────────────────────── */}
+        {dlGate && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 bg-[#080808]/90 backdrop-blur-sm"
+                 onClick={closeDlGate}>
+                <div className="w-full max-w-sm bg-[#0f0f0f] border border-gold/20 shadow-2xl"
+                     onClick={e => e.stopPropagation()}>
+                    <div className="relative p-6 pb-4 border-b border-white/5">
+                        <button onClick={closeDlGate}
+                                className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors text-lg leading-none">✕</button>
+                        <span className="font-lastica text-[7px] tracking-[4px] text-gold uppercase block mb-2">Catalogue</span>
+                        <p className="font-glacial text-base text-white uppercase tracking-[2px]">{dlGate.name}</p>
+                    </div>
+                    <div className="p-6">
+                        {dlStatus === 'done' ? (
+                            <div className="text-center py-4">
+                                <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-3">
+                                    <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <p className="font-glacial text-sm text-white/70 tracking-[1px]">Téléchargement en cours…</p>
+                                <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">Merci pour votre inscription !</p>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleDlSubmit}>
+                                <p className="font-glacial text-xs text-white/40 leading-relaxed mb-5 tracking-[0.5px]">
+                                    Entrez votre adresse e-mail pour recevoir le catalogue et rester informé de nos actualités.
+                                </p>
+                                <div className="mb-4">
+                                    <input ref={dlInputRef} type="email" required value={dlEmail}
+                                        onChange={e => setDlEmail(e.target.value)}
+                                        placeholder="votre@email.com"
+                                        className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-4 py-3 outline-none placeholder:text-white/20 font-glacial tracking-[1px] transition-colors" />
+                                    {dlError && <p className="mt-2 font-glacial text-xs text-red-400/80">{dlError}</p>}
+                                </div>
+                                <button type="submit" disabled={dlStatus === 'loading'}
+                                        className="w-full btn btn-gold text-[9px] py-3.5 flex items-center justify-center gap-2 disabled:opacity-50">
+                                    {dlStatus === 'loading' ? (
+                                        <><svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                                        </svg>CHARGEMENT…</>
+                                    ) : (
+                                        <><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                        </svg>TÉLÉCHARGER LE CATALOGUE</>
+                                    )}
+                                </button>
+                                <p className="mt-3 font-glacial text-[10px] text-white/15 text-center leading-relaxed">
+                                    En continuant, vous acceptez de recevoir nos communications.
+                                </p>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )}
         </>
     );
 }

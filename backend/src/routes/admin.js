@@ -34,42 +34,50 @@ cloudinary.config({
 });
 const CLOUDINARY_READY = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 
-// ── Multer : mémoire si Cloudinary dispo, disque sinon ────────────────────────
+// ── Multer : TOUJOURS disque (évite les crashs mémoire avec les gros PDFs) ──────
 const UPLOADS = path.join(__dirname, '../../../uploads');
+const os = require('os');
 
-const storage = CLOUDINARY_READY
-    ? multer.memoryStorage()
-    : multer.diskStorage({
-        destination: (req, file, cb) => cb(null, UPLOADS),
-        filename:    (req, file, cb) => {
-            const ext = file.mimetype === 'application/pdf' ? '.pdf' : '.webp';
-            cb(null, `${Date.now()}-${Math.round(Math.random()*1e9)}${ext}`);
-        },
-    });
+// Images → uploads/ (permanentes)   PDFs → tmpdir (streamées vers Cloudinary puis supprimées)
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dest = file.mimetype === 'application/pdf' ? os.tmpdir() : UPLOADS;
+        cb(null, dest);
+    },
+    filename: (req, file, cb) => {
+        const ext = file.mimetype === 'application/pdf' ? '.pdf' : '.webp';
+        cb(null, `mia-${Date.now()}-${Math.round(Math.random()*1e9)}${ext}`);
+    },
+});
 
 const upload = multer({
     storage,
-    limits: { fileSize: 15 * 1024 * 1024 },
+    limits: { fileSize: 50 * 1024 * 1024 },  // 50 Mo — gros catalogues PDF
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') cb(null, true);
         else cb(new Error('Fichier non supporté (image ou PDF requis)'));
     },
 });
 
-// ── Upload vers Cloudinary ou compression locale ───────────────────────────────
+// ── Traitement fichiers : Cloudinary ou disque local ──────────────────────────
 async function processImages(req, res, next) {
     if (!req.files && !req.file) return next();
     try {
         const files = req.file ? [req.file] : Object.values(req.files || {}).flat();
 
         await Promise.all(files.map(async (file) => {
+
             if (file.mimetype.startsWith('image/')) {
-                // ── Traitement image ──────────────────────────────────────
+                // ── Image : compresser en WebP ────────────────────────────
                 if (CLOUDINARY_READY) {
-                    const buffer = await sharp(file.buffer)
+                    // Lire depuis disque → compresser → uploader sur Cloudinary
+                    const buffer = await sharp(file.path)
                         .resize({ width: 1400, height: 1400, fit: 'inside', withoutEnlargement: true })
                         .webp({ quality: 82 })
                         .toBuffer();
+
+                    // Supprimer le fichier temporaire disque
+                    try { fs.unlinkSync(file.path); } catch (_) {}
 
                     const result = await new Promise((resolve, reject) => {
                         cloudinary.uploader.upload_stream(
@@ -78,10 +86,10 @@ async function processImages(req, res, next) {
                         ).end(buffer);
                     });
 
-                    file.filename  = result.secure_url;
+                    file.filename   = result.secure_url;
                     file.cloudinary = true;
                 } else {
-                    // Fallback disque local + sharp
+                    // Fallback disque local : compresser en place
                     const tmpPath = file.path + '.tmp';
                     fs.renameSync(file.path, tmpPath);
                     await sharp(tmpPath)
@@ -92,34 +100,47 @@ async function processImages(req, res, next) {
                 }
 
             } else if (file.mimetype === 'application/pdf') {
-                // ── Traitement PDF ────────────────────────────────────────
+                // ── PDF : streamer depuis disque (pas de mémoire) ─────────
                 if (CLOUDINARY_READY) {
-                    // Upload PDF vers Cloudinary en tant que ressource "raw"
-                    // Timeout 2 minutes pour les gros PDFs
                     const result = await new Promise((resolve, reject) => {
-                        const timeout = setTimeout(() => {
-                            reject(new Error('Délai dépassé lors de l\'upload du PDF vers Cloudinary (>2 min). Réessayez ou utilisez un PDF plus léger.'));
-                        }, 2 * 60 * 1000);
+                        const timer = setTimeout(() => {
+                            reject(new Error('Délai dépassé (>3 min). Compressez le PDF ou vérifiez votre connexion.'));
+                        }, 3 * 60 * 1000);
 
-                        cloudinary.uploader.upload_stream(
-                            { folder: 'miadreams', resource_type: 'raw', timeout: 120000 },
+                        const readStream = fs.createReadStream(file.path);
+                        const uploadStream = cloudinary.uploader.upload_stream(
+                            { folder: 'miadreams', resource_type: 'raw', timeout: 180000 },
                             (err, res) => {
-                                clearTimeout(timeout);
-                                if (err) reject(new Error(`Cloudinary PDF upload : ${err.message}`));
-                                else resolve(res);
+                                clearTimeout(timer);
+                                if (err) reject(new Error(`Cloudinary : ${err.message}`));
+                                else     resolve(res);
                             }
-                        ).end(file.buffer);
+                        );
+                        readStream.pipe(uploadStream);
+                        readStream.on('error', (e) => { clearTimeout(timer); reject(e); });
                     });
 
-                    file.filename  = result.secure_url;
+                    // Supprimer le fichier temporaire après upload réussi
+                    try { fs.unlinkSync(file.path); } catch (_) {}
+
+                    file.filename   = result.secure_url;
                     file.cloudinary = true;
                     console.log(`📄 PDF uploadé sur Cloudinary : ${result.secure_url}`);
+                } else {
+                    // Fallback disque local : déplacer vers uploads/
+                    const destPath = path.join(UPLOADS, file.filename);
+                    fs.renameSync(file.path, destPath);
+                    // file.filename est déjà correct (le nom multer)
                 }
-                // Fallback disque : multer a déjà sauvegardé le fichier avec la bonne extension .pdf
             }
         }));
         next();
-    } catch (e) { next(e); }
+    } catch (e) {
+        // Nettoyer les fichiers temporaires en cas d'erreur
+        const files = req.file ? [req.file] : Object.values(req.files || {}).flat();
+        files.forEach(f => { try { if (f.path) fs.unlinkSync(f.path); } catch (_) {} });
+        next(e);
+    }
 }
 
 // Alias pour compatibilité avec le code existant

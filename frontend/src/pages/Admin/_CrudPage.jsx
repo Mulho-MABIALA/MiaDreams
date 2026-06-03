@@ -90,50 +90,113 @@ export default function CrudPage({ title, apiPath, fields, imageFields = [], pdf
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadLabel,   setUploadLabel]   = useState('');
 
+    // Upload un PDF directement vers Cloudinary depuis le navigateur
+    // (contourne toutes les limites serveur Apache/Passenger/Node)
+    const uploadPdfToCloudinary = async (file, fieldName) => {
+        setUploadLabel(`Récupération signature Cloudinary…`);
+        const { data: signData } = await axios.get('/api/admin/cloudinary-sign');
+
+        if (!signData.cloudinary) {
+            // Cloudinary non dispo → fallback upload normal
+            return null;
+        }
+
+        setUploadLabel(`Upload PDF vers Cloudinary… 0%`);
+
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('api_key',       signData.api_key);
+        fd.append('timestamp',     signData.timestamp);
+        fd.append('signature',     signData.signature);
+        fd.append('folder',        signData.folder);
+        fd.append('resource_type', 'raw');
+
+        const response = await axios.post(
+            `https://api.cloudinary.com/v1_1/${signData.cloud_name}/raw/upload`,
+            fd,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: 10 * 60 * 1000, // 10 min pour les très gros PDFs
+                onUploadProgress: (evt) => {
+                    const pct = Math.round((evt.loaded * 100) / (evt.total || 1));
+                    setUploadProgress(pct);
+                    setUploadLabel(`Upload PDF vers Cloudinary… ${pct}%`);
+                },
+            }
+        );
+
+        return response.data.secure_url; // URL Cloudinary du PDF
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setUploadProgress(0);
         setUploadLabel('Préparation…');
 
-        // ── Validation taille fichiers avant envoi ────────────────────────────
-        const MAX_SIZE = 30 * 1024 * 1024; // 30 Mo
-        for (const [fieldName, file] of Object.entries(files)) {
-            if (file.size > MAX_SIZE) {
-                alert(`Le fichier "${file.name}" dépasse la limite de 30 Mo (taille : ${(file.size / 1024 / 1024).toFixed(1)} Mo). Réduisez la taille du PDF avant de l'uploader.`);
-                setLoading(false);
-                return;
-            }
-        }
-
         try {
             const fd = new FormData();
+            // Champs texte (hors fichiers)
             Object.entries(form).forEach(([k, v]) => {
                 if (v !== undefined && v !== null && !imageFields.includes(k) && !pdfFields.includes(k) && k !== '_id' && k !== '__v') fd.append(k, v);
             });
-            Object.entries(files).forEach(([k, v]) => fd.append(k, v));
 
-            const hasPdf = Object.keys(files).some(k => pdfFields.includes(k));
-            setUploadLabel(hasPdf ? 'Upload du PDF en cours…' : 'Enregistrement…');
+            // ── PDFs : upload direct Cloudinary si disponible ─────────────
+            const pdfUrls = {};
+            for (const [fieldName, file] of Object.entries(files)) {
+                if (pdfFields.includes(fieldName)) {
+                    try {
+                        const cloudUrl = await uploadPdfToCloudinary(file, fieldName);
+                        if (cloudUrl) {
+                            // PDF uploadé sur Cloudinary → envoyer juste l'URL au serveur
+                            pdfUrls[fieldName] = cloudUrl;
+                        } else {
+                            // Fallback : inclure le fichier dans le FormData normal
+                            fd.append(fieldName, file);
+                        }
+                    } catch (cloudErr) {
+                        console.warn('Cloudinary upload failed, falling back:', cloudErr.message);
+                        fd.append(fieldName, file);
+                    }
+                } else {
+                    // Fichiers non-PDF (images) → upload normal via serveur
+                    fd.append(fieldName, file);
+                }
+            }
+
+            // Ajouter les URLs Cloudinary des PDFs comme champs texte
+            Object.entries(pdfUrls).forEach(([k, v]) => fd.append(k, v));
+
+            const hasPdf    = Object.keys(files).some(k => pdfFields.includes(k));
+            const pdfDirect = Object.keys(pdfUrls).length > 0;
+
+            if (!pdfDirect && hasPdf) {
+                setUploadLabel('Envoi du PDF au serveur…');
+            } else if (!hasPdf) {
+                setUploadLabel('Enregistrement…');
+            }
 
             const cfg = {
                 headers: { 'Content-Type': 'multipart/form-data' },
-                timeout: 3 * 60 * 1000, // 3 minutes pour les gros PDFs
+                timeout: 3 * 60 * 1000,
                 onUploadProgress: (evt) => {
-                    const pct = Math.round((evt.loaded * 100) / (evt.total || 1));
-                    setUploadProgress(pct);
-                    if (pct < 100) setUploadLabel(`Upload… ${pct}%`);
-                    else setUploadLabel('Traitement sur le serveur…');
+                    if (!pdfDirect) {
+                        const pct = Math.round((evt.loaded * 100) / (evt.total || 1));
+                        setUploadProgress(pct);
+                        if (pct < 100) setUploadLabel(`Envoi… ${pct}%`);
+                        else setUploadLabel('Traitement sur le serveur…');
+                    }
                 },
             };
 
+            setUploadLabel('Enregistrement…');
             if (editing) await axios.put(`/api/admin/${apiPath}/${editing}`, fd, cfg);
             else         await axios.post(`/api/admin/${apiPath}`, fd, cfg);
 
             await load(); cancel();
         } catch (err) {
             const msg = err.response?.data?.message
-                || (err.code === 'ECONNABORTED' ? 'Délai dépassé — le fichier est peut-être trop volumineux ou la connexion est lente. Réessayez.' : null)
+                || (err.code === 'ECONNABORTED' ? 'Délai dépassé — connexion lente ou fichier trop volumineux.' : null)
                 || err.message
                 || 'Une erreur est survenue. Vérifiez votre connexion et réessayez.';
             alert(msg);

@@ -248,6 +248,26 @@ router.delete('/products/:id', async (req, res) => {
     try { await Product.findByIdAndDelete(req.params.id); res.json({ message: 'Supprimé' }); }
     catch(e){ res.status(500).json({message:e.message}); }
 });
+// ── Cloudinary : signature pour upload direct depuis le navigateur ────────────
+// Permet au frontend d'uploader les gros PDFs directement vers Cloudinary
+// sans passer par le serveur Node.js (contourne les limites de taille)
+router.get('/cloudinary-sign', (req, res) => {
+    if (!CLOUDINARY_READY) {
+        return res.status(503).json({ cloudinary: false, message: 'Cloudinary non configuré sur ce serveur' });
+    }
+    const timestamp  = Math.round(Date.now() / 1000);
+    const paramsToSign = { folder: 'miadreams', resource_type: 'raw', timestamp };
+    const signature  = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);
+    res.json({
+        cloudinary:  true,
+        signature,
+        timestamp,
+        api_key:     process.env.CLOUDINARY_API_KEY,
+        cloud_name:  process.env.CLOUDINARY_CLOUD_NAME,
+        folder:      'miadreams',
+    });
+});
+
 router.use('/services',     crudRouter(Service, ['image']));
 router.use('/posts',        crudRouter(Post, ['cover_image']));
 router.use('/podcasts',     crudRouter(Podcast, ['thumbnail']));

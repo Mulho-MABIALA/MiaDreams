@@ -89,10 +89,10 @@ export default function FashionProgram() {
                                 FORMEZ-VOUS À<br /><span className="text-gold">L'EXCELLENCE</span>
                             </h2>
                             <div className="gold-line my-6" />
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-6">
+                            <p className="font-glacial text-sm text-[#444] leading-loose mb-6">
                                 {description}
                             </p>
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-9">
+                            <p className="font-glacial text-sm text-[#444] leading-loose mb-9">
                                 Du design à la commercialisation, en passant par la gestion d'atelier et le marketing digital, notre programme couvre tous les aspects essentiels de l'industrie de la mode.
                             </p>
                             <Link to="/reservation" className="btn btn-gold">DÉCOUVRIR LE PROGRAMME</Link>
@@ -123,7 +123,7 @@ export default function FashionProgram() {
                                     <span className="font-lastica text-[12px] tracking-[4px] text-gold/40 flex-shrink-0 mt-1">{m.num}</span>
                                     <div>
                                         <h3 className="font-glacial text-base text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{m.title}</h3>
-                                        <p className="font-glacial text-sm text-white/35 leading-relaxed">{m.desc}</p>
+                                        <p className="font-glacial text-sm text-white/60 leading-relaxed">{m.desc}</p>
                                     </div>
                                 </div>
                             </div>
@@ -140,7 +140,7 @@ export default function FashionProgram() {
                 <div className="max-w-xl mx-auto px-6 reveal">
                     <span className="eyebrow justify-center">Rejoignez la prochaine promotion</span>
                     <h2 className="display-title text-3xl text-white mt-4 mb-6">CANDIDATER AU <span className="text-gold">PROGRAMME</span></h2>
-                    <p className="font-glacial text-sm text-white/40 leading-loose mb-10">Les candidatures pour la prochaine promotion sont ouvertes. Places limitées — postulez dès maintenant.</p>
+                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">Les candidatures pour la prochaine promotion sont ouvertes. Places limitées — postulez dès maintenant.</p>
                     <div className="flex flex-wrap gap-4 justify-center">
                         <Link to="/reservation" className="btn btn-gold">SOUMETTRE MA CANDIDATURE</Link>
                         <Link to="/contact" className="btn btn-white">POSER UNE QUESTION</Link>

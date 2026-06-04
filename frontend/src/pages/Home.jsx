@@ -59,7 +59,7 @@ function HeroCarousel({ slides }) {
                         <div className="max-w-7xl w-full mx-auto px-5 sm:px-10 lg:px-20">
                             {/* Trait horizontal fin */}
                             <div className="w-10 h-px mb-6" style={{ background: GOLD, opacity: 0, animation: 'fadeUp .6s .3s forwards' }} />
-                            <p className="font-lastica text-[7px] tracking-[6px] uppercase mb-3 text-white/50"
+                            <p className="font-lastica text-[10px] tracking-[6px] uppercase mb-3 text-white/50"
                                style={{ opacity: 0, animation: 'fadeUp .7s .4s forwards' }}>
                                 {s.subtitle}
                             </p>
@@ -68,7 +68,7 @@ function HeroCarousel({ slides }) {
                                 {s.title}
                             </h1>
                             {s.content && (
-                                <p className="font-glacial text-sm sm:text-base text-white/50 tracking-[1px] leading-relaxed mb-8 max-w-md"
+                                <p className="font-glacial text-sm sm:text-base text-white/55 tracking-[1px] leading-relaxed mb-8 max-w-md"
                                    style={{ opacity: 0, animation: 'fadeUp .8s .7s forwards' }}>
                                     {s.content}
                                 </p>
@@ -156,7 +156,7 @@ function TestimonialsSection({ testimonials }) {
                         <div style={{ opacity: animating ? 0 : 1, transform: animating ? 'translateY(12px)' : 'translateY(0)', transition: 'opacity 0.3s ease, transform 0.3s ease' }}>
                             <div className="flex justify-center gap-1.5 mb-8">
                                 {[1,2,3,4,5].map(i => (
-                                    <svg key={i} className={`w-4 h-4 ${i <= (t?.rating || 5) ? 'text-gold fill-current' : 'text-white/10 fill-current'}`} viewBox="0 0 20 20">
+                                    <svg key={i} className={`w-4 h-4 ${i <= (t?.rating || 5) ? 'text-gold fill-current' : 'text-white/35 fill-current'}`} viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                     </svg>
                                 ))}
@@ -179,7 +179,7 @@ function TestimonialsSection({ testimonials }) {
                                 <div className="text-left">
                                     <p className="font-glacial text-sm text-white uppercase tracking-[3px] leading-tight">{t?.name}</p>
                                     {(t?.role || t?.company) && (
-                                        <p className="font-glacial text-xs text-white/30 mt-1">{[t?.role, t?.company].filter(Boolean).join(' · ')}</p>
+                                        <p className="font-glacial text-sm text-white/55 mt-1">{[t?.role, t?.company].filter(Boolean).join(' · ')}</p>
                                     )}
                                 </div>
                             </div>
@@ -248,7 +248,7 @@ function TestimonialForm() {
                             onMouseEnter={() => setHoveredStar(star)} onMouseLeave={() => setHoveredStar(0)}
                             onClick={() => set('rating', star)}
                             className="p-1 transition-transform duration-150 hover:scale-110 focus:outline-none">
-                            <svg className={`w-7 h-7 transition-colors duration-150 ${star <= (hoveredStar || form.rating) ? 'text-gold fill-current' : 'text-white/40 fill-current'}`} viewBox="0 0 20 20">
+                            <svg className={`w-7 h-7 transition-colors duration-150 ${star <= (hoveredStar || form.rating) ? 'text-gold fill-current' : 'text-white/65 fill-current'}`} viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                             </svg>
                         </button>
@@ -326,7 +326,7 @@ function FeaturedProducts({ products }) {
                                     {added[product._id] ? '✓ Ajouté' : '+ Panier'}
                                 </button>
                             </div>
-                            <p className="font-glacial text-xs text-white/60 uppercase tracking-[1px] mb-1 group-hover:text-white transition-colors truncate">{product.name}</p>
+                            <p className="font-glacial text-sm text-white/60 uppercase tracking-[1px] mb-1 group-hover:text-white transition-colors truncate">{product.name}</p>
                             <p className="font-glacial text-sm" style={{ color: GOLD }}>{(product.price || 0).toLocaleString('fr-FR')} FCFA</p>
                         </Link>
                     ))}
@@ -427,7 +427,7 @@ export default function Home() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"
                                                           d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                 </svg>
-                                                <p className="font-lastica text-[7px] tracking-[3px] text-[#aaa] uppercase">
+                                                <p className="font-lastica text-[10px] tracking-[3px] text-[#aaa] uppercase">
                                                     Vidéo non configurée
                                                 </p>
                                             </div>
@@ -443,7 +443,7 @@ export default function Home() {
 
                                 {/* ── Texte ── */}
                                 <div className="flex flex-col gap-7 reveal" style={{ transitionDelay: '.12s' }}>
-                                    <span className="font-lastica text-[7px] tracking-[6px] uppercase"
+                                    <span className="font-lastica text-[10px] tracking-[6px] uppercase"
                                           style={{ color: 'rgba(196,162,103,.7)' }}>
                                         Notre vision
                                     </span>
@@ -488,7 +488,7 @@ export default function Home() {
 
             {/* ══ TAGLINE ══════════════════════════════════════════════════ */}
             <div className="gold-strip py-8 text-center">
-                <p className="relative z-10 font-lastica text-[7px] sm:text-[8px] tracking-[5px] sm:tracking-[7px] text-[#080808] uppercase">
+                <p className="relative z-10 font-lastica text-[10px] sm:text-[10px] tracking-[5px] sm:tracking-[7px] text-[#080808] uppercase">
                     {tagline || "Plus qu'une entreprise, un univers authentique aux inspirations africaines et contemporaines."}
                 </p>
             </div>
@@ -499,7 +499,7 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 reveal">
                     <div className="flex items-end justify-between">
                         <div>
-                            <span className="font-lastica text-[7px] tracking-[5px] uppercase block mb-3"
+                            <span className="font-lastica text-[10px] tracking-[5px] uppercase block mb-3"
                                   style={{ color: 'rgba(196,162,103,.5)' }}>
                                 Explorer
                             </span>
@@ -508,7 +508,7 @@ export default function Home() {
                             </h2>
                         </div>
                         <Link to="/miaDreams"
-                              className="hidden sm:flex items-center gap-2 font-lastica text-[7px] tracking-[3px] uppercase transition-colors"
+                              className="hidden sm:flex items-center gap-2 font-lastica text-[10px] tracking-[3px] uppercase transition-colors"
                               style={{ color: 'rgba(255,255,255,.25)' }}
                               onMouseEnter={e => e.currentTarget.style.color = GOLD}
                               onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.25)'}>
@@ -539,7 +539,7 @@ export default function Home() {
                                     {u.title}
                                 </h3>
                                 <p className="font-glacial text-sm text-white/65 mb-5">{u.content || u.sub}</p>
-                                <span className="flex items-center gap-2 font-lastica text-[7px] tracking-[3px] uppercase transition-all duration-300"
+                                <span className="flex items-center gap-2 font-lastica text-[10px] tracking-[3px] uppercase transition-all duration-300"
                                       style={{ color: 'rgba(196,162,103,.6)' }}>
                                     Découvrir
                                     <span className="transition-transform duration-300 group-hover:translate-x-1.5">→</span>
@@ -572,7 +572,7 @@ export default function Home() {
                         {/* 1 — Mode consciente */}
                         <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400">
                             <div className="w-8 h-px bg-gold mb-6" />
-                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">01</span>
+                            <span className="font-lastica text-[10px] tracking-[4px] text-gold/50 uppercase block mb-3">01</span>
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Mode Consciente<br />&amp; Innovation Digitale
                             </h3>
@@ -595,7 +595,7 @@ export default function Home() {
                         {/* 2 — Image & positionnement */}
                         <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400" style={{ transitionDelay: '0.08s' }}>
                             <div className="w-8 h-px bg-gold mb-6" />
-                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">02</span>
+                            <span className="font-lastica text-[10px] tracking-[4px] text-gold/50 uppercase block mb-3">02</span>
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Image &amp; Positionnement<br />Stratégique
                             </h3>
@@ -618,7 +618,7 @@ export default function Home() {
                         {/* 3 — Entrepreneuriat */}
                         <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400" style={{ transitionDelay: '0.16s' }}>
                             <div className="w-8 h-px bg-gold mb-6" />
-                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">03</span>
+                            <span className="font-lastica text-[10px] tracking-[4px] text-gold/50 uppercase block mb-3">03</span>
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Entrepreneuriat<br />&amp; ICC
                             </h3>
@@ -633,7 +633,7 @@ export default function Home() {
                         {/* 4 — Institutions */}
                         <div className="reveal bg-[#0a0a0a] p-8 lg:p-10 group hover:bg-[#0f0f0f] transition-colors duration-400" style={{ transitionDelay: '0.24s' }}>
                             <div className="w-8 h-px bg-gold mb-6" />
-                            <span className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase block mb-3">04</span>
+                            <span className="font-lastica text-[10px] tracking-[4px] text-gold/50 uppercase block mb-3">04</span>
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Pour les<br />Institutions
                             </h3>
@@ -675,7 +675,7 @@ export default function Home() {
                     {/* Panneau texte */}
                     <div className="flex flex-col justify-center px-8 py-14 lg:px-14 xl:px-20 reveal"
                          style={{ transitionDelay: '.15s' }}>
-                        <span className="font-lastica text-[7px] tracking-[5px] uppercase block mb-6"
+                        <span className="font-lastica text-[10px] tracking-[5px] uppercase block mb-6"
                               style={{ color: 'rgba(196,162,103,.55)' }}>
                             {personalBranding?.subtitle || 'Nouveau'}
                         </span>
@@ -702,7 +702,7 @@ export default function Home() {
                     {/* Panneau texte à gauche */}
                     <div className="flex flex-col justify-center px-8 py-14 lg:px-14 xl:px-20 order-2 lg:order-1 reveal"
                          style={{ transitionDelay: '.15s' }}>
-                        <span className="font-lastica text-[7px] tracking-[5px] uppercase block mb-6"
+                        <span className="font-lastica text-[10px] tracking-[5px] uppercase block mb-6"
                               style={{ color: 'rgba(196,162,103,.75)' }}>
                             {ethicalFashion?.subtitle || 'Engagement'}
                         </span>
@@ -758,7 +758,7 @@ export default function Home() {
                                     {blogBanner?.title || <>BLOG <span className="text-gold">&</span> PODCAST</>}
                                 </h2>
                                 <div className="gold-line-center mb-8" />
-                                <p className="font-glacial text-sm text-white/45 leading-[1.9] mb-10">
+                                <p className="font-glacial text-sm text-white/70 leading-[1.9] mb-10">
                                     {blogBanner?.content ||
                                         "Bienvenue dans l'univers d'OTENTIK MIA — mode, personal branding, entrepreneuriat & culture africaine."}
                                 </p>
@@ -815,7 +815,7 @@ export default function Home() {
 
                     {/* Infos adresse */}
                     <div className="flex flex-col justify-center px-8 py-16 lg:px-14 xl:px-20 reveal">
-                        <span className="font-lastica text-[7px] tracking-[5px] uppercase block mb-6"
+                        <span className="font-lastica text-[10px] tracking-[5px] uppercase block mb-6"
                               style={{ color: 'rgba(196,162,103,.55)' }}>
                             Nous trouver
                         </span>
@@ -835,7 +835,7 @@ export default function Home() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/25 uppercase mb-1">Adresse</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">Adresse</p>
                                     <p className="font-glacial text-sm text-white/60 leading-relaxed">Abidjan, Côte d'Ivoire</p>
                                 </div>
                             </div>
@@ -849,7 +849,7 @@ export default function Home() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/25 uppercase mb-1">Horaires</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">Horaires</p>
                                     <p className="font-glacial text-sm text-white/60">Lun – Sam : 09h00 – 18h00</p>
                                 </div>
                             </div>
@@ -862,7 +862,7 @@ export default function Home() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/25 uppercase mb-1">Sur rendez-vous</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">Sur rendez-vous</p>
                                     <p className="font-glacial text-sm text-white/60">Consultations sur réservation</p>
                                 </div>
                             </div>
@@ -894,7 +894,7 @@ export default function Home() {
 
             {/* ══ MADE IN AFRICA — signature finale ═══════════════════════ */}
             <div className="bg-white py-20 lg:py-24 text-center border-t border-[#ede9e3]">
-                <p className="font-lastica text-[7px] tracking-[8px] uppercase mb-6"
+                <p className="font-lastica text-[10px] tracking-[8px] uppercase mb-6"
                    style={{ color: 'rgba(196,162,103,.7)' }}>
                     Dakar, Sénégal
                 </p>

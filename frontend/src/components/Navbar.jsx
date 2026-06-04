@@ -124,7 +124,7 @@ export default function Navbar() {
                     {/* Panier */}
                     <li>
                         <Link to="/panier" aria-label="Panier"
-                              className="nav-link text-white/45 hover:text-gold transition-colors flex items-center relative">
+                              className="nav-link text-white/70 hover:text-gold transition-colors flex items-center relative">
                             <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                             </svg>
@@ -140,7 +140,7 @@ export default function Navbar() {
                     {/* Recherche */}
                     <li>
                         <button onClick={() => setSearchOpen(o => !o)} aria-label="Rechercher"
-                                className="nav-link text-white/45 hover:text-gold transition-colors flex items-center">
+                                className="nav-link text-white/70 hover:text-gold transition-colors flex items-center">
                             {searchOpen
                                 ? <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                 : <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -195,7 +195,7 @@ export default function Navbar() {
                                className="flex-1 bg-transparent text-white font-glacial text-sm tracking-[1px] outline-none placeholder:text-white/20 border-b border-white/10 pb-1.5 focus:border-gold/40 transition-colors" />
                         {searchQuery && (
                             <button type="button" onClick={() => setSearchQuery('')}
-                                    className="text-white/25 hover:text-gold transition-colors text-sm leading-none">✕</button>
+                                    className="text-white/55 hover:text-gold transition-colors text-sm leading-none">✕</button>
                         )}
                         <button type="submit" className="btn btn-gold py-[.55rem] px-4 text-[9px]">GO</button>
                     </form>
@@ -227,7 +227,7 @@ export default function Navbar() {
                         <div className="flex flex-col gap-1 pl-2">
                             {brands.map(b => (
                                 <Link key={b.slug || b.name} to={b.href}
-                                      className="font-glacial text-[11px] tracking-[2px] uppercase text-white/45 hover:text-gold py-1.5 transition-colors">
+                                      className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">
                                     {b.name}
                                 </Link>
                             ))}
@@ -236,8 +236,8 @@ export default function Navbar() {
                     <li className="py-3 border-b border-white/[0.05]">
                         <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/40 block mb-3">JOURNAL</span>
                         <div className="flex flex-col gap-1 pl-2">
-                            <Link to="/apropos" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/45 hover:text-gold py-1.5 transition-colors">À Propos</Link>
-                            <Link to="/blog" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/45 hover:text-gold py-1.5 transition-colors">Blog & Podcast</Link>
+                            <Link to="/apropos" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">À Propos</Link>
+                            <Link to="/blog" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">Blog & Podcast</Link>
                         </div>
                     </li>
                     <li className="pt-5">

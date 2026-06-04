@@ -39,7 +39,7 @@ export default function BrandCollections({ brandSlug }) {
                         </h2>
                     </div>
                     <div className="flex-1 h-px bg-gold/10" />
-                    <span className="font-lastica text-[8px] tracking-[3px] text-white/15">
+                    <span className="font-lastica text-[8px] tracking-[3px] text-white/45">
                         {collections.length} collection{collections.length > 1 ? 's' : ''}
                     </span>
                 </div>
@@ -80,7 +80,7 @@ export default function BrandCollections({ brandSlug }) {
 
                             {/* Nom */}
                             <div className="mt-3">
-                                <h3 className="font-glacial text-xs text-white/70 uppercase tracking-[2px] leading-snug group-hover:text-gold transition-colors duration-300">
+                                <h3 className="font-glacial text-sm text-white/70 uppercase tracking-[2px] leading-snug group-hover:text-gold transition-colors duration-300">
                                     {col.name}
                                 </h3>
                             </div>
@@ -91,7 +91,7 @@ export default function BrandCollections({ brandSlug }) {
                 {/* ── CTA bas de section ── */}
                 <div className="mt-16 lg:mt-20 text-center reveal">
                     <div className="gold-line-center mb-8" />
-                    <p className="font-glacial text-sm text-white/40 tracking-[1px] mb-6">
+                    <p className="font-glacial text-sm text-white/65 tracking-[1px] mb-6">
                         Découvrez tous les articles disponibles à la commande
                     </p>
                     <Link to={boutiqueUrl}

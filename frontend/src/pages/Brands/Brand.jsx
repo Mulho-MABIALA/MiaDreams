@@ -64,7 +64,7 @@ export default function Brand() {
                                 <h2 className="display-title text-2xl lg:text-3xl text-white">NOS <span className="text-gold">COLLECTIONS</span></h2>
                             </div>
                             <div className="flex-1 h-px bg-gold/10" />
-                            <span className="font-lastica text-[8px] tracking-[3px] text-white/15">
+                            <span className="font-lastica text-[8px] tracking-[3px] text-white/45">
                                 {collections.length} collection{collections.length > 1 ? 's' : ''}
                             </span>
                         </div>
@@ -90,7 +90,7 @@ export default function Brand() {
                                             )}
                                             {/* Numéro flottant */}
                                             <div className="absolute top-5 left-5">
-                                                <span className="font-lastica text-[9px] tracking-[4px] text-white/30 bg-black/40 backdrop-blur-sm px-3 py-1.5">
+                                                <span className="font-lastica text-[9px] tracking-[4px] text-white/55 bg-black/40 backdrop-blur-sm px-3 py-1.5">
                                                     {String(ci + 1).padStart(2, '0')}
                                                 </span>
                                             </div>
@@ -104,7 +104,7 @@ export default function Brand() {
                                             </h3>
                                             <div className="w-8 h-px mb-5" style={{ background: '#C9A84C' }} />
                                             {col.description && (
-                                                <p className="font-glacial text-sm text-white/45 leading-loose mb-6">
+                                                <p className="font-glacial text-sm text-white/70 leading-loose mb-6">
                                                     {col.description}
                                                 </p>
                                             )}
@@ -137,14 +137,14 @@ export default function Brand() {
                                                         }
                                                         <div className="absolute inset-x-0 bottom-0 h-px bg-gold/0 group-hover:bg-gold/30 transition-colors duration-300" />
                                                     </div>
-                                                    <h4 className="font-glacial text-xs text-white/70 uppercase tracking-[1.5px] mb-1 group-hover:text-gold transition-colors duration-300 leading-snug">
+                                                    <h4 className="font-glacial text-sm text-white/70 uppercase tracking-[1.5px] mb-1 group-hover:text-gold transition-colors duration-300 leading-snug">
                                                         {prod.name}
                                                     </h4>
                                                     {prod.price > 0 && (
                                                         <p className="font-glacial text-sm" style={{ color: '#C9A84C' }}>
                                                             {prod.price.toLocaleString('fr-FR')} <span className="text-xs text-gold/60">FCFA</span>
                                                             {prod.compare_price > prod.price && (
-                                                                <span className="ml-2 line-through text-white/20 text-xs">
+                                                                <span className="ml-2 line-through text-white/50 text-xs">
                                                                     {prod.compare_price.toLocaleString('fr-FR')}
                                                                 </span>
                                                             )}
@@ -155,10 +155,10 @@ export default function Brand() {
                                         </div>
                                     ) : (
                                         <div className="border border-dashed border-white/[0.06] py-10 text-center">
-                                            <svg className="w-6 h-6 text-white/10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-6 h-6 text-white/35 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                                             </svg>
-                                            <p className="font-lastica text-[7px] tracking-[3px] text-white/15 uppercase">Produits à venir</p>
+                                            <p className="font-lastica text-[10px] tracking-[3px] text-white/45 uppercase">Produits à venir</p>
                                         </div>
                                     )}
                                 </div>

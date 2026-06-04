@@ -67,10 +67,10 @@ export default function PersonalBranding() {
                                 VOTRE IMAGE,<br /><span className="text-gold">VOTRE POUVOIR</span>
                             </h2>
                             <div className="gold-line my-6" />
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-6">
+                            <p className="font-glacial text-sm text-[#444] leading-loose mb-6">
                                 {description}
                             </p>
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-9">
+                            <p className="font-glacial text-sm text-[#444] leading-loose mb-9">
                                 Que vous soyez entrepreneur, cadre dirigeant ou créatif, notre programme de Personal Branding vous aide à construire une identité visuelle forte et cohérente qui reflète vos valeurs.
                             </p>
                             <Link to="/reservation" className="btn btn-gold">COMMENCER MON ACCOMPAGNEMENT</Link>
@@ -120,7 +120,7 @@ export default function PersonalBranding() {
                                 <span className="font-lastica text-[10px] tracking-[4px] text-gold/60 block mb-5">{s.num}</span>
                                 <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{s.title}</h3>
                                 <div className="w-5 h-px bg-gold/30 mb-4" />
-                                <p className="font-glacial text-xs text-white/35 leading-relaxed">{s.desc}</p>
+                                <p className="font-glacial text-sm text-white/60 leading-relaxed">{s.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -135,7 +135,7 @@ export default function PersonalBranding() {
                 <div className="max-w-xl mx-auto px-6 reveal">
                     <span className="eyebrow justify-center">Prêt(e) à vous transformer ?</span>
                     <h2 className="display-title text-3xl text-white mt-4 mb-6">COMMENCEZ <span className="text-gold">AUJOURD'HUI</span></h2>
-                    <p className="font-glacial text-sm text-white/40 leading-loose mb-10">Réservez une consultation gratuite de 30 minutes pour découvrir comment nous pouvons vous aider.</p>
+                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">Réservez une consultation gratuite de 30 minutes pour découvrir comment nous pouvons vous aider.</p>
                     <Link to="/reservation" className="btn btn-gold">RÉSERVER MA CONSULTATION GRATUITE</Link>
                 </div>
             </section>

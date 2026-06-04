@@ -86,10 +86,10 @@ export default function Mprew() {
                                 MA PETITE ROBE<br /><span className="text-gold">EN WAX</span>
                             </h2>
                             <div className="gold-line my-6" />
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-6">
+                            <p className="font-glacial text-sm text-[#444] leading-loose mb-6">
                                 {description}
                             </p>
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-9">
+                            <p className="font-glacial text-sm text-[#444] leading-loose mb-9">
                                 Une expérience shopping unique, alliant technologie moderne et artisanat africain traditionnel.
                             </p>
                             <div className="flex flex-wrap gap-4">
@@ -121,7 +121,7 @@ export default function Mprew() {
                             <div key={i} className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 p-8 transition-colors" style={{ transitionDelay: `${i * 0.08}s` }}>
                                 <span className="text-3xl block mb-5">{f.icon}</span>
                                 <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{f.title}</h3>
-                                <p className="font-glacial text-xs text-white/35 leading-relaxed">{f.desc}</p>
+                                <p className="font-glacial text-sm text-white/60 leading-relaxed">{f.desc}</p>
                             </div>
                         ))}
                     </div>

@@ -87,7 +87,7 @@ export default function MiaDreams() {
                             <span className="eyebrow">La marque</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-[#1a1a1a] mt-4 leading-tight">ÉLÉGANCE <span className="text-gold">AFRICAINE</span></h2>
                             <div className="gold-line my-6" />
-                            <p className="font-glacial text-sm text-[#777] leading-loose mb-8">{description}</p>
+                            <p className="font-glacial text-sm text-[#444] leading-loose mb-8">{description}</p>
                             <Link to="/reservation" className="btn btn-gold">RÉSERVER UNE CONSULTATION</Link>
                         </div>
                     </div>

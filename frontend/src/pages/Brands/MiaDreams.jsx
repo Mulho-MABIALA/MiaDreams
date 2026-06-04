@@ -61,16 +61,20 @@ export default function MiaDreams() {
                         {/* Gauche : vidéo si dispo, sinon image, sinon fond sombre */}
                         <div className="reveal">
                             {youtubeId ? (
-                                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                                    <iframe
-                                        className="absolute inset-0 w-full h-full"
-                                        src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1`}
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        allowFullScreen loading="lazy"
-                                        title={brand?.name || 'Mia Dreams'}
-                                    />
-                                </div>
+                                <a href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank" rel="noopener noreferrer"
+                                   className="relative w-full block group overflow-hidden"
+                                   style={{ paddingBottom: '56.25%', background: '#111' }}>
+                                    <img src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`} alt={brand?.name || 'Mia Dreams'}
+                                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                         onError={e => { e.target.src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`; }} />
+                                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-16 h-16 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                                             style={{ background: 'rgba(201,168,76,0.95)' }}>
+                                            <svg className="w-6 h-6 ml-1" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                    </div>
+                                </a>
                             ) : heroImg ? (
                                 <img src={heroImg}
                                     className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top"

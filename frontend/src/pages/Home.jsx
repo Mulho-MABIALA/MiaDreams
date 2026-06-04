@@ -392,16 +392,31 @@ export default function Home() {
 
                                 {/* ── Vidéo ou placeholder ── */}
                                 <div className="reveal">
-                                    {embedUrl ? (
-                                        <div className="relative w-full shadow-lg" style={{ paddingBottom: '56.25%' }}>
-                                            <iframe
-                                                className="absolute inset-0 w-full h-full"
-                                                src={embedUrl}
-                                                frameBorder="0"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                                allowFullScreen loading="lazy" title="MIA DREAMS" />
-                                        </div>
-                                    ) : (
+                                    {embedUrl ? (() => {
+                                        const vidId = embedUrl.match(/embed\/([a-zA-Z0-9_-]{11})/)?.[1];
+                                        const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/maxresdefault.jpg` : '';
+                                        const watchUrl = vidId ? `https://www.youtube.com/watch?v=${vidId}` : embedUrl;
+                                        return (
+                                        <a href={watchUrl} target="_blank" rel="noopener noreferrer"
+                                           className="relative w-full shadow-lg flex items-center justify-center group block"
+                                           style={{ paddingBottom: '56.25%', background: '#111', overflow: 'hidden' }}>
+                                            {thumbUrl && (
+                                                <img src={thumbUrl} alt="Vidéo MIA DREAMS"
+                                                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                     onError={e => { e.target.style.display='none'; }} />
+                                            )}
+                                            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="w-16 h-16 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                                                     style={{ background: 'rgba(201,168,76,0.95)' }}>
+                                                    <svg className="w-6 h-6 ml-1" fill="white" viewBox="0 0 24 24">
+                                                        <path d="M8 5v14l11-7z"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        );
+                                    })() : (
                                         /* Placeholder — ajoute une vidéo dans le dashboard (Section › Intro › video_url) */
                                         <div className="relative w-full shadow-lg flex items-center justify-center"
                                              style={{ paddingBottom: '56.25%', background: '#f5f3f0' }}>

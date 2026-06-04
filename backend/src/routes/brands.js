@@ -26,8 +26,7 @@ router.get('/:slug', async (req, res) => {
         const collectionIds = collections.map(c => c._id);
         const products = await Product.find({
             collection: { $in: collectionIds },
-            is_active: { $ne: false },
-        }).sort('order');
+        }).sort('order').select('name slug image images price compare_price category stock collection is_active');
 
         // Attacher les produits à chaque collection
         const collectionsWithProducts = collections.map(col => ({

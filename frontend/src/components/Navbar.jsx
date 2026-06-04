@@ -86,13 +86,13 @@ export default function Navbar() {
                 {/* Desktop nav */}
                 <ul className="hidden lg:flex items-center">
                     <li>
-                        <Link to="/" className={`nav-link ${pathname === '/' ? 'active text-gold' : 'text-white/55'}`}>HOME</Link>
+                        <Link to="/" className={`nav-link ${pathname === '/' ? 'active text-gold' : 'text-white/85'}`}>HOME</Link>
                     </li>
 
                     <li className="nav-dropdown">
                         <button className={`nav-link flex items-center gap-1.5 ${
                             ['/miaDreams','/mprew','/fashionProgram','/personalBranding'].some(p => pathname.startsWith(p)) || pathname.startsWith('/marque')
-                                ? 'active text-gold' : 'text-white/55'}`}>
+                                ? 'active text-gold' : 'text-white/85'}`}>
                             NOS MARQUES
                             <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                         </button>
@@ -103,11 +103,11 @@ export default function Navbar() {
                         </div>
                     </li>
 
-                    <li><Link to="/catalogues" className={`nav-link ${isActive('/catalogues') ? 'active text-gold' : 'text-white/55'}`}>CATALOGUES</Link></li>
-                    <li><Link to="/galerie"    className={`nav-link ${isActive('/galerie')    ? 'active text-gold' : 'text-white/55'}`}>GALERIE</Link></li>
+                    <li><Link to="/catalogues" className={`nav-link ${isActive('/catalogues') ? 'active text-gold' : 'text-white/85'}`}>CATALOGUES</Link></li>
+                    <li><Link to="/galerie"    className={`nav-link ${isActive('/galerie')    ? 'active text-gold' : 'text-white/85'}`}>GALERIE</Link></li>
 
                     <li className="nav-dropdown">
-                        <button className={`nav-link flex items-center gap-1.5 ${isActive('/apropos') || isActive('/blog') ? 'active text-gold' : 'text-white/55'}`}>
+                        <button className={`nav-link flex items-center gap-1.5 ${isActive('/apropos') || isActive('/blog') ? 'active text-gold' : 'text-white/85'}`}>
                             JOURNAL
                             <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                         </button>
@@ -117,9 +117,9 @@ export default function Navbar() {
                         </div>
                     </li>
 
-                    <li><Link to="/boutique"    className={`nav-link ${isActive('/boutique')    ? 'active text-gold' : 'text-white/55'}`}>BOUTIQUE</Link></li>
-                    <li><Link to="/impact"     className={`nav-link ${isActive('/impact')     ? 'active text-gold' : 'text-white/55'}`}>IMPACT</Link></li>
-                    <li><Link to="/reservation" className={`nav-link ${isActive('/reservation') ? 'active text-gold' : 'text-white/55'}`}>RÉSERVER</Link></li>
+                    <li><Link to="/boutique"    className={`nav-link ${isActive('/boutique')    ? 'active text-gold' : 'text-white/85'}`}>BOUTIQUE</Link></li>
+                    <li><Link to="/impact"     className={`nav-link ${isActive('/impact')     ? 'active text-gold' : 'text-white/85'}`}>IMPACT</Link></li>
+                    <li><Link to="/reservation" className={`nav-link ${isActive('/reservation') ? 'active text-gold' : 'text-white/85'}`}>RÉSERVER</Link></li>
 
                     {/* Panier */}
                     <li>
@@ -155,7 +155,7 @@ export default function Navbar() {
 
                 {/* Mobile icons */}
                 <div className="lg:hidden flex items-center gap-1">
-                    <Link to="/panier" className="relative p-2.5 text-white/50 hover:text-gold transition-colors">
+                    <Link to="/panier" className="relative p-2.5 text-white/80 hover:text-gold transition-colors">
                         <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
@@ -195,7 +195,7 @@ export default function Navbar() {
                                className="flex-1 bg-transparent text-white font-glacial text-sm tracking-[1px] outline-none placeholder:text-white/20 border-b border-white/10 pb-1.5 focus:border-gold/40 transition-colors" />
                         {searchQuery && (
                             <button type="button" onClick={() => setSearchQuery('')}
-                                    className="text-white/55 hover:text-gold transition-colors text-sm leading-none">✕</button>
+                                    className="text-white/85 hover:text-gold transition-colors text-sm leading-none">✕</button>
                         )}
                         <button type="submit" className="btn btn-gold py-[.55rem] px-4 text-[9px]">GO</button>
                     </form>
@@ -216,14 +216,14 @@ export default function Navbar() {
                         <li key={item.to}>
                             <Link to={item.to}
                                   className={`font-glacial text-[11px] tracking-[3px] uppercase py-3.5 block border-b border-white/[0.05] transition-colors duration-200 ${
-                                      isActive(item.to) ? 'text-gold' : 'text-white/55 hover:text-gold'
+                                      isActive(item.to) ? 'text-gold' : 'text-white/85 hover:text-gold'
                                   }`}>
                                 {item.label}
                             </Link>
                         </li>
                     ))}
                     <li className="py-3 border-b border-white/[0.05]">
-                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/40 block mb-3">NOS MARQUES</span>
+                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">NOS MARQUES</span>
                         <div className="flex flex-col gap-1 pl-2">
                             {brands.map(b => (
                                 <Link key={b.slug || b.name} to={b.href}
@@ -234,7 +234,7 @@ export default function Navbar() {
                         </div>
                     </li>
                     <li className="py-3 border-b border-white/[0.05]">
-                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/40 block mb-3">JOURNAL</span>
+                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">JOURNAL</span>
                         <div className="flex flex-col gap-1 pl-2">
                             <Link to="/apropos" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">À Propos</Link>
                             <Link to="/blog" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">Blog & Podcast</Link>

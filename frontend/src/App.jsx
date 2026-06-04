@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -32,7 +32,6 @@ import BlogShow from './pages/Blog/Show';
 import MiaDreams from './pages/Brands/MiaDreams';
 import Mprew from './pages/Brands/Mprew';
 import PersonalBranding from './pages/Brands/PersonalBranding';
-import FashionProgram from './pages/Brands/FashionProgram';
 import Brand from './pages/Brands/Brand';
 import Gallery from './pages/Gallery';
 import Catalogues from './pages/Catalogues';
@@ -73,7 +72,7 @@ export default function App() {
                 <Route path="/miaDreams"        element={<MiaDreams />} />
                 <Route path="/mprew"            element={<Mprew />} />
                 <Route path="/personalBranding" element={<PersonalBranding />} />
-                <Route path="/fashionProgram"   element={<FashionProgram />} />
+                <Route path="/fashionProgram"   element={<Navigate to="/programmes/fashion-program" replace />} />
                 <Route path="/marque/:slug"     element={<Brand />} />
                 <Route path="/programmes"       element={<ProgrammesIndex />} />
                 <Route path="/programmes/:slug" element={<ProgrammeDetail />} />

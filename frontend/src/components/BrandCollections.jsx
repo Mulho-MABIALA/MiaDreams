@@ -119,9 +119,20 @@ export default function BrandCollections({ brandSlug }) {
                                                 {prod.name}
                                             </h4>
                                             {prod.price > 0 && (
-                                                <p className="font-glacial text-sm text-gold">
+                                                <p className="font-glacial text-sm text-gold mb-1">
                                                     {prod.price.toLocaleString('fr-FR')} <span className="text-[11px] text-gold/70">FCFA</span>
                                                 </p>
+                                            )}
+                                            {!inBoutique && (
+                                                <div className="flex items-start gap-1.5 mt-1">
+                                                    <svg className="w-3 h-3 text-white/40 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                                    </svg>
+                                                    <p className="font-glacial text-[10px] text-white/45 leading-snug">
+                                                        Non disponible en boutique.<br/>
+                                                        <span className="text-[#25D366]/80">Commandez via WhatsApp ↑</span>
+                                                    </p>
+                                                </div>
                                             )}
                                         </div>
                                     );

@@ -53,11 +53,49 @@ export default function BrandCollections({ brandSlug }) {
 
                 {/* ── Collections avec leurs produits ── */}
                 {collections.map((col) => (
-                    <div key={col._id} className="mb-16">
-                        {/* Titre de la collection */}
-                        <div className="flex items-center gap-4 mb-6">
-                            <span className="font-lastica text-[9px] tracking-[4px] text-gold/60 uppercase">{col.name}</span>
-                            <div className="flex-1 h-px bg-white/[0.06]" />
+                    <div key={col._id} className="mb-20 reveal">
+
+                        {/* ── En-tête enrichi de la collection ── */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-10 overflow-hidden border border-white/[0.07]">
+
+                            {/* Image couverture */}
+                            <div className="relative overflow-hidden" style={{ minHeight: 260 }}>
+                                {col.image ? (
+                                    <img src={imgSrc(col.image)} alt={col.name}
+                                         className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
+                                         loading="lazy" />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#0f0f0f' }}>
+                                        <svg className="w-12 h-12 text-gold/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                )}
+                                {/* Overlay gradient */}
+                                <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, #0c0c0c 100%)' }} />
+                            </div>
+
+                            {/* Infos texte */}
+                            <div className="flex flex-col justify-center p-8 lg:p-10" style={{ background: '#0c0c0c' }}>
+                                <span className="font-lastica text-[8px] tracking-[5px] text-gold/60 uppercase mb-3">Collection</span>
+                                <h3 className="font-glacial text-2xl lg:text-3xl text-white uppercase tracking-[3px] leading-tight mb-4">
+                                    {col.name}
+                                </h3>
+                                <div className="w-8 h-px mb-5" style={{ background: '#C9A84C' }} />
+                                {col.description && (
+                                    <p className="font-glacial text-sm text-white/65 leading-loose mb-4">
+                                        {col.description}
+                                    </p>
+                                )}
+                                {col.products?.length > 0 && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <div className="w-1 h-1 rounded-full bg-gold/60" />
+                                        <span className="font-lastica text-[8px] tracking-[3px] text-gold/55">
+                                            {col.products.length} pièce{col.products.length > 1 ? 's' : ''}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Grille produits */}

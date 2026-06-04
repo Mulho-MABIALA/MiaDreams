@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { useApp } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
 
@@ -21,24 +22,28 @@ export default function Navbar() {
     const defaultBrands = [
         { name: 'Mia Dreams', slug: 'mia-dreams', href: '/miaDreams' },
         { name: 'MPREW', slug: 'mprew', href: '/mprew' },
-        { name: 'Fashion Program', slug: 'fashion-program', href: '/fashionProgram' },
         { name: 'Personal Branding', slug: 'personal-branding', href: '/personalBranding' },
     ];
     // Chemins des pages de marques statiques existantes
-    const STATIC_BRAND_PATHS = ['/miaDreams', '/mprew', '/fashionProgram', '/personalBranding'];
+    const STATIC_BRAND_PATHS = ['/miaDreams', '/mprew', '/personalBranding'];
     const brands = navBrands && navBrands.length > 0
-        ? navBrands.map(b => {
-            let href = b.href || '';
-            // N'utiliser le href personnalisé que s'il correspond à une page statique existante
-            // ou s'il commence par http. Sinon, utiliser la route dynamique /marque/:slug
-            const isValidHref = href &&
-                (STATIC_BRAND_PATHS.includes(href) || href.startsWith('http'));
-            if (!isValidHref) {
-                href = `/marque/${b.slug}`;
-            }
-            return { ...b, href };
-        })
+        ? navBrands
+            .filter(b => b.slug !== 'fashion-program')
+            .map(b => {
+                let href = b.href || '';
+                const isValidHref = href &&
+                    (STATIC_BRAND_PATHS.includes(href) || href.startsWith('http'));
+                if (!isValidHref) {
+                    href = `/marque/${b.slug}`;
+                }
+                return { ...b, href };
+            })
         : defaultBrands;
+
+    const [navProgrammes, setNavProgrammes] = useState([]);
+    useEffect(() => {
+        axios.get('/api/programmes').then(r => setNavProgrammes(r.data.programmes || [])).catch(() => {});
+    }, []);
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 40);
@@ -91,7 +96,7 @@ export default function Navbar() {
 
                     <li className="nav-dropdown">
                         <button className={`nav-link flex items-center gap-1.5 ${
-                            ['/miaDreams','/mprew','/fashionProgram','/personalBranding'].some(p => pathname.startsWith(p)) || pathname.startsWith('/marque')
+                            ['/miaDreams','/mprew','/personalBranding'].some(p => pathname.startsWith(p)) || pathname.startsWith('/marque')
                                 ? 'active text-gold' : 'text-white/85'}`}>
                             NOS MARQUES
                             <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
@@ -100,6 +105,22 @@ export default function Navbar() {
                             {brands.map(b => (
                                 <Link key={b.slug || b.name} to={b.href}>{b.name}</Link>
                             ))}
+                        </div>
+                    </li>
+
+                    <li className="nav-dropdown">
+                        <button className={`nav-link flex items-center gap-1.5 ${pathname.startsWith('/programmes') ? 'active text-gold' : 'text-white/85'}`}>
+                            NOS PROGRAMMES
+                            <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div className="nav-dropdown-menu">
+                            {navProgrammes.length > 0
+                                ? navProgrammes.map(p => <Link key={p._id} to={`/programmes/${p.slug}`}>{p.name}</Link>)
+                                : <>
+                                    <Link to="/programmes/fashion-program">Fashion Program</Link>
+                                    <Link to="/programmes/mia-startup">Mia Startup</Link>
+                                  </>
+                            }
                         </div>
                     </li>
 
@@ -231,6 +252,23 @@ export default function Navbar() {
                                     {b.name}
                                 </Link>
                             ))}
+                        </div>
+                    </li>
+                    <li className="py-3 border-b border-white/[0.05]">
+                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">NOS PROGRAMMES</span>
+                        <div className="flex flex-col gap-1 pl-2">
+                            {navProgrammes.length > 0
+                                ? navProgrammes.map(p => (
+                                    <Link key={p._id} to={`/programmes/${p.slug}`}
+                                          className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">
+                                        {p.name}
+                                    </Link>
+                                ))
+                                : <>
+                                    <Link to="/programmes/fashion-program" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">Fashion Program</Link>
+                                    <Link to="/programmes/mia-startup" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">Mia Startup</Link>
+                                  </>
+                            }
                         </div>
                     </li>
                     <li className="py-3 border-b border-white/[0.05]">

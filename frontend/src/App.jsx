@@ -47,6 +47,8 @@ import CommandeSucces from './pages/CommandeSucces';
 import CommandeErreur from './pages/CommandeErreur';
 import MesCommandes from './pages/MesCommandes';
 import CommandeSuivi from './pages/CommandeSuivi';
+import ProgrammesIndex from './pages/Programmes/Index';
+import ProgrammeDetail from './pages/Programmes/Detail';
 import NotFound from './pages/NotFound';
 
 function ScrollToTop() {
@@ -73,6 +75,8 @@ export default function App() {
                 <Route path="/personalBranding" element={<PersonalBranding />} />
                 <Route path="/fashionProgram"   element={<FashionProgram />} />
                 <Route path="/marque/:slug"     element={<Brand />} />
+                <Route path="/programmes"       element={<ProgrammesIndex />} />
+                <Route path="/programmes/:slug" element={<ProgrammeDetail />} />
                 <Route path="/galerie"          element={<Gallery />} />
                 <Route path="/catalogues"       element={<Catalogues />} />
                 <Route path="/recherche"        element={<Search />} />

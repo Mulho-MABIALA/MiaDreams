@@ -8,9 +8,10 @@ const helmet  = require('helmet');
 const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/auth');
 const { apiLimiter } = require('./middleware/rateLimiter');
-const seedAdmin    = require('./seed');
-const seedBrands   = require('./seedBrands');
-const seedSections = require('./seedSections');
+const seedAdmin      = require('./seed');
+const seedBrands     = require('./seedBrands');
+const seedSections   = require('./seedSections');
+const seedProgrammes = require('./seedProgrammes');
 
 const app = express();
 if (compression) app.use(compression()); // gzip — réduit la taille des réponses de ~70%
@@ -23,6 +24,7 @@ connectDB().then(async () => {
     await seedAdmin();
     await seedBrands();
     await seedSections();
+    await seedProgrammes();
 });
 
 // ── Sécurité HTTP headers (helmet) ──────────────────────────────────────────
@@ -105,6 +107,7 @@ const routes = [
     ['/api/payment',      './routes/payment'],
     ['/api/caisse',       './routes/caisse'],
     ['/api/invoices',    './routes/invoices'],
+    ['/api/programmes',  './routes/programmes'],
 ];
 
 routes.forEach(([path, file]) => {

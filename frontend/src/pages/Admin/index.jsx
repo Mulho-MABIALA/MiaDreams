@@ -21,6 +21,8 @@ import AdminCollections from './AdminCollections';
 import AdminProfile from './AdminProfile';
 import AdminCaisse from './AdminCaisse';
 import AdminPOS from './AdminPOS';
+import AdminProgrammes from './AdminProgrammes';
+import AdminInscriptions from './AdminInscriptions';
 
 const NAV_GROUPS = [
     {
@@ -41,6 +43,13 @@ const NAV_GROUPS = [
             { to: '/admin/temoignages',  label: 'Témoignages',     icon: <IconTestimonials /> },
             { to: '/admin/equipe',       label: 'Équipe',          icon: <IconTeam /> },
             { to: '/admin/initiatives',  label: 'Initiatives',     icon: <IconInitiatives /> },
+        ]
+    },
+    {
+        label: 'Programmes',
+        items: [
+            { to: '/admin/programmes',    label: 'Formations',    icon: <IconProgrammes /> },
+            { to: '/admin/inscriptions',  label: 'Inscriptions',  icon: <IconInscriptions /> },
         ]
     },
     {
@@ -442,6 +451,8 @@ export default function Admin() {
                             <Route path="temoignages/*" element={<AdminTestimonials />} />
                             <Route path="equipe/*" element={<AdminTeam />} />
                             <Route path="initiatives/*" element={<AdminInitiatives />} />
+                            <Route path="programmes/*"    element={<AdminProgrammes />} />
+                            <Route path="inscriptions/*" element={<AdminInscriptions />} />
                             <Route path="produits/*"   element={<AdminProduits />} />
                             <Route path="commandes/*"  element={<AdminCommandes />} />
                             <Route path="reservations" element={<AdminReservations />} />
@@ -503,3 +514,5 @@ function IconCart() { return <svg width="15" height="15" viewBox="0 0 24 24" fil
 function IconMenu()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> }
 function IconCaisse() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="11" x2="12" y2="15"/><line x1="10" y1="13" x2="14" y2="13"/></svg> }
 function IconPOS()    { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M12 8h.01M17 8h.01M7 12h.01M12 12h.01M17 12h.01"/></svg> }
+function IconProgrammes()   { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> }
+function IconInscriptions() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> }

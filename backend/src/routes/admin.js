@@ -486,4 +486,75 @@ router.put('/company-info', upload.single('logo'), processImages, async (req, re
     } catch(e){ res.status(400).json({message:e.message}); }
 });
 
+// ── PROGRAMMES ────────────────────────────────────────────────────────────────
+const Programme  = require('../models/Programme');
+const Inscription = require('../models/Inscription');
+
+router.get('/programmes', async (req, res) => {
+    try {
+        const programmes = await Programme.find().sort({ order: 1, createdAt: 1 });
+        res.json({ programmes });
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+router.post('/programmes', upload.single('image'), processImages, async (req, res) => {
+    try {
+        const data = { ...req.body };
+        if (req.body.modules) {
+            try { data.modules = JSON.parse(req.body.modules); } catch (_) { data.modules = []; }
+        }
+        if (req.file) data.image = req.file.filename;
+        const prog = await Programme.create(data);
+        res.status(201).json(prog);
+    } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
+router.put('/programmes/:id', upload.single('image'), processImages, async (req, res) => {
+    try {
+        const data = { ...req.body };
+        if (req.body.modules) {
+            try { data.modules = JSON.parse(req.body.modules); } catch (_) {}
+        }
+        if (req.file) data.image = req.file.filename;
+        const prog = await Programme.findByIdAndUpdate(req.params.id, data, { new: true });
+        if (!prog) return res.status(404).json({ message: 'Programme introuvable' });
+        res.json(prog);
+    } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
+router.delete('/programmes/:id', async (req, res) => {
+    try {
+        await Programme.findByIdAndDelete(req.params.id);
+        await Inscription.deleteMany({ programme: req.params.id });
+        res.json({ message: 'Supprimé' });
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+// ── INSCRIPTIONS ──────────────────────────────────────────────────────────────
+router.get('/inscriptions', async (req, res) => {
+    try {
+        const { programme } = req.query;
+        const filter = programme ? { programme } : {};
+        const inscriptions = await Inscription.find(filter)
+            .populate('programme', 'name slug')
+            .sort({ createdAt: -1 });
+        res.json({ inscriptions });
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+router.put('/inscriptions/:id', async (req, res) => {
+    try {
+        const insc = await Inscription.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
+        if (!insc) return res.status(404).json({ message: 'Inscription introuvable' });
+        res.json(insc);
+    } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
+router.delete('/inscriptions/:id', async (req, res) => {
+    try {
+        await Inscription.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Supprimé' });
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
 module.exports = router;

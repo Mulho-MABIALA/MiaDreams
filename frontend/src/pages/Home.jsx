@@ -457,7 +457,7 @@ export default function Home() {
                                     <div className="w-10 h-px" style={{ background: GOLD }} />
 
                                     {/* Corps */}
-                                    <p className="font-glacial text-sm text-[#888] leading-[1.95]">
+                                    <p className="font-glacial text-[15px] text-[#555] leading-[1.95]">
                                         {introSection?.content ||
                                             "Au-delà d'une simple entreprise ou d'une marque de vêtements, nous incarnons un univers contemporain de la mode africaine. Notre savoir-faire dans l'industrie textile est empreint de valeurs vertueuses, tout en embrassant l'innovation numérique."}
                                     </p>
@@ -471,7 +471,7 @@ export default function Home() {
                                         ].map((s, i) => (
                                             <div key={i}>
                                                 <p className="font-glacial text-2xl font-light" style={{ color: GOLD }}>{s.n}</p>
-                                                <p className="font-lastica text-[6px] tracking-[3px] text-[#aaa] uppercase mt-1.5">{s.l}</p>
+                                                <p className="font-lastica text-[8px] tracking-[2px] text-[#999] uppercase mt-1.5">{s.l}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -538,7 +538,7 @@ export default function Home() {
                                 <h3 className="font-glacial text-lg sm:text-xl font-light text-white uppercase tracking-[3px] mb-2 group-hover:text-gold transition-colors duration-300">
                                     {u.title}
                                 </h3>
-                                <p className="font-glacial text-sm text-white/40 mb-5">{u.content || u.sub}</p>
+                                <p className="font-glacial text-sm text-white/65 mb-5">{u.content || u.sub}</p>
                                 <span className="flex items-center gap-2 font-lastica text-[7px] tracking-[3px] uppercase transition-all duration-300"
                                       style={{ color: 'rgba(196,162,103,.6)' }}>
                                     Découvrir
@@ -561,7 +561,7 @@ export default function Home() {
                             NOS PILIERS <span className="text-gold">D'ACTION</span>
                         </h2>
                         <div className="gold-line-center" />
-                        <p className="font-glacial text-xs text-white/30 tracking-[2px] uppercase mt-6 max-w-xl mx-auto leading-relaxed">
+                        <p className="font-glacial text-sm text-white/60 mt-6 max-w-xl mx-auto leading-relaxed">
                             Parce que l'impact ne commence pas par la visibilité. Il commence par l'alignement.
                         </p>
                     </div>
@@ -576,18 +576,18 @@ export default function Home() {
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Mode Consciente<br />&amp; Innovation Digitale
                             </h3>
-                            <p className="font-glacial text-xs text-white/40 leading-relaxed mb-4">
+                            <p className="font-glacial text-sm text-white/65 leading-relaxed mb-4">
                                 À travers <span className="text-gold/70">MIA DREAMS</span> et <span className="text-gold/70">MA PETITE ROBE EN WAX</span>, nous développons une mode africaine contemporaine intégrant :
                             </p>
                             <ul className="space-y-2 mb-5">
                                 {['Production à la demande', 'Digitalisation de l\'expérience client', 'Réduction du gaspillage textile', 'Valorisation des savoir-faire locaux'].map(item => (
-                                    <li key={item} className="flex items-start gap-2.5 font-glacial text-xs text-white/35">
+                                    <li key={item} className="flex items-start gap-2.5 font-glacial text-sm text-white/70">
                                         <span className="w-1 h-1 rounded-full bg-gold/50 mt-1.5 flex-shrink-0" />
                                         {item}
                                     </li>
                                 ))}
                             </ul>
-                            <p className="font-glacial text-xs text-white/25 leading-relaxed italic">
+                            <p className="font-glacial text-sm text-white/50 leading-relaxed italic">
                                 La mode devient un outil d'affirmation, une solution économique et environnementale.
                             </p>
                         </div>
@@ -599,18 +599,18 @@ export default function Home() {
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Image &amp; Positionnement<br />Stratégique
                             </h3>
-                            <p className="font-glacial text-xs text-white/40 leading-relaxed mb-4">
+                            <p className="font-glacial text-sm text-white/65 leading-relaxed mb-4">
                                 Nous accompagnons les leaders, entrepreneurs et dirigeants dans la construction d'une image cohérente et puissante :
                             </p>
                             <ul className="space-y-2 mb-5">
                                 {['Personal branding stratégique', 'Garde-robe identitaire', 'Plateformes digitales personnalisées'].map(item => (
-                                    <li key={item} className="flex items-start gap-2.5 font-glacial text-xs text-white/35">
+                                    <li key={item} className="flex items-start gap-2.5 font-glacial text-sm text-white/70">
                                         <span className="w-1 h-1 rounded-full bg-gold/50 mt-1.5 flex-shrink-0" />
                                         {item}
                                     </li>
                                 ))}
                             </ul>
-                            <p className="font-glacial text-xs text-white/25 leading-relaxed italic">
+                            <p className="font-glacial text-sm text-white/50 leading-relaxed italic">
                                 Parce qu'une marque forte est d'abord une identité assumée.
                             </p>
                         </div>
@@ -622,7 +622,7 @@ export default function Home() {
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Entrepreneuriat<br />&amp; ICC
                             </h3>
-                            <p className="font-glacial text-xs text-white/40 leading-relaxed">
+                            <p className="font-glacial text-sm text-white/65 leading-relaxed">
                                 <span className="text-gold/70 not-italic">Mia for Startup</span> est un programme de formation de{' '}
                                 <span className="text-white/60">6 semaines transformatrices</span> conçu pour aider les entrepreneurs à structurer et accélérer leur business.
                                 À travers une approche pratique, les participants apprennent à intégrer le digital, maîtriser les fondamentaux du marketing, comprendre leur comptabilité,
@@ -637,7 +637,7 @@ export default function Home() {
                             <h3 className="font-glacial text-base text-white uppercase tracking-[3px] mb-5 leading-snug group-hover:text-gold transition-colors duration-300">
                                 Pour les<br />Institutions
                             </h3>
-                            <p className="font-glacial text-xs text-white/40 leading-relaxed">
+                            <p className="font-glacial text-sm text-white/65 leading-relaxed">
                                 Mia Dreams développe des solutions à l'intersection de la{' '}
                                 <span className="text-white/60">mode responsable, du digital, de l'entrepreneuriat et du leadership féminin</span>,
                                 et sollicite les institutions souhaitant soutenir ces axes à fort impact.
@@ -684,7 +684,7 @@ export default function Home() {
                             {personalBranding?.title || <>OFFRE EN<br /><span className="text-gold">PERSONAL BRANDING</span></>}
                         </h2>
                         <div className="w-10 h-px mb-8" style={{ background: GOLD }} />
-                        <p className="font-glacial text-sm text-white/45 leading-[1.95] mb-10 max-w-sm">
+                        <p className="font-glacial text-[15px] text-white/70 leading-[1.95] mb-10 max-w-sm">
                             {personalBranding?.content ||
                                 "Une méthode et un accompagnement uniques au service de votre leadership, qui vous font gagner du temps. Nous allons vous aider à développer votre propre style, dans une démarche bienveillante."}
                         </p>
@@ -711,7 +711,7 @@ export default function Home() {
                             {ethicalFashion?.title || <>ETHICAL<br /><span className="text-gold">FASHION</span></>}
                         </h2>
                         <div className="w-10 h-px mb-8" style={{ background: GOLD }} />
-                        <p className="font-glacial text-sm text-[#777] leading-[1.95] mb-10 max-w-sm">
+                        <p className="font-glacial text-[15px] text-[#444] leading-[1.95] mb-10 max-w-sm">
                             {ethicalFashion?.content ||
                                 "Chez Mia Dreams and Co, notre engagement envers une mode éthique et responsable est au cœur de notre identité. Nous croyons fermement que la mode peut être une force positive pour les communautés africaines."}
                         </p>

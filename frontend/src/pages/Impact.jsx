@@ -124,7 +124,7 @@ export default function Impact() {
                                     {item.bullets && (
                                         <ul className="space-y-3 mt-1">
                                             {item.bullets.map(b => (
-                                                <li key={b.label} className="flex items-start gap-2.5 font-glacial text-xs text-white/45 leading-relaxed">
+                                                <li key={b.label} className="flex items-start gap-2.5 font-glacial text-sm text-white/65 leading-relaxed">
                                                     <span className="w-1 h-1 rounded-full bg-gold/60 mt-1.5 flex-shrink-0" />
                                                     <span><span className="text-white/70 font-semibold">{b.label}</span> : {b.text}</span>
                                                 </li>
@@ -171,12 +171,12 @@ export default function Impact() {
                                 </div>
                                 <h3 className="font-glacial text-base text-white uppercase tracking-[2px] mb-4 group-hover:text-gold transition-colors">{e.title}</h3>
                                 {e.content && (
-                                    <p className="font-glacial text-sm text-white/40 leading-relaxed">{e.content}</p>
+                                    <p className="font-glacial text-sm text-white/65 leading-relaxed">{e.content}</p>
                                 )}
                                 {e.bullets && (
                                     <ul className="space-y-2.5 mt-3">
                                         {e.bullets.map((b, bi) => (
-                                            <li key={bi} className="flex items-start gap-2.5 font-glacial text-xs text-white/35 leading-relaxed">
+                                            <li key={bi} className="flex items-start gap-2.5 font-glacial text-sm text-white/60 leading-relaxed">
                                                 <span className="w-1 h-1 rounded-full bg-gold/50 mt-1.5 flex-shrink-0" />
                                                 {b}
                                             </li>
@@ -213,7 +213,7 @@ export default function Impact() {
                                     )}
                                     <div className="p-7">
                                         <h3 className="font-glacial text-lg text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{init.name}</h3>
-                                        {init.description && <p className="font-glacial text-sm text-white/40 leading-relaxed">{init.description}</p>}
+                                        {init.description && <p className="font-glacial text-sm text-white/65 leading-relaxed">{init.description}</p>}
                                     </div>
                                 </div>
                             ))}
@@ -227,7 +227,7 @@ export default function Impact() {
                 <div className="max-w-xl mx-auto px-6 reveal">
                     <span className="eyebrow justify-center">Rejoignez le mouvement</span>
                     <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-6">MODE <span className="text-gold">RESPONSABLE</span></h2>
-                    <p className="font-glacial text-sm text-white/40 leading-loose mb-10">Chaque achat, chaque collaboration est un acte pour une mode plus juste, plus belle et plus africaine.</p>
+                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">Chaque achat, chaque collaboration est un acte pour une mode plus juste, plus belle et plus africaine.</p>
                     <div className="flex flex-wrap gap-4 justify-center">
                         <a href="/contact" className="btn btn-gold">NOUS REJOINDRE</a>
                         <a href="/reservation" className="btn btn-white">PRENDRE RDV</a>

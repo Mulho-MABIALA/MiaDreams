@@ -79,7 +79,7 @@ function ProductCard({ product, index }) {
             </div>
             <div>
                 {product.category && (
-                    <p className="font-lastica text-[7px] tracking-[3px] uppercase mb-1" style={{ color: `${GOLD}88` }}>{product.category}</p>
+                    <p className="font-lastica text-[10px] tracking-[3px] uppercase mb-1" style={{ color: `${GOLD}88` }}>{product.category}</p>
                 )}
                 <h3 className="font-glacial text-[13px] text-white/75 uppercase tracking-[1px] leading-snug mb-2 group-hover:text-gold transition-colors duration-200">
                     {product.name}
@@ -89,7 +89,7 @@ function ProductCard({ product, index }) {
                         {product.price.toLocaleString('fr-FR')} <span className="text-[10px]">FCFA</span>
                     </span>
                     {product.compare_price > product.price && (
-                        <span className="font-glacial text-[11px] text-white/25 line-through">
+                        <span className="font-glacial text-sm text-white/55 line-through">
                             {product.compare_price.toLocaleString('fr-FR')}
                         </span>
                     )}
@@ -208,7 +208,7 @@ export default function BoutiqueIndex() {
                 </div>
                 {!loading && products.length > 0 && (
                     <div className="absolute bottom-10 right-10 text-right hidden lg:block">
-                        <p className="font-lastica text-[8px] tracking-[4px] text-white/20 uppercase">{products.length} articles</p>
+                        <p className="font-lastica text-[8px] tracking-[4px] text-white/50 uppercase">{products.length} articles</p>
                     </div>
                 )}
             </div>
@@ -239,7 +239,7 @@ export default function BoutiqueIndex() {
                             <div className="hidden sm:flex items-center gap-0.5 overflow-x-auto">
                                 {[{ _id: '', name: 'Tout' }, ...brands].map(b => (
                                     <button key={b._id} onClick={() => setBrand(b._id)}
-                                        className="font-lastica text-[7px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 transition-all duration-200 rounded-sm"
+                                        className="font-lastica text-[10px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 transition-all duration-200 rounded-sm"
                                         style={activeBrand === b._id
                                             ? { background: GOLD, color: '#050505' }
                                             : { color: 'rgba(255,255,255,.50)' }}>
@@ -254,7 +254,7 @@ export default function BoutiqueIndex() {
                         {/* Tri */}
                         <div className="relative flex-shrink-0">
                             <button onClick={() => setSortOpen(o => !o)}
-                                className="flex items-center gap-2 font-lastica text-[7px] tracking-[2px] uppercase text-white/55 hover:text-white/80 transition-colors">
+                                className="flex items-center gap-2 font-lastica text-[10px] tracking-[2px] uppercase text-white/55 hover:text-white/80 transition-colors">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" d="M3 6h18M7 12h10M11 18h2"/>
                                 </svg>
@@ -283,7 +283,7 @@ export default function BoutiqueIndex() {
                         </div>
 
                         {filterActive && displayed.length > 0 && (
-                            <span className="font-lastica text-[7px] tracking-[2px] text-white/18 hidden sm:block">
+                            <span className="font-lastica text-[10px] tracking-[2px] text-white/45 hidden sm:block">
                                 {displayed.length}
                             </span>
                         )}
@@ -297,7 +297,7 @@ export default function BoutiqueIndex() {
                     <div className="flex gap-1 px-6 py-3 w-max">
                         {[{ _id: '', name: 'Tout' }, ...brands].map(b => (
                             <button key={b._id} onClick={() => setBrand(b._id)}
-                                className="font-lastica text-[7px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 rounded-sm transition-all"
+                                className="font-lastica text-[10px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 rounded-sm transition-all"
                                 style={activeBrand === b._id
                                     ? { background: GOLD, color: '#050505' }
                                     : { color: 'rgba(255,255,255,.32)' }}>

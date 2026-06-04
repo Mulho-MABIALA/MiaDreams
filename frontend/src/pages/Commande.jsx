@@ -44,7 +44,7 @@ const PAYMENT_METHODS = [
 ];
 
 const inp = "w-full bg-[#0d0d0d] border border-white/[0.18] text-white/90 font-glacial text-sm px-4 py-3 outline-none focus:border-gold/50 transition-colors placeholder:text-white/25 rounded-none";
-const label = "font-lastica text-[7px] tracking-[3px] text-white/50 uppercase block mb-2";
+const label = "font-lastica text-[10px] tracking-[3px] text-white/70 uppercase block mb-2";
 
 export default function Commande() {
     const { items, subtotal, clearCart } = useCart();
@@ -65,7 +65,7 @@ export default function Commande() {
     if (items.length === 0) return (
         <Layout title="Commande">
             <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center gap-5 px-6">
-                <p className="font-lastica text-[8px] tracking-[5px] text-white/20 uppercase">Panier vide</p>
+                <p className="font-lastica text-[8px] tracking-[5px] text-white/50 uppercase">Panier vide</p>
                 <Link to="/boutique" className="font-lastica text-[8px] tracking-[4px] uppercase px-7 py-3.5"
                       style={{ background: GOLD, color: '#050505' }}>
                     RETOUR BOUTIQUE
@@ -114,8 +114,8 @@ export default function Commande() {
 
                     {/* En-tête */}
                     <div className="mb-12 pb-6 border-b border-white/[0.05]">
-                        <span className="font-lastica text-[7px] tracking-[5px] text-white/15 uppercase block mb-2">Boutique</span>
-                        <h1 className="font-glacial text-3xl lg:text-4xl text-white/80 uppercase tracking-[4px]">Finaliser la commande</h1>
+                        <span className="font-lastica text-[10px] tracking-[5px] text-white/45 uppercase block mb-2">Boutique</span>
+                        <h1 className="font-glacial text-3xl lg:text-4xl text-white uppercase tracking-[4px]">Finaliser la commande</h1>
                     </div>
 
                     <form onSubmit={handleSubmit}>
@@ -127,9 +127,9 @@ export default function Commande() {
                                 {/* Infos client */}
                                 <div>
                                     <div className="flex items-center gap-4 mb-6">
-                                        <span className="font-lastica text-[7px] tracking-[5px] text-white/40 uppercase">01</span>
+                                        <span className="font-lastica text-[10px] tracking-[5px] text-white/40 uppercase">01</span>
                                         <div className="h-px flex-1 bg-white/[0.08]" />
-                                        <span className="font-lastica text-[7px] tracking-[4px] text-white/40 uppercase">Vos informations</span>
+                                        <span className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase">Vos informations</span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="sm:col-span-2">
@@ -168,9 +168,9 @@ export default function Commande() {
                                 {/* Mode de paiement */}
                                 <div>
                                     <div className="flex items-center gap-4 mb-6">
-                                        <span className="font-lastica text-[7px] tracking-[5px] text-white/40 uppercase">02</span>
+                                        <span className="font-lastica text-[10px] tracking-[5px] text-white/40 uppercase">02</span>
                                         <div className="h-px flex-1 bg-white/[0.08]" />
-                                        <span className="font-lastica text-[7px] tracking-[4px] text-white/40 uppercase">Mode de paiement</span>
+                                        <span className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase">Mode de paiement</span>
                                     </div>
                                     <div className="space-y-3">
                                         {PAYMENT_METHODS.map(m => (
@@ -188,7 +188,7 @@ export default function Commande() {
                                                        style={{ color: paymentMethod === m.id ? GOLD : 'rgba(255,255,255,.6)' }}>
                                                         {m.label}
                                                     </p>
-                                                    <p className="font-glacial text-xs text-white/25 leading-relaxed">{m.desc}</p>
+                                                    <p className="font-glacial text-sm text-white/55 leading-relaxed">{m.desc}</p>
                                                 </div>
 
                                                 {/* Radio */}
@@ -207,7 +207,7 @@ export default function Commande() {
                             {/* ── Récapitulatif ── */}
                             <div>
                                 <div className="bg-[#0c0c0c] border border-white/[0.05] p-5 sm:p-7 lg:sticky lg:top-24">
-                                    <p className="font-lastica text-[7px] tracking-[5px] text-white/45 uppercase mb-6">Ma commande</p>
+                                    <p className="font-lastica text-[10px] tracking-[5px] text-white/65 uppercase mb-6">Ma commande</p>
 
                                     {/* Articles */}
                                     <div className="space-y-4 mb-6">
@@ -220,9 +220,9 @@ export default function Commande() {
                                                     }
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-glacial text-xs text-white/75 uppercase tracking-[.5px] truncate leading-snug">{item.name}</p>
-                                                    {item.size && <p className="font-glacial text-[10px] text-white/40 mt-0.5">T. {item.size}</p>}
-                                                    <p className="font-glacial text-[10px] text-white/40">× {item.quantity}</p>
+                                                    <p className="font-glacial text-sm text-white/75 uppercase tracking-[.5px] truncate leading-snug">{item.name}</p>
+                                                    {item.size && <p className="font-glacial text-[12px] text-white/40 mt-0.5">T. {item.size}</p>}
+                                                    <p className="font-glacial text-[12px] text-white/40">× {item.quantity}</p>
                                                 </div>
                                                 <span className="font-glacial text-xs text-white/65 flex-shrink-0">
                                                     {(item.price * item.quantity).toLocaleString('fr-FR')} F
@@ -264,7 +264,7 @@ export default function Commande() {
                                     </button>
 
                                     <Link to="/panier"
-                                        className="block text-center mt-4 font-lastica text-[7px] tracking-[3px] text-white/18 hover:text-white/38 transition-colors uppercase">
+                                        className="block text-center mt-4 font-lastica text-[10px] tracking-[3px] text-white/45 hover:text-white/38 transition-colors uppercase">
                                         ← Modifier le panier
                                     </Link>
                                 </div>

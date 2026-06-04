@@ -44,7 +44,7 @@ function TeamModal({ member, onClose }) {
                 {/* Infos */}
                 <div className="px-5 sm:px-8 pb-8 -mt-6 relative z-10">
                     {member.role && (
-                        <span className="font-lastica text-[7px] tracking-[4px] text-gold/60 uppercase block mb-3">{member.role}</span>
+                        <span className="font-lastica text-[10px] tracking-[4px] text-gold/60 uppercase block mb-3">{member.role}</span>
                     )}
                     <h3 className="font-glacial text-2xl text-white uppercase tracking-[3px] mb-4">{member.name}</h3>
                     <div className="w-8 h-px mb-5" style={{ background: '#C9A84C' }} />
@@ -145,7 +145,7 @@ export default function APropos() {
                                 {activeStats.map((s, i) => (
                                     <div key={s._id || i} className="text-center">
                                         <p className="font-glacial text-2xl text-gold font-light">{s.subtitle}</p>
-                                        <p className="font-lastica text-[7px] tracking-[3px] text-white/30 uppercase mt-1">{s.title}</p>
+                                        <p className="font-lastica text-[10px] tracking-[3px] text-white/55 uppercase mt-1">{s.title}</p>
                                     </div>
                                 ))}
                             </div>
@@ -168,7 +168,7 @@ export default function APropos() {
                                 <span className="font-lastica text-[9px] tracking-[4px] text-gold/40 block mb-4">{v.subtitle}</span>
                                 <h3 className="font-glacial text-lg text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{v.title}</h3>
                                 <div className="w-6 h-px bg-gold/30 mb-4" />
-                                <p className="font-glacial text-xs text-white/35 leading-relaxed">{v.content}</p>
+                                <p className="font-glacial text-sm text-white/60 leading-relaxed">{v.content}</p>
                             </div>
                         ))}
                     </div>
@@ -204,7 +204,7 @@ export default function APropos() {
                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400"
                                              style={{ background: 'rgba(8,8,8,0.55)' }}>
                                             <div className="border border-gold/50 px-4 py-2">
-                                                <span className="font-lastica text-[7px] tracking-[3px] text-gold uppercase">Voir le profil</span>
+                                                <span className="font-lastica text-[10px] tracking-[3px] text-gold uppercase">Voir le profil</span>
                                             </div>
                                         </div>
                                         <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/40 transition-colors duration-400" />

@@ -37,7 +37,7 @@ function Timeline({ status }) {
                 <span className="text-2xl">❌</span>
                 <div>
                     <p className="font-glacial text-sm text-red-400/70">Commande annulée</p>
-                    <p className="font-glacial text-xs text-white/30 mt-0.5">{STATUS_MSG.cancelled}</p>
+                    <p className="font-glacial text-sm text-white/55 mt-0.5">{STATUS_MSG.cancelled}</p>
                 </div>
             </div>
         );
@@ -87,7 +87,7 @@ function Timeline({ status }) {
                                 {step.label}
                             </p>
                             {current && (
-                                <p className="font-glacial text-xs text-white/35 mt-1 leading-relaxed">
+                                <p className="font-glacial text-sm text-white/60 mt-1 leading-relaxed">
                                     {STATUS_MSG[status]}
                                 </p>
                             )}
@@ -95,7 +95,7 @@ function Timeline({ status }) {
 
                         {current && (
                             <div className="pt-2">
-                                <span className="font-lastica text-[7px] tracking-[2px] px-2.5 py-1 rounded-sm"
+                                <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1 rounded-sm"
                                       style={{ background: `${GOLD}20`, color: GOLD }}>
                                     ACTUEL
                                 </span>
@@ -144,13 +144,13 @@ export default function CommandeSuivi() {
 
                     {/* En-tête */}
                     <div className="mb-10">
-                        <span className="font-lastica text-[7px] tracking-[5px] text-white/15 uppercase block mb-2">Boutique</span>
-                        <h1 className="font-glacial text-3xl text-white/75 uppercase tracking-[4px]">Suivi commande</h1>
+                        <span className="font-lastica text-[10px] tracking-[5px] text-white/45 uppercase block mb-2">Boutique</span>
+                        <h1 className="font-glacial text-3xl text-white uppercase tracking-[4px]">Suivi commande</h1>
                     </div>
 
                     {/* Formulaire de recherche */}
                     <form onSubmit={handleSubmit} className="mb-10">
-                        <label className="font-lastica text-[7px] tracking-[4px] text-white/40 uppercase block mb-2">
+                        <label className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase block mb-2">
                             Numéro de commande
                         </label>
                         <div className="flex gap-2">
@@ -176,12 +176,12 @@ export default function CommandeSuivi() {
                             <div className="border border-white/[0.06] p-6" style={{ background: '#0c0c0c' }}>
                                 <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.05]">
                                     <div>
-                                        <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-1">Commande</p>
+                                        <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Commande</p>
                                         <p className="font-glacial text-lg font-medium" style={{ color: GOLD }}>{order.order_number}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-1">Date</p>
-                                        <p className="font-glacial text-sm text-white/40">
+                                        <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Date</p>
+                                        <p className="font-glacial text-sm text-white/65">
                                             {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                                         </p>
                                     </div>
@@ -189,14 +189,14 @@ export default function CommandeSuivi() {
 
                                 {/* Timeline */}
                                 <div className="mb-5">
-                                    <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-4">Progression</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-4">Progression</p>
                                     <Timeline status={order.order_status} />
                                 </div>
 
                                 {/* Paiement */}
                                 <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
-                                    <span className="font-glacial text-sm text-white/40">Paiement</span>
-                                    <span className="font-lastica text-[7px] tracking-[2px] px-2.5 py-1"
+                                    <span className="font-glacial text-sm text-white/65">Paiement</span>
+                                    <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1"
                                           style={{
                                               background: order.payment_status === 'paid' ? 'rgba(124,154,132,0.15)' : 'rgba(201,168,76,0.12)',
                                               color:      order.payment_status === 'paid' ? '#7C9A84' : GOLD,
@@ -208,12 +208,12 @@ export default function CommandeSuivi() {
 
                             {/* Articles */}
                             <div className="border border-white/[0.06] p-6" style={{ background: '#0c0c0c' }}>
-                                <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-4">Articles</p>
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-4">Articles</p>
                                 <div className="space-y-3">
                                     {order.items.map((item, i) => (
                                         <div key={i} className="flex justify-between items-center">
                                             <p className="font-glacial text-sm text-white/55">{item.name}</p>
-                                            <span className="font-glacial text-xs text-white/30">× {item.quantity}</span>
+                                            <span className="font-glacial text-sm text-white/55">× {item.quantity}</span>
                                         </div>
                                     ))}
                                     <div className="flex justify-between items-center pt-3 border-t border-white/[0.05]">
@@ -242,7 +242,7 @@ export default function CommandeSuivi() {
                     )}
 
                     {!order && !loading && !number && (
-                        <p className="font-glacial text-sm text-white/20 text-center mt-8">
+                        <p className="font-glacial text-sm text-white/50 text-center mt-8">
                             Entrez votre numéro de commande pour suivre votre livraison.
                         </p>
                     )}

@@ -82,7 +82,7 @@ export default function Gallery() {
                                                 <span className="font-lastica text-[7px] tracking-[2px] text-gold uppercase">{item.brand.name}</span>
                                             )}
                                             {item.source && item.source !== 'gallery' && (
-                                                <span className="font-lastica text-[6px] tracking-[2px] text-white/25 uppercase border border-white/10 px-1.5 py-0.5">
+                                                <span className="font-lastica text-[9px] tracking-[2px] text-white/55 uppercase border border-white/10 px-1.5 py-0.5">
                                                     {SOURCE_LABEL[item.source]}
                                                 </span>
                                             )}
@@ -94,7 +94,7 @@ export default function Gallery() {
                     ) : (
                         <div className="text-center py-24">
                             <div className="w-10 h-px bg-gold/30 mx-auto mb-6" />
-                            <p className="font-glacial text-sm text-white/25 tracking-[3px] uppercase">Aucune photo pour le moment</p>
+                            <p className="font-glacial text-sm text-white/55 tracking-[3px] uppercase">Aucune photo pour le moment</p>
                         </div>
                     )}
                 </div>
@@ -122,7 +122,7 @@ export default function Gallery() {
                                     <span className="font-glacial text-[10px] text-white/30">{lightbox.subtitle}</span>
                                 )}
                                 {lightbox.source && lightbox.source !== 'gallery' && (
-                                    <span className="font-lastica text-[7px] tracking-[2px] text-white/20 uppercase border border-white/10 px-2 py-0.5">
+                                    <span className="font-lastica text-[10px] tracking-[2px] text-white/50 uppercase border border-white/10 px-2 py-0.5">
                                         {SOURCE_LABEL[lightbox.source]}
                                     </span>
                                 )}

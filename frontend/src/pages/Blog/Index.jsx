@@ -29,7 +29,7 @@ function PostCard({ post, featured = false }) {
             </div>
             {post.category && <span className="font-lastica text-[7px] tracking-[3px] text-gold uppercase mb-2 block">{post.category}</span>}
             <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] leading-tight mb-2.5 group-hover:text-gold transition-colors duration-250">{post.title}</h3>
-            {post.excerpt && <p className="font-glacial text-xs text-white/35 leading-relaxed line-clamp-3">{post.excerpt}</p>}
+            {post.excerpt && <p className="font-glacial text-sm text-white/60 leading-relaxed line-clamp-3">{post.excerpt}</p>}
             <div className="mt-4 w-0 group-hover:w-8 h-px bg-gold transition-all duration-400" />
         </Link>
     );
@@ -98,7 +98,7 @@ export default function BlogIndex() {
                         <button type="submit" className="btn btn-gold py-[.55rem] px-4 text-[9px]">GO</button>
                     </form>
                     {search && (
-                        <p className="font-glacial text-xs text-white/25 mt-3 tracking-[1px]">
+                        <p className="font-glacial text-sm text-white/55 mt-3 tracking-[1px]">
                             {data.posts?.data?.length > 0 ? `${data.posts.data.length} résultat(s) pour « ${search} »` : `Aucun résultat pour « ${search} »`}
                         </p>
                     )}
@@ -160,7 +160,7 @@ export default function BlogIndex() {
                     ) : (
                         <div className="text-center py-24">
                             <div className="w-10 h-px bg-gold/30 mx-auto mb-6" />
-                            <p className="font-glacial text-sm text-white/25 tracking-[3px] uppercase">{search ? 'Aucun résultat' : 'Aucun article pour le moment'}</p>
+                            <p className="font-glacial text-sm text-white/55 tracking-[3px] uppercase">{search ? 'Aucun résultat' : 'Aucun article pour le moment'}</p>
                         </div>
                     )}
                 </div>
@@ -175,7 +175,7 @@ export default function BlogIndex() {
                                 <span className="eyebrow">Otentik Mia</span>
                                 <h2 className="display-title text-3xl lg:text-4xl text-white mt-3">NOS <span className="text-gold">PODCASTS</span></h2>
                             </div>
-                            <p className="font-glacial text-xs text-white/25 max-w-xs leading-relaxed mt-4 lg:mt-0">Mode africaine · Personal branding · Entrepreneuriat · Culture</p>
+                            <p className="font-glacial text-sm text-white/55 max-w-xs leading-relaxed mt-4 lg:mt-0">Mode africaine · Personal branding · Entrepreneuriat · Culture</p>
                         </div>
                         {latestPodcast && (
                             <div className="reveal mb-10">
@@ -197,7 +197,7 @@ export default function BlogIndex() {
                                             </div>
                                         )}
                                         <h3 className="display-title text-xl lg:text-2xl text-white leading-tight mb-4 group-hover:text-gold transition-colors">{latestPodcast.title}</h3>
-                                        {latestPodcast.description && <p className="font-glacial text-sm text-white/40 leading-loose mb-6 line-clamp-3">{latestPodcast.description}</p>}
+                                        {latestPodcast.description && <p className="font-glacial text-sm text-white/65 leading-loose mb-6 line-clamp-3">{latestPodcast.description}</p>}
                                         <div className="flex flex-wrap gap-2.5">
                                             {latestPodcast.spotify_url && <a href={latestPodcast.spotify_url} target="_blank" rel="noopener" className="flex items-center gap-2 font-lastica text-[8px] tracking-[2px] uppercase px-4 py-2.5 border border-[#1DB954]/40 text-[#1DB954] hover:bg-[#1DB954] hover:text-[#080808] transition-all duration-250">Spotify</a>}
                                             {latestPodcast.youtube_url && <a href={latestPodcast.youtube_url} target="_blank" rel="noopener" className="flex items-center gap-2 font-lastica text-[8px] tracking-[2px] uppercase px-4 py-2.5 border border-[#FF0000]/40 text-[#FF0000] hover:bg-[#FF0000] hover:text-white transition-all duration-250">YouTube</a>}
@@ -212,10 +212,10 @@ export default function BlogIndex() {
                                 {podcasts.slice(1).map((p, i) => (
                                     <div key={p._id} className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/25 transition-all duration-400" style={{ transitionDelay: `${i * 0.08}s` }}>
                                         <div className="p-5">
-                                            <span className="font-lastica text-[7px] tracking-[2px] text-white uppercase bg-[#080808]/85 px-2.5 py-1.5 block w-fit mb-3">{epLabel(p)}</span>
+                                            <span className="font-lastica text-[10px] tracking-[2px] text-white uppercase bg-[#080808]/85 px-2.5 py-1.5 block w-fit mb-3">{epLabel(p)}</span>
                                             <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] leading-snug group-hover:text-gold transition-colors mb-2 line-clamp-2">{p.title}</h3>
-                                            {p.guest && <p className="font-lastica text-[7px] tracking-[2px] text-gold/60 uppercase mb-3">avec {p.guest}</p>}
-                                            {p.description && <p className="font-glacial text-xs text-white/35 line-clamp-2 mb-4">{p.description}</p>}
+                                            {p.guest && <p className="font-lastica text-[10px] tracking-[2px] text-gold/60 uppercase mb-3">avec {p.guest}</p>}
+                                            {p.description && <p className="font-glacial text-sm text-white/60 line-clamp-2 mb-4">{p.description}</p>}
                                             <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.06]">
                                                 {p.spotify_url && <a href={p.spotify_url} target="_blank" rel="noopener" className="font-lastica text-[7px] tracking-[2px] uppercase px-3 py-1.5 border border-[#1DB954]/40 text-[#1DB954] hover:bg-[#1DB954] hover:text-[#080808] transition-all duration-200">Spotify</a>}
                                                 {p.youtube_url && <a href={p.youtube_url} target="_blank" rel="noopener" className="font-lastica text-[7px] tracking-[2px] uppercase px-3 py-1.5 border border-[#FF0000]/40 text-[#FF0000] hover:bg-[#FF0000] hover:text-white transition-all duration-200">YouTube</a>}

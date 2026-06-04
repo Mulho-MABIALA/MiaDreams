@@ -69,39 +69,39 @@ export default function CommandeSucces() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
                             </svg>
                         </div>
-                        <p className="font-lastica text-[7px] tracking-[5px] text-white/20 uppercase mb-2">Commande reçue</p>
-                        <h1 className="font-glacial text-3xl text-white/80 uppercase tracking-[4px] mb-2">Merci !</h1>
-                        <p className="font-glacial text-sm text-white/40">Votre commande a bien été enregistrée.</p>
+                        <p className="font-lastica text-[10px] tracking-[5px] text-white/50 uppercase mb-2">Commande reçue</p>
+                        <h1 className="font-glacial text-3xl text-white uppercase tracking-[4px] mb-2">Merci !</h1>
+                        <p className="font-glacial text-sm text-white/65">Votre commande a bien été enregistrée.</p>
                     </div>
 
                     {/* Détails */}
                     <div className="border border-white/[0.05] p-6 mb-6" style={{ background: '#0c0c0c' }}>
                         <div className="flex items-center gap-3 mb-6">
-                            <p className="font-lastica text-[7px] tracking-[4px] text-white/20 uppercase">Détails de la commande</p>
+                            <p className="font-lastica text-[10px] tracking-[4px] text-white/50 uppercase">Détails de la commande</p>
                             <div className="flex-1 h-px bg-white/[0.04]" />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
                             <div>
-                                <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-1">N° commande</p>
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">N° commande</p>
                                 <p className="font-glacial font-medium" style={{ color: GOLD }}>{order.order_number}</p>
                             </div>
                             <div>
-                                <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-1">Date</p>
-                                <p className="font-glacial text-white/50">
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Date</p>
+                                <p className="font-glacial text-white/70">
                                     {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                                 </p>
                             </div>
                             <div>
-                                <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-1">Statut commande</p>
-                                <span className="font-lastica text-[7px] tracking-[2px] px-2.5 py-1"
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Statut commande</p>
+                                <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1"
                                       style={{ background: `${orderStatus.color}20`, color: orderStatus.color }}>
                                     {orderStatus.label}
                                 </span>
                             </div>
                             <div>
-                                <p className="font-lastica text-[6px] tracking-[3px] text-white/20 uppercase mb-1">Paiement</p>
-                                <span className="font-lastica text-[7px] tracking-[2px] px-2.5 py-1"
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Paiement</p>
+                                <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1"
                                       style={{ background: `${payStatus.color}20`, color: payStatus.color }}>
                                     {payStatus.label}
                                 </span>
@@ -114,9 +114,9 @@ export default function CommandeSucces() {
                                 <div key={i} className="flex justify-between items-center">
                                     <div>
                                         <p className="font-glacial text-sm text-white/60">{item.name}</p>
-                                        <p className="font-glacial text-[10px] text-white/25">× {item.quantity}{item.size ? ` — T. ${item.size}` : ''}</p>
+                                        <p className="font-glacial text-[12px] text-white/55">× {item.quantity}{item.size ? ` — T. ${item.size}` : ''}</p>
                                     </div>
-                                    <span className="font-glacial text-sm text-white/40">
+                                    <span className="font-glacial text-sm text-white/65">
                                         {(item.price * item.quantity).toLocaleString('fr-FR')} FCFA
                                     </span>
                                 </div>
@@ -126,8 +126,8 @@ export default function CommandeSucces() {
                         {/* Total */}
                         <div className="border-t border-white/[0.05] pt-4 space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span className="font-glacial text-white/35">Sous-total</span>
-                                <span className="font-glacial text-white/45">{order.subtotal.toLocaleString('fr-FR')} FCFA</span>
+                                <span className="font-glacial text-white/60">Sous-total</span>
+                                <span className="font-glacial text-white/65">{order.subtotal.toLocaleString('fr-FR')} FCFA</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="font-glacial text-sm text-white/70">Total</span>
@@ -141,14 +141,14 @@ export default function CommandeSucces() {
                     {/* Client */}
                     <div className="border border-white/[0.05] p-6 mb-8" style={{ background: '#0c0c0c' }}>
                         <div className="flex items-center gap-3 mb-4">
-                            <p className="font-lastica text-[7px] tracking-[4px] text-white/20 uppercase">Livraison</p>
+                            <p className="font-lastica text-[10px] tracking-[4px] text-white/50 uppercase">Livraison</p>
                             <div className="flex-1 h-px bg-white/[0.04]" />
                         </div>
                         <div className="space-y-1.5">
                             <p className="font-glacial text-sm text-white/60">{order.customer.name}</p>
-                            <p className="font-glacial text-sm text-white/40">{order.customer.email}</p>
-                            <p className="font-glacial text-sm text-white/40">{order.customer.phone}</p>
-                            {order.customer.address && <p className="font-glacial text-sm text-white/40">{order.customer.address}, {order.customer.city}</p>}
+                            <p className="font-glacial text-sm text-white/65">{order.customer.email}</p>
+                            <p className="font-glacial text-sm text-white/65">{order.customer.phone}</p>
+                            {order.customer.address && <p className="font-glacial text-sm text-white/65">{order.customer.address}, {order.customer.city}</p>}
                         </div>
                     </div>
 

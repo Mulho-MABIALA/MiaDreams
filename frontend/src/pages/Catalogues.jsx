@@ -89,7 +89,7 @@ export default function Catalogues() {
                                     <div className="p-6">
                                         <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] mb-2 group-hover:text-gold transition-colors">{cat.name}</h3>
                                         {cat.description && (
-                                            <p className="font-glacial text-xs text-white/35 leading-relaxed mb-5">{cat.description}</p>
+                                            <p className="font-glacial text-sm text-white/60 leading-relaxed mb-5">{cat.description}</p>
                                         )}
                                         {cat.pdf_path ? (
                                             <button onClick={() => openGate(cat)}
@@ -114,7 +114,7 @@ export default function Catalogues() {
                     ) : (
                         <div className="text-center py-24">
                             <div className="w-10 h-px bg-gold/30 mx-auto mb-6" />
-                            <p className="font-glacial text-sm text-white/25 tracking-[3px] uppercase">Aucun catalogue disponible pour le moment</p>
+                            <p className="font-glacial text-sm text-white/55 tracking-[3px] uppercase">Aucun catalogue disponible pour le moment</p>
                         </div>
                     )}
                 </div>
@@ -149,7 +149,7 @@ export default function Catalogues() {
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit}>
-                                    <p className="font-glacial text-xs text-white/40 leading-relaxed mb-5 tracking-[0.5px]">
+                                    <p className="font-glacial text-sm text-white/65 leading-relaxed mb-5 tracking-[0.5px]">
                                         Entrez votre adresse e-mail pour recevoir le catalogue et rester informé de nos actualités.
                                     </p>
 
@@ -188,7 +188,7 @@ export default function Catalogues() {
                                         )}
                                     </button>
 
-                                    <p className="mt-3 font-glacial text-[10px] text-white/15 text-center leading-relaxed">
+                                    <p className="mt-3 font-glacial text-[12px] text-white/45 text-center leading-relaxed">
                                         En continuant, vous acceptez de recevoir nos communications. Désinscription possible à tout moment.
                                     </p>
                                 </form>

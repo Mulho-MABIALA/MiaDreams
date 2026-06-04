@@ -49,10 +49,10 @@ export default function BlogShow() {
                 <div className="relative z-10 max-w-4xl mx-auto px-6 lg:px-10 pb-12 w-full">
                     {post.category && <span className="inline-block font-lastica text-[8px] tracking-[3px] text-gold uppercase border border-gold/40 px-3 py-1 mb-5">{post.category}</span>}
                     <h1 className="display-title text-2xl lg:text-4xl text-white leading-tight mb-4">{post.title}</h1>
-                    <div className="flex items-center gap-5 text-white/30">
-                        {post.author && <span className="font-glacial text-xs">{post.author}</span>}
-                        {post.published_at && <span className="font-glacial text-xs">{fmtDate(post.published_at)}</span>}
-                        {post.reading_time && <span className="font-glacial text-xs">{post.reading_time} min de lecture</span>}
+                    <div className="flex items-center gap-5 text-white/55">
+                        {post.author && <span className="font-glacial text-sm">{post.author}</span>}
+                        {post.published_at && <span className="font-glacial text-sm">{fmtDate(post.published_at)}</span>}
+                        {post.reading_time && <span className="font-glacial text-sm">{post.reading_time} min de lecture</span>}
                     </div>
                 </div>
             </div>
@@ -71,14 +71,14 @@ export default function BlogShow() {
 
                     {/* Partage */}
                     <div className="mt-14 pt-8 border-t border-gold/10 flex items-center gap-6 flex-wrap">
-                        <span className="font-lastica text-[7px] tracking-[4px] text-gold/40 uppercase">Partager</span>
+                        <span className="font-lastica text-[10px] tracking-[4px] text-gold/40 uppercase">Partager</span>
                         {[
                             { label: 'Facebook', url: `https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}` },
                             { label: 'Twitter', url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}` },
                             { label: 'LinkedIn', url: `https://linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}` },
                         ].map(s => (
                             <a key={s.label} href={s.url} target="_blank" rel="noopener"
-                               className="font-glacial text-[10px] tracking-[2px] uppercase text-white/30 hover:text-gold border border-white/10 hover:border-gold/40 px-4 py-2 transition-all duration-200">
+                               className="font-glacial text-[12px] tracking-[2px] uppercase text-white/55 hover:text-gold border border-white/10 hover:border-gold/40 px-4 py-2 transition-all duration-200">
                                 {s.label}
                             </a>
                         ))}
@@ -101,7 +101,7 @@ export default function BlogShow() {
                                              className="w-full h-[200px] object-cover transition-transform duration-700 group-hover:scale-105"
                                              style={{ filter: 'brightness(.7)' }} alt={p.title} loading="lazy" />
                                     </div>
-                                    {p.category && <span className="font-lastica text-[7px] tracking-[3px] text-gold uppercase mb-2 block">{p.category}</span>}
+                                    {p.category && <span className="font-lastica text-[10px] tracking-[3px] text-gold uppercase mb-2 block">{p.category}</span>}
                                     <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] leading-tight group-hover:text-gold transition-colors">{p.title}</h3>
                                 </Link>
                             ))}

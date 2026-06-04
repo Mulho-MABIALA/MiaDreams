@@ -234,7 +234,7 @@ function TestimonialForm() {
                 <svg className="w-7 h-7 text-gold" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
             </div>
             <h3 className="font-glacial text-xl text-white uppercase tracking-[3px] mb-3">Merci pour votre <span className="text-gold">témoignage</span></h3>
-            <p className="font-glacial text-sm text-white/40 max-w-sm mx-auto leading-relaxed">Votre avis a été transmis à notre équipe. Il sera publié après validation sous 24–48h.</p>
+            <p className="font-glacial text-sm text-white/70 max-w-sm mx-auto leading-relaxed">Votre avis a été transmis à notre équipe. Il sera publié après validation sous 24–48h.</p>
         </div>
     );
 
@@ -248,7 +248,7 @@ function TestimonialForm() {
                             onMouseEnter={() => setHoveredStar(star)} onMouseLeave={() => setHoveredStar(0)}
                             onClick={() => set('rating', star)}
                             className="p-1 transition-transform duration-150 hover:scale-110 focus:outline-none">
-                            <svg className={`w-7 h-7 transition-colors duration-150 ${star <= (hoveredStar || form.rating) ? 'text-gold fill-current' : 'text-white/15 fill-current'}`} viewBox="0 0 20 20">
+                            <svg className={`w-7 h-7 transition-colors duration-150 ${star <= (hoveredStar || form.rating) ? 'text-gold fill-current' : 'text-white/40 fill-current'}`} viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                             </svg>
                         </button>
@@ -273,10 +273,10 @@ function TestimonialForm() {
             <div className="mb-8">
                 <label className="input-label">Votre témoignage *</label>
                 <textarea value={form.content} onChange={e => set('content', e.target.value)} rows={5} placeholder="Partagez votre expérience avec MIA DREAMS & CO…" className="input-mia resize-none" required />
-                <span className="font-glacial text-[10px] text-white/20 block text-right mt-1">{form.content.length}/1000</span>
+                <span className="font-glacial text-[11px] text-white/50 block text-right mt-1">{form.content.length}/1000</span>
             </div>
             <div className="flex items-center justify-between gap-6 flex-wrap">
-                <p className="font-glacial text-xs text-white/25 leading-relaxed max-w-xs">Votre avis sera publié après validation par notre équipe.</p>
+                <p className="font-glacial text-sm text-white/60 leading-relaxed max-w-xs">Votre avis sera publié après validation par notre équipe.</p>
                 <button type="submit" disabled={processing || !form.rating} className="btn btn-gold disabled:opacity-40 disabled:cursor-not-allowed">
                     {processing ? 'ENVOI…' : 'ENVOYER MON AVIS'}
                 </button>
@@ -784,7 +784,7 @@ export default function Home() {
                                 LAISSEZ VOTRE<br /><span className="text-gold">TÉMOIGNAGE</span>
                             </h2>
                             <div className="gold-line my-6" />
-                            <p className="font-glacial text-sm text-white/40 leading-[1.9] mb-8">
+                            <p className="font-glacial text-[15px] text-white/70 leading-[1.9] mb-8">
                                 Vous avez travaillé avec nous ou porté une de nos créations ? Partagez votre expérience — votre avis inspire d'autres femmes à embrasser la mode africaine d'excellence.
                             </p>
                             <div className="space-y-4">
@@ -794,12 +794,12 @@ export default function Home() {
                                     { icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', text: "Chaque témoignage est une fierté pour notre équipe" },
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-start gap-4">
-                                        <div className="w-8 h-8 border border-gold/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <svg className="w-3.5 h-3.5 text-gold/60" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                                        <div className="w-8 h-8 border border-gold/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <svg className="w-3.5 h-3.5 text-gold/80" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon}/>
                                             </svg>
                                         </div>
-                                        <p className="font-glacial text-sm text-white/40 leading-relaxed">{item.text}</p>
+                                        <p className="font-glacial text-[15px] text-white/75 leading-relaxed">{item.text}</p>
                                     </div>
                                 ))}
                             </div>

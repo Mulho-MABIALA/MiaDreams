@@ -141,11 +141,11 @@ export default function Footer() {
                         <div className="lg:col-span-4">
                             <img src={logoSrc} alt={companyInfo?.name || 'MIA DREAMS'}
                                  className={`h-11 w-auto mb-5 ${logoIsCustom ? 'opacity-90 object-contain' : 'brightness-0 invert opacity-70'}`} />
-                            <p className="font-glacial text-[13px] text-white/35 leading-relaxed mb-8 max-w-[240px]">
+                            <p className="font-glacial text-[14px] text-white/65 leading-relaxed mb-8 max-w-[240px]">
                                 Maison de mode africaine d'excellence, basée à Dakar. Chaque pièce raconte une histoire.
                             </p>
                             <div className="mb-8">
-                                <p className="font-lastica text-[7px] tracking-[4px] text-gold/40 uppercase mb-4">Nous suivre</p>
+                                <p className="font-lastica text-[9px] tracking-[4px] text-gold/70 uppercase mb-4">Nous suivre</p>
                                 <div className="flex flex-wrap gap-2">
                                     {socialMediaLinks && socialMediaLinks.length > 0
                                         ? socialMediaLinks.map(s => <SocialIcon key={s._id} platform={s.platform} url={s.url} />)
@@ -158,19 +158,19 @@ export default function Footer() {
                                     <div className="w-7 h-7 border border-gold/20 flex items-center justify-center flex-shrink-0 group-hover:border-gold/50 transition-colors">
                                         <svg className="w-3 h-3 text-gold/50 group-hover:text-gold transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                     </div>
-                                    <span className="font-glacial text-[13px] text-white/40 group-hover:text-gold transition-colors">{phone}</span>
+                                    <span className="font-glacial text-[14px] text-white/70 group-hover:text-gold transition-colors">{phone}</span>
                                 </a>
                                 <a href={`mailto:${emailCo}`} className="flex items-center gap-3 group">
                                     <div className="w-7 h-7 border border-gold/20 flex items-center justify-center flex-shrink-0 group-hover:border-gold/50 transition-colors">
                                         <svg className="w-3 h-3 text-gold/50 group-hover:text-gold transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                     </div>
-                                    <span className="font-glacial text-[13px] text-white/40 group-hover:text-gold transition-colors">{emailCo}</span>
+                                    <span className="font-glacial text-[14px] text-white/70 group-hover:text-gold transition-colors">{emailCo}</span>
                                 </a>
                                 <div className="flex items-start gap-3">
                                     <div className="w-7 h-7 border border-gold/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                                         <svg className="w-3 h-3 text-gold/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     </div>
-                                    <span className="font-glacial text-[13px] text-white/40 leading-relaxed whitespace-pre-line">{address}</span>
+                                    <span className="font-glacial text-[14px] text-white/70 leading-relaxed whitespace-pre-line">{address}</span>
                                 </div>
                             </div>
                         </div>
@@ -190,7 +190,7 @@ export default function Footer() {
                                 ].map(item => (
                                     <li key={item.to}>
                                         <Link to={item.to}
-                                              className="font-glacial text-[13px] text-white/35 tracking-wide hover:text-gold transition-colors duration-250 inline-block">
+                                              className="font-glacial text-[14px] text-white/70 tracking-wide hover:text-gold transition-colors duration-250 inline-block">
                                             {item.label}
                                         </Link>
                                     </li>
@@ -205,7 +205,7 @@ export default function Footer() {
                                 {brands.map(b => (
                                     <li key={b.slug || b.name}>
                                         <Link to={b.href}
-                                              className="font-glacial text-[13px] text-white/35 tracking-wide hover:text-gold transition-colors duration-250 inline-block">
+                                              className="font-glacial text-[14px] text-white/70 tracking-wide hover:text-gold transition-colors duration-250 inline-block">
                                             {b.name}
                                         </Link>
                                     </li>
@@ -221,7 +221,7 @@ export default function Footer() {
                                     ? navCatalogues.slice(0, 5).map(c => (
                                         <li key={c._id}>
                                             <button onClick={() => openDlGate(c)}
-                                               className="font-glacial text-[13px] text-white/35 tracking-wide hover:text-gold transition-colors duration-250 inline-flex items-center gap-2 text-left">
+                                               className="font-glacial text-[14px] text-white/70 tracking-wide hover:text-gold transition-colors duration-250 inline-flex items-center gap-2 text-left">
                                                 <svg className="w-2.5 h-2.5 text-gold/30 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                 </svg>
@@ -245,12 +245,12 @@ export default function Footer() {
 
                     {/* Copyright */}
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-7">
-                        <p className="font-glacial text-[11px] text-white/20 tracking-wide">
-                            © {new Date().getFullYear()} <span className="text-white/35">MIA DREAMS & CO</span> — Tous droits réservés
+                        <p className="font-glacial text-[12px] text-white/50 tracking-wide">
+                            © {new Date().getFullYear()} <span className="text-white/70">MIA DREAMS & CO</span> — Tous droits réservés
                         </p>
                         <div className="flex items-center gap-3">
                             <span className="w-6 h-px bg-gold/25" />
-                            <p className="font-lastica text-[7px] tracking-[4px] text-gold/50 uppercase">Made In Africa</p>
+                            <p className="font-lastica text-[9px] tracking-[4px] text-gold/80 uppercase">Made In Africa</p>
                             <span className="w-6 h-px bg-gold/25" />
                         </div>
                     </div>
@@ -281,7 +281,7 @@ export default function Footer() {
                             </div>
                         ) : (
                             <form onSubmit={handleDlSubmit}>
-                                <p className="font-glacial text-xs text-white/40 leading-relaxed mb-5 tracking-[0.5px]">
+                                <p className="font-glacial text-sm text-white/65 leading-relaxed mb-5 tracking-[0.5px]">
                                     Entrez votre adresse e-mail pour recevoir le catalogue et rester informé de nos actualités.
                                 </p>
                                 <div className="mb-4">
@@ -304,7 +304,7 @@ export default function Footer() {
                                         </svg>TÉLÉCHARGER LE CATALOGUE</>
                                     )}
                                 </button>
-                                <p className="mt-3 font-glacial text-[10px] text-white/15 text-center leading-relaxed">
+                                <p className="mt-3 font-glacial text-[11px] text-white/45 text-center leading-relaxed">
                                     En continuant, vous acceptez de recevoir nos communications.
                                 </p>
                             </form>

@@ -165,20 +165,26 @@ function CollectionForm({ collection, brands, onSave, onCancel }) {
 export default function AdminCollections() {
     const [collections, setCollections] = useState([]);
     const [brands, setBrands]           = useState([]);
+    const [stats, setStats]             = useState({});
     const [loading, setLoading]         = useState(true);
     const [editing, setEditing]         = useState(null);
     const [filterBrand, setFilterBrand] = useState('');
     const [saved, setSaved]             = useState(null);
 
-    useEffect(() => {
+    const loadAll = () => {
+        setLoading(true);
         Promise.all([
             axios.get('/api/admin/collections'),
             axios.get('/api/admin/brands'),
-        ]).then(([cRes, bRes]) => {
+            axios.get('/api/admin/collections-stats'),
+        ]).then(([cRes, bRes, sRes]) => {
             setCollections(cRes.data);
             setBrands(bRes.data);
+            setStats(sRes.data);
         }).catch(() => {}).finally(() => setLoading(false));
-    }, []);
+    };
+
+    useEffect(() => { loadAll(); }, []);
 
     const handleSave = (doc) => {
         setCollections(prev => {
@@ -339,7 +345,18 @@ export default function AdminCollections() {
                                                 {/* Nom */}
                                                 <td className="px-4 py-3.5">
                                                     <p className="text-sm font-semibold text-[#111827]">{col.name}</p>
-                                                    {col.order > 0 && <p className="text-xs text-[#9CA3AF] mt-0.5">Ordre : {col.order}</p>}
+                                                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                                        {col.order > 0 && <p className="text-xs text-[#9CA3AF]">Ordre : {col.order}</p>}
+                                                        {stats[col._id] > 0 ? (
+                                                            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-[#FDF8EC] text-[#C9A84C] border border-[#C9A84C]/20">
+                                                                {stats[col._id]} produit{stats[col._id] > 1 ? 's' : ''}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-400 border border-red-100">
+                                                                ⚠ Aucun produit
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 {/* Description */}
                                                 <td className="px-4 py-3.5 hidden md:table-cell">
@@ -388,9 +405,18 @@ export default function AdminCollections() {
                                                   </div>}
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-semibold text-[#111827] truncate">{col.name}</p>
-                                                <span className={`inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full mt-1 ${col.is_active ? 'bg-green-100 text-green-700' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
-                                                    {col.is_active ? 'Actif' : 'Inactif'}
-                                                </span>
+                                                <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                                                    <span className={`inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full ${col.is_active ? 'bg-green-100 text-green-700' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
+                                                        {col.is_active ? 'Actif' : 'Inactif'}
+                                                    </span>
+                                                    {stats[col._id] > 0 ? (
+                                                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#FDF8EC] text-[#C9A84C] border border-[#C9A84C]/20">
+                                                            {stats[col._id]} produit{stats[col._id] > 1 ? 's' : ''}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-400">⚠ 0 produit</span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="flex flex-col gap-1.5 flex-shrink-0">
                                                 <button onClick={() => setEditing(col)}

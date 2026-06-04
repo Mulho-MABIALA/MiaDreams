@@ -100,34 +100,53 @@ async function processImages(req, res, next) {
                 }
 
             } else if (file.mimetype === 'application/pdf') {
-                // ── PDF : streamer depuis disque (pas de mémoire) ─────────
+                // ── PDF : Cloudinary si dispo, sinon disque ───────────────
                 if (CLOUDINARY_READY) {
-                    const result = await new Promise((resolve, reject) => {
-                        const timer = setTimeout(() => {
-                            reject(new Error('Délai dépassé (>3 min). Compressez le PDF ou vérifiez votre connexion.'));
-                        }, 3 * 60 * 1000);
+                    let cloudinaryOk = false;
+                    try {
+                        const result = await new Promise((resolve, reject) => {
+                            const timer = setTimeout(() => {
+                                reject(new Error('Délai dépassé (>3 min). Compressez le PDF ou vérifiez votre connexion.'));
+                            }, 3 * 60 * 1000);
 
-                        const readStream = fs.createReadStream(file.path);
-                        const uploadStream = cloudinary.uploader.upload_stream(
-                            { folder: 'miadreams', resource_type: 'raw', timeout: 180000 },
-                            (err, res) => {
-                                clearTimeout(timer);
-                                if (err) reject(new Error(`Cloudinary : ${err.message}`));
-                                else     resolve(res);
-                            }
-                        );
-                        readStream.pipe(uploadStream);
-                        readStream.on('error', (e) => { clearTimeout(timer); reject(e); });
-                    });
+                            const readStream = fs.createReadStream(file.path);
+                            const uploadStream = cloudinary.uploader.upload_stream(
+                                { folder: 'miadreams', resource_type: 'raw', timeout: 180000 },
+                                (err, res) => {
+                                    clearTimeout(timer);
+                                    if (err) reject(err);
+                                    else     resolve(res);
+                                }
+                            );
+                            readStream.pipe(uploadStream);
+                            readStream.on('error', (e) => { clearTimeout(timer); reject(e); });
+                        });
 
-                    // Supprimer le fichier temporaire après upload réussi
-                    try { fs.unlinkSync(file.path); } catch (_) {}
+                        try { fs.unlinkSync(file.path); } catch (_) {}
+                        file.filename   = result.secure_url;
+                        file.cloudinary = true;
+                        cloudinaryOk    = true;
+                        console.log(`📄 PDF uploadé sur Cloudinary : ${result.secure_url}`);
+                    } catch (cloudErr) {
+                        // Fichier trop lourd ou quota dépassé → fallback disque
+                        console.warn(`⚠️  Cloudinary PDF refusé (${cloudErr.message}), fallback disque`);
+                    }
 
-                    file.filename   = result.secure_url;
-                    file.cloudinary = true;
-                    console.log(`📄 PDF uploadé sur Cloudinary : ${result.secure_url}`);
+                    if (!cloudinaryOk) {
+                        // Fallback disque local
+                        const destPath = path.join(UPLOADS, file.filename);
+                        if (!fs.existsSync(UPLOADS)) fs.mkdirSync(UPLOADS, { recursive: true });
+                        try {
+                            fs.renameSync(file.path, destPath);
+                        } catch (e) {
+                            if (e.code === 'EXDEV') {
+                                fs.copyFileSync(file.path, destPath);
+                                try { fs.unlinkSync(file.path); } catch (_) {}
+                            } else { throw e; }
+                        }
+                    }
                 } else {
-                    // Fallback disque local : copier puis supprimer (évite EXDEV cross-device)
+                    // Cloudinary non configuré → disque local directement
                     const destPath = path.join(UPLOADS, file.filename);
                     if (!fs.existsSync(UPLOADS)) fs.mkdirSync(UPLOADS, { recursive: true });
                     try {

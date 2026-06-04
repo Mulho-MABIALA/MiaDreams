@@ -224,9 +224,8 @@ const crudRouter = (Model, fields = []) => {
 };
 
 router.use('/brands',       crudRouter(Brand, ['image']));
-router.use('/collections',  crudRouter(Collection, ['image']));
 
-// ─── Comptage produits par collection ────────────────────────────────────────
+// ─── Comptage produits par collection (DOIT être AVANT router.use('/collections'))
 router.get('/collections-stats', async (req, res) => {
     try {
         const stats = await Product.aggregate([
@@ -237,6 +236,8 @@ router.get('/collections-stats', async (req, res) => {
         res.json(map);
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
+
+router.use('/collections',  crudRouter(Collection, ['image']));
 // ─── Routes produits personnalisées (support multi-images) ──────────────────────
 const productUpload = upload.fields([
     { name: 'image',  maxCount: 1 },

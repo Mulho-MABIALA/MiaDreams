@@ -176,11 +176,11 @@ export default function AdminCollections() {
         Promise.all([
             axios.get('/api/admin/collections'),
             axios.get('/api/admin/brands'),
-            axios.get('/api/admin/collections-stats'),
+            axios.get('/api/admin/collections-stats').catch(() => ({ data: {} })),
         ]).then(([cRes, bRes, sRes]) => {
             setCollections(cRes.data);
             setBrands(bRes.data);
-            setStats(sRes.data);
+            setStats(sRes.data || {});
         }).catch(() => {}).finally(() => setLoading(false));
     };
 

@@ -120,6 +120,13 @@ export default function Admin() {
     });
     const [collapsed, setCollapsed] = useState(false);
 
+    // ⚡ Définir le token IMMÉDIATEMENT (synchrone) avant tout rendu enfant
+    // → évite la race condition où Dashboard fetchait les données sans token
+    useState(() => {
+        const token = localStorage.getItem('admin_token');
+        if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    });
+
     // ── Server wake-up (cold start Passenger / idle process) ─────────────────
     // N'affiche "Serveur connecté" que si le serveur avait du mal à répondre
     const [serverStatus, setServerStatus] = useState('idle'); // 'idle' | 'waking' | 'up'

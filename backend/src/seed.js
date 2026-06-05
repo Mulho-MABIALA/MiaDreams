@@ -20,12 +20,21 @@ async function seedAdmin() {
         const count = await Admin.countDocuments({});
 
         if (count === 0) {
-            // Aucun admin → créer
-            const admin = new Admin({ name, email, password });
+            // Aucun admin → créer comme super_admin
+            const admin = new Admin({ name, email, password, role: 'super_admin' });
             await admin.save();
-            console.log(`✅ Admin créé : ${email}`);
+            console.log(`✅ Super admin créé : ${email}`);
         } else {
-            console.log(`ℹ️  Admin déjà présent (${count} entrée(s)) — aucune modification.`);
+            // Migration : s'assurer que le 1er admin est bien super_admin
+            await Admin.updateMany({ role: { $exists: false } }, { $set: { role: 'super_admin' } });
+            await Admin.updateMany({ role: 'admin', permissions: { $exists: false } }, { $set: { permissions: [] } });
+            // Le tout premier admin créé (le compte principal) devient super_admin
+            const first = await Admin.findOne().sort({ createdAt: 1 });
+            if (first && first.role !== 'super_admin') {
+                await Admin.updateOne({ _id: first._id }, { $set: { role: 'super_admin' } });
+                console.log(`✅ Migration : ${first.email} promu super_admin`);
+            }
+            console.log(`ℹ️  Admin déjà présent (${count} entrée(s)).`);
         }
     } catch (err) {
         console.error('Erreur seed admin :', err.message);

@@ -28,13 +28,15 @@ router.post('/login', loginLimiter, async (req, res) => {
             return res.status(401).json({ message: 'Identifiants incorrects' });
         }
 
+        const permissions = admin.role === 'super_admin' ? ['*'] : (admin.permissions || []);
+
         const token = jwt.sign(
-            { id: admin._id, email: admin.email, name: admin.name, role: 'admin' },
+            { id: admin._id, email: admin.email, name: admin.name, role: admin.role, permissions },
             JWT_SECRET,
             { expiresIn: '24h', algorithm: 'HS256' }
         );
 
-        res.json({ token, user: { email: admin.email, name: admin.name, role: 'admin' } });
+        res.json({ token, user: { email: admin.email, name: admin.name, role: admin.role, permissions } });
     } catch (err) {
         console.error('Erreur login :', err);
         res.status(500).json({ message: 'Erreur serveur' });

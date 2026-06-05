@@ -23,7 +23,16 @@ const Reservation = require('../models/Reservation');
 const Newsletter = require('../models/Newsletter');
 const Order = require('../models/Order');
 const CaisseTransaction = require('../models/CaisseTransaction');
+const AdminUser = require('../models/Admin');
 const { notifyStatusUpdate } = require('../utils/notify');
+
+// Middleware : réservé au super_admin uniquement
+function superAdminOnly(req, res, next) {
+    if (req.user?.role !== 'super_admin') {
+        return res.status(403).json({ message: 'Accès réservé au super administrateur.' });
+    }
+    next();
+}
 
 // ── Cloudinary (stockage cloud permanent) ─────────────────────────────────────
 const cloudinary = require('cloudinary').v2;
@@ -484,6 +493,60 @@ router.put('/company-info', upload.single('logo'), processImages, async (req, re
             : await CompanyInfo.create(data);
         res.json(doc);
     } catch(e){ res.status(400).json({message:e.message}); }
+});
+
+// ── GESTION UTILISATEURS (super_admin only) ───────────────────────────────────
+router.get('/users', superAdminOnly, async (req, res) => {
+    try {
+        const users = await AdminUser.find().select('-password').sort({ createdAt: -1 });
+        res.json({ users, modules: AdminUser.ALL_MODULES });
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+router.post('/users', superAdminOnly, async (req, res) => {
+    try {
+        const { name, email, password, role, permissions, is_active } = req.body;
+        if (!name || !email || !password) return res.status(400).json({ message: 'Nom, email et mot de passe requis.' });
+        if (password.length < 8) return res.status(400).json({ message: 'Mot de passe minimum 8 caractères.' });
+        const existing = await AdminUser.findOne({ email: email.toLowerCase() });
+        if (existing) return res.status(400).json({ message: 'Cet email est déjà utilisé.' });
+        const user = await AdminUser.create({
+            name, email,
+            password,
+            role: role || 'admin',
+            permissions: role === 'super_admin' ? [] : (permissions || []),
+            is_active: is_active !== false,
+        });
+        res.status(201).json({ user: { ...user.toObject(), password: undefined } });
+    } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
+router.put('/users/:id', superAdminOnly, async (req, res) => {
+    try {
+        const { name, email, password, role, permissions, is_active } = req.body;
+        const user = await AdminUser.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'Utilisateur introuvable.' });
+        // On ne peut pas modifier le propre compte super_admin
+        if (user._id.toString() === req.user.id && role && role !== user.role) {
+            return res.status(400).json({ message: 'Vous ne pouvez pas modifier votre propre rôle.' });
+        }
+        if (name)  user.name  = name;
+        if (email) user.email = email.toLowerCase();
+        if (password && password.length >= 8) user.password = password;
+        if (role)  user.role  = role;
+        if (permissions !== undefined) user.permissions = permissions;
+        if (is_active !== undefined)   user.is_active   = is_active;
+        await user.save();
+        res.json({ user: { ...user.toObject(), password: undefined } });
+    } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
+router.delete('/users/:id', superAdminOnly, async (req, res) => {
+    try {
+        if (req.params.id === req.user.id) return res.status(400).json({ message: 'Impossible de supprimer votre propre compte.' });
+        await AdminUser.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Utilisateur supprimé.' });
+    } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
 // ── PROGRAMMES ────────────────────────────────────────────────────────────────

@@ -23,64 +23,89 @@ import AdminCaisse from './AdminCaisse';
 import AdminPOS from './AdminPOS';
 import AdminProgrammes from './AdminProgrammes';
 import AdminInscriptions from './AdminInscriptions';
+import AdminUsers from './AdminUsers';
 
-const NAV_GROUPS = [
+// Mapping module → chemin admin
+const ALL_NAV_GROUPS = [
     {
         label: 'Principal',
         items: [
-            { to: '/admin',       label: 'Dashboard',       icon: <IconDashboard />, end: true },
-            { to: '/admin/pages', label: 'Pages dynamiques', icon: <IconPages /> },
+            { to: '/admin',       label: 'Dashboard',        icon: <IconDashboard />, end: true,   module: null },
+            { to: '/admin/pages', label: 'Pages dynamiques', icon: <IconPages />,                  module: 'pages' },
         ]
     },
     {
         label: 'Contenu',
         items: [
-            { to: '/admin/marques',      label: 'Marques',         icon: <IconBrands /> },
-            { to: '/admin/collections',  label: 'Collections',     icon: <IconCollections /> },
-            { to: '/admin/blog',         label: 'Blog & Podcast',  icon: <IconBlogPod /> },
-            { to: '/admin/galerie',      label: 'Galerie',         icon: <IconGallery /> },
-            { to: '/admin/catalogues',   label: 'Catalogues',      icon: <IconCatalogues /> },
-            { to: '/admin/temoignages',  label: 'Témoignages',     icon: <IconTestimonials /> },
-            { to: '/admin/equipe',       label: 'Équipe',          icon: <IconTeam /> },
-            { to: '/admin/initiatives',  label: 'Initiatives',     icon: <IconInitiatives /> },
+            { to: '/admin/marques',      label: 'Marques',        icon: <IconBrands />,      module: 'marques' },
+            { to: '/admin/collections',  label: 'Collections',    icon: <IconCollections />, module: 'collections' },
+            { to: '/admin/blog',         label: 'Blog & Podcast', icon: <IconBlogPod />,     module: 'blog' },
+            { to: '/admin/galerie',      label: 'Galerie',        icon: <IconGallery />,     module: 'galerie' },
+            { to: '/admin/catalogues',   label: 'Catalogues',     icon: <IconCatalogues />,  module: 'catalogues' },
+            { to: '/admin/temoignages',  label: 'Témoignages',    icon: <IconTestimonials />,module: 'temoignages' },
+            { to: '/admin/equipe',       label: 'Équipe',         icon: <IconTeam />,        module: 'equipe' },
+            { to: '/admin/initiatives',  label: 'Initiatives',    icon: <IconInitiatives />, module: 'initiatives' },
         ]
     },
     {
         label: 'Programmes',
         items: [
-            { to: '/admin/programmes',    label: 'Formations',    icon: <IconProgrammes /> },
-            { to: '/admin/inscriptions',  label: 'Inscriptions',  icon: <IconInscriptions /> },
+            { to: '/admin/programmes',   label: 'Formations',   icon: <IconProgrammes />,   module: 'programmes' },
+            { to: '/admin/inscriptions', label: 'Inscriptions', icon: <IconInscriptions />, module: 'inscriptions' },
         ]
     },
     {
         label: 'Boutique',
         items: [
-            { to: '/admin/produits',   label: 'Produits',   icon: <IconShop /> },
-            { to: '/admin/commandes',  label: 'Commandes',  icon: <IconCart /> },
+            { to: '/admin/produits',  label: 'Produits',  icon: <IconShop />, module: 'produits' },
+            { to: '/admin/commandes', label: 'Commandes', icon: <IconCart />, module: 'commandes' },
         ]
     },
     {
         label: 'Finance',
         items: [
-            { to: '/admin/pos',    label: 'Point de Vente', icon: <IconPOS /> },
-            { to: '/admin/caisse', label: 'Caisse',         icon: <IconCaisse /> },
+            { to: '/admin/pos',    label: 'Point de Vente', icon: <IconPOS />,    module: 'pos' },
+            { to: '/admin/caisse', label: 'Caisse',         icon: <IconCaisse />, module: 'caisse' },
         ]
     },
     {
         label: 'Clients',
         items: [
-            { to: '/admin/reservations', label: 'Réservations', icon: <IconReservations /> },
-            { to: '/admin/contacts', label: 'Messages', icon: <IconContacts /> },
-            { to: '/admin/newsletter', label: 'Newsletter', icon: <IconNewsletter /> },
+            { to: '/admin/reservations', label: 'Réservations', icon: <IconReservations />, module: 'reservations' },
+            { to: '/admin/contacts',     label: 'Messages',     icon: <IconContacts />,     module: 'contacts' },
+            { to: '/admin/newsletter',   label: 'Newsletter',   icon: <IconNewsletter />,   module: 'newsletter' },
         ]
     },
     {
         label: 'Configuration',
         items: [
-            { to: '/admin/parametres', label: 'Paramètres', icon: <IconSettings /> },
+            { to: '/admin/parametres', label: 'Paramètres', icon: <IconSettings />, module: 'parametres' },
+        ]
+    },
+    {
+        label: 'Administration',
+        items: [
+            { to: '/admin/utilisateurs', label: 'Utilisateurs', icon: <IconUsers />, module: '__super_admin__' },
         ]
     },
 ];
+
+// Filtre le menu selon les droits de l'utilisateur
+function getNavGroups(user) {
+    const isSuperAdmin = user?.role === 'super_admin';
+    const perms = user?.permissions || [];
+    return ALL_NAV_GROUPS
+        .map(group => ({
+            ...group,
+            items: group.items.filter(item => {
+                if (item.module === null) return true;                   // Dashboard toujours visible
+                if (item.module === '__super_admin__') return isSuperAdmin;
+                if (isSuperAdmin) return true;                          // Super admin voit tout
+                return perms.includes(item.module);
+            }),
+        }))
+        .filter(group => group.items.length > 0);
+}
 
 export default function Admin() {
     const navigate = useNavigate();
@@ -151,6 +176,8 @@ export default function Admin() {
         delete axios.defaults.headers.common['Authorization'];
         navigate('/login');
     };
+
+    const NAV_GROUPS = getNavGroups(user);
 
     // Page title from path
     const allItems = NAV_GROUPS.flatMap(g => g.items);
@@ -453,6 +480,7 @@ export default function Admin() {
                             <Route path="initiatives/*" element={<AdminInitiatives />} />
                             <Route path="programmes/*"    element={<AdminProgrammes />} />
                             <Route path="inscriptions/*" element={<AdminInscriptions />} />
+                            <Route path="utilisateurs"   element={<AdminUsers />} />
                             <Route path="produits/*"   element={<AdminProduits />} />
                             <Route path="commandes/*"  element={<AdminCommandes />} />
                             <Route path="reservations" element={<AdminReservations />} />
@@ -516,3 +544,4 @@ function IconCaisse() { return <svg width="15" height="15" viewBox="0 0 24 24" f
 function IconPOS()    { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M12 8h.01M17 8h.01M7 12h.01M12 12h.01M17 12h.01"/></svg> }
 function IconProgrammes()   { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> }
 function IconInscriptions() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> }
+function IconUsers()        { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 11h6M19 8v6"/></svg> }

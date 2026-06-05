@@ -92,4 +92,25 @@ router.post('/change-password', authMiddleware, async (req, res) => {
     }
 });
 
+// POST /api/auth/promote-super-admin
+// Promeut le PREMIER admin créé en super_admin si aucun super_admin n'existe encore.
+// Route auto-désactivante : ne fait rien si un super_admin existe déjà.
+router.post('/promote-super-admin', async (req, res) => {
+    try {
+        const existing = await Admin.findOne({ role: 'super_admin' });
+        if (existing) {
+            return res.json({ message: `Un super_admin existe déjà : ${existing.email}` });
+        }
+        const count = await Admin.countDocuments();
+        if (count !== 1) {
+            return res.status(400).json({ message: 'Cette route ne fonctionne que s\'il y a exactement 1 admin.' });
+        }
+        const first = await Admin.findOne().sort({ createdAt: 1 });
+        await Admin.updateOne({ _id: first._id }, { $set: { role: 'super_admin', permissions: [] } });
+        res.json({ message: `✅ ${first.email} promu super_admin. Reconnectez-vous pour avoir le nouveau token.` });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+});
+
 module.exports = router;

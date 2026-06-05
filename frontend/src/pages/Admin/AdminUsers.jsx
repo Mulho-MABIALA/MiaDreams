@@ -127,7 +127,8 @@ export default function AdminUsers() {
         }
     };
 
-    const isSuperAdmin = me?.role === 'super_admin';
+    // Rétrocompatibilité : ancien token sans permissions = accès complet (seul admin du système)
+    const isSuperAdmin = me?.role === 'super_admin' || !me?.permissions;
 
     if (!isSuperAdmin) {
         return (

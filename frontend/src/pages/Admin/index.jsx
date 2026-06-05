@@ -93,14 +93,18 @@ const ALL_NAV_GROUPS = [
 // Filtre le menu selon les droits de l'utilisateur
 function getNavGroups(user) {
     const isSuperAdmin = user?.role === 'super_admin';
+    // Rétrocompatibilité : ancien token sans champ permissions → accès complet
+    const isLegacyToken = !user?.permissions;
+    const hasFullAccess = isSuperAdmin || isLegacyToken;
     const perms = user?.permissions || [];
+
     return ALL_NAV_GROUPS
         .map(group => ({
             ...group,
             items: group.items.filter(item => {
-                if (item.module === null) return true;                   // Dashboard toujours visible
-                if (item.module === '__super_admin__') return isSuperAdmin;
-                if (isSuperAdmin) return true;                          // Super admin voit tout
+                if (item.module === null) return true;               // Dashboard toujours visible
+                if (item.module === '__super_admin__') return hasFullAccess;
+                if (hasFullAccess) return true;                      // Accès complet
                 return perms.includes(item.module);
             }),
         }))

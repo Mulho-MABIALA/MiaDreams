@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, NavLink, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-
 import Dashboard from './Dashboard';
 import AdminBrands from './AdminBrands';
 import AdminBlogPodcast from './AdminBlogPodcast';
@@ -24,6 +23,12 @@ import AdminPOS from './AdminPOS';
 import AdminProgrammes from './AdminProgrammes';
 import AdminInscriptions from './AdminInscriptions';
 import AdminUsers from './AdminUsers';
+
+// ── Token défini au chargement du module (après tous les imports) ────────────
+// Garantit que toutes les requêtes axios sont authentifiées dès le premier rendu,
+// quelle que soit l'ordre d'exécution des useEffect enfants/parents.
+const _savedToken = localStorage.getItem('admin_token');
+if (_savedToken) axios.defaults.headers.common['Authorization'] = `Bearer ${_savedToken}`;
 
 // Mapping module → chemin admin
 const ALL_NAV_GROUPS = [
@@ -119,13 +124,6 @@ export default function Admin() {
         return u ? JSON.parse(u) : null;
     });
     const [collapsed, setCollapsed] = useState(false);
-
-    // ⚡ Définir le token IMMÉDIATEMENT (synchrone) avant tout rendu enfant
-    // → évite la race condition où Dashboard fetchait les données sans token
-    useState(() => {
-        const token = localStorage.getItem('admin_token');
-        if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    });
 
     // ── Server wake-up (cold start Passenger / idle process) ─────────────────
     // N'affiche "Serveur connecté" que si le serveur avait du mal à répondre

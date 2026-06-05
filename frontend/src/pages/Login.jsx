@@ -28,6 +28,8 @@ export default function Login() {
                 const res = await axios.post('/api/auth/login', form);
                 localStorage.setItem('admin_token', res.data.token);
                 localStorage.setItem('admin_user', JSON.stringify(res.data.user));
+                // Définir le token immédiatement — avant même la navigation
+                axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
                 navigate('/admin');
                 return;
             } catch (err) {

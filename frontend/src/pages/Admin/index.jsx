@@ -24,12 +24,6 @@ import AdminProgrammes from './AdminProgrammes';
 import AdminInscriptions from './AdminInscriptions';
 import AdminUsers from './AdminUsers';
 
-// ── Token défini au chargement du module (après tous les imports) ────────────
-// Garantit que toutes les requêtes axios sont authentifiées dès le premier rendu,
-// quelle que soit l'ordre d'exécution des useEffect enfants/parents.
-const _savedToken = localStorage.getItem('admin_token');
-if (_savedToken) axios.defaults.headers.common['Authorization'] = `Bearer ${_savedToken}`;
-
 // Mapping module → chemin admin
 const ALL_NAV_GROUPS = [
     {

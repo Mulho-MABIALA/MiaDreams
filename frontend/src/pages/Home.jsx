@@ -17,7 +17,7 @@ const DEFAULT_SLIDES = [
 const DEFAULT_UNIVERS = [
     { image: '/img/index/home-image2.jpg', subtitle: '01', title: 'Mia Dreams Brand',       content: 'Notre ligne de vêtements', cta_href: '/miaDreams' },
     { image: '/img/index/home-image3.jpg', subtitle: '02', title: 'Ma Petite Robe En Wax',  content: 'Notre application mobile',  cta_href: '/mprew' },
-    { image: '/img/index/home-image4.jpg', subtitle: '03', title: 'Fashion Program',         content: 'Notre programme de formation', cta_href: '/fashionProgram' },
+    { image: '/img/index/home-image4.jpg', subtitle: '03', title: 'Fashion Program',         content: 'Notre programme de formation à la mode africaine', cta_href: '/programmes/fashion-program' },
 ];
 
 // ─── Hero Carousel ─────────────────────────────────────────────────────────────
@@ -519,8 +519,11 @@ export default function Home() {
 
                 {/* Grille éditoriale */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
-                    {activeUnivers.map((u, i) => (
-                        <Link key={u._id || i} to={u.cta_href || u.href || '/'}
+                    {activeUnivers.map((u, i) => {
+                        // Redirige les anciens liens fashionProgram vers la nouvelle URL
+                        const href = (u.cta_href || u.href || '/').replace('/fashionProgram', '/programmes/fashion-program');
+                        return (
+                        <Link key={u._id || i} to={href}
                               className="card-editorial reveal h-[380px] sm:h-[500px] lg:h-[640px] group"
                               style={{ transitionDelay: `${i * 0.1}s` }}>
                             <img src={imgSrc(u.image)} alt={u.title} loading="lazy" />
@@ -546,7 +549,8 @@ export default function Home() {
                                 </span>
                             </div>
                         </Link>
-                    ))}
+                        );
+                    })}
                 </div>
             </section>
 

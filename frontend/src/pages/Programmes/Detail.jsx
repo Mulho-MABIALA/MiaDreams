@@ -65,16 +65,21 @@ export default function ProgrammeDetail() {
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
-                    {heroImg
-                        ? <img
+                    {/* Fond sombre toujours présent */}
+                    <div style={{ position: 'absolute', inset: 0, background: '#0d0d0d' }} />
+                    {/* Image par-dessus le fond */}
+                    {heroImg && (
+                        <img
                             src={heroImg}
                             alt={programme.name}
                             loading="eager"
-                            className="absolute inset-0 w-full h-full object-cover object-top"
-                            onError={e => { e.target.style.display = 'none'; }}
-                          />
-                        : <div className="absolute inset-0 bg-[#0d0d0d]" />
-                    }
+                            style={{
+                                position: 'absolute', inset: 0,
+                                width: '100%', height: '100%',
+                                objectFit: 'cover', objectPosition: 'center top',
+                            }}
+                        />
+                    )}
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">

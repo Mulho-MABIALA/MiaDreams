@@ -20,7 +20,19 @@ export default function ProgrammesIndex() {
             {/* HERO */}
             <div className="hero-carousel" style={{ height: '60vh' }}>
                 <div className="hero-slide active">
-                    <div className="absolute inset-0 bg-[#0d0d0d]" />
+                    {/* Fond sombre */}
+                    <div style={{ position: 'absolute', inset: 0, background: '#0d0d0d' }} />
+                    {/* Image hero */}
+                    <img
+                        src="/img/index/home-image4.jpg"
+                        alt="Nos programmes de formation"
+                        loading="eager"
+                        style={{
+                            position: 'absolute', inset: 0,
+                            width: '100%', height: '100%',
+                            objectFit: 'cover', objectPosition: 'center top',
+                        }}
+                    />
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">

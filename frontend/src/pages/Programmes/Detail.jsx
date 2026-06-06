@@ -66,7 +66,13 @@ export default function ProgrammeDetail() {
             <div className="hero-carousel" style={{ height: '80vh' }}>
                 <div className="hero-slide active">
                     {heroImg
-                        ? <img src={heroImg} alt={programme.name} loading="eager" />
+                        ? <img
+                            src={heroImg}
+                            alt={programme.name}
+                            loading="eager"
+                            className="absolute inset-0 w-full h-full object-cover object-top"
+                            onError={e => { e.target.style.display = 'none'; }}
+                          />
                         : <div className="absolute inset-0 bg-[#0d0d0d]" />
                     }
                     <div className="overlay" />

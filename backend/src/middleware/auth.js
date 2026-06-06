@@ -14,13 +14,25 @@ const getSecret = () => {
 const JWT_SECRET = getSecret();
 
 module.exports = (req, res, next) => {
-    const header = req.headers.authorization;
-    if (!header || !header.startsWith('Bearer '))
+    // Cherche le token dans plusieurs sources (ordre de priorité) :
+    // 1. Header Authorization standard (peut être bloqué par Apache)
+    // 2. Header X-Admin-Token personnalisé (passe toujours via Apache/Passenger)
+    // 3. Variable env HTTP_AUTHORIZATION (injectée par la règle RewriteRule .htaccess)
+    const authHeader =
+        req.headers['authorization'] ||
+        req.headers['x-admin-token'] ||
+        (req.headers['http_authorization']) ||
+        '';
+
+    const token = authHeader.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : authHeader || null;
+
+    if (!token)
         return res.status(401).json({ message: 'Token manquant' });
 
     try {
-        // Spécification explicite de l'algorithme → bloque l'attaque alg=none
-        req.user = jwt.verify(header.split(' ')[1], JWT_SECRET, { algorithms: ['HS256'] });
+        req.user = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
         next();
     } catch {
         return res.status(401).json({ message: 'Token invalide ou expiré' });

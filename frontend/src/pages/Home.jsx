@@ -550,6 +550,79 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* ══ NOS PROGRAMMES DE FORMATION ══════════════════════════════ */}
+            <section className="bg-white py-24 lg:py-32 border-t border-[#f0ebe3]">
+                <div className="max-w-7xl mx-auto px-6 lg:px-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+                        {/* Texte gauche */}
+                        <div className="reveal">
+                            <span className="eyebrow">Formations</span>
+                            <h2 className="display-title text-3xl lg:text-5xl text-[#1a1a1a] mt-4 leading-tight">
+                                NOS PROGRAMMES<br />
+                                <span className="text-gold">DE FORMATION</span>
+                            </h2>
+                            <div className="gold-line my-6" />
+                            <p className="font-glacial text-sm text-[#555] leading-loose mb-4">
+                                Mia Dreams & Co accompagne les créateurs, stylistes et entrepreneurs africains à travers des programmes de formation d'excellence. Du design à l'entrepreneuriat, nous vous donnons toutes les clés pour réussir dans l'industrie de la mode.
+                            </p>
+                            <p className="font-glacial text-sm text-[#555] leading-loose mb-10">
+                                Des formations concrètes, animées par des professionnels du secteur, pour vous permettre de transformer votre passion en carrière.
+                            </p>
+                            <Link to="/programmes" className="btn btn-gold">
+                                DÉCOUVRIR NOS PROGRAMMES
+                            </Link>
+                        </div>
+
+                        {/* Cards droite */}
+                        <div className="reveal grid grid-cols-1 gap-4" style={{ transitionDelay: '.15s' }}>
+                            {[
+                                {
+                                    num: '01',
+                                    title: 'Fashion Program',
+                                    desc: 'Design, patronage, marketing et entrepreneuriat de la mode africaine.',
+                                    slug: 'fashion-program',
+                                },
+                                {
+                                    num: '02',
+                                    title: 'Mia Startup',
+                                    desc: 'De l\'idée au marché — accompagnement intensif pour entrepreneurs.',
+                                    slug: 'mia-startup',
+                                },
+                            ].map((p, i) => (
+                                <Link
+                                    key={i}
+                                    to={`/programmes/${p.slug}`}
+                                    className="group flex items-start gap-6 border border-[#e8e0d0] hover:border-gold/40 p-6 transition-all duration-300 hover:shadow-md"
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    <span className="font-lastica text-[11px] tracking-[4px] text-gold/50 flex-shrink-0 mt-1">{p.num}</span>
+                                    <div>
+                                        <h3 className="font-glacial text-base text-[#1a1a1a] uppercase tracking-[2px] mb-2 group-hover:text-gold transition-colors">
+                                            {p.title}
+                                        </h3>
+                                        <p className="font-glacial text-sm text-[#777] leading-relaxed">{p.desc}</p>
+                                    </div>
+                                    <svg className="ml-auto flex-shrink-0 mt-1 text-gold/30 group-hover:text-gold transition-colors" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </Link>
+                            ))}
+
+                            {/* CTA secondaire */}
+                            <Link
+                                to="/programmes"
+                                className="group flex items-center justify-center gap-3 border border-dashed border-gold/30 hover:border-gold/60 p-5 transition-all duration-300"
+                                style={{ textDecoration: 'none' }}
+                            >
+                                <span className="font-glacial text-[11px] tracking-[3px] uppercase text-gold/60 group-hover:text-gold transition-colors">
+                                    Voir tous les programmes
+                                </span>
+                                <svg className="text-gold/40 group-hover:text-gold transition-colors" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* ══ NOS PILIERS D'ACTION ═════════════════════════════════════ */}
             <section className="bg-[#080808] py-24 lg:py-32 border-t border-gold/6">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">

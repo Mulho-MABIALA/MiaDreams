@@ -5,9 +5,13 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Conserver l'en-tête Authorization (JWT)
+    # Conserver l'en-tête Authorization (JWT) — peut être bloqué par Apache BasicAuth
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Header personnalisé — passe toujours, utilisé comme fallback par le middleware
+    RewriteCond %{HTTP:X-Admin-Token} .
+    RewriteRule .* - [E=HTTP_X_ADMIN_TOKEN:%{HTTP:X-Admin-Token}]
 
     # Laisser passer les vrais fichiers statiques présents sur disque
     # (uploads, public/, etc.) — Passenger ne les gère pas

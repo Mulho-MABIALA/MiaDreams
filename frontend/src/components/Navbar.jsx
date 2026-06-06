@@ -108,18 +108,7 @@ export default function Navbar() {
                         </div>
                     </li>
 
-                    <li className="nav-dropdown">
-                        <button className={`nav-link flex items-center gap-1.5 ${pathname.startsWith('/programmes') ? 'active text-gold' : 'text-white/85'}`}>
-                            NOS PROGRAMMES
-                            <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                        </button>
-                        <div className="nav-dropdown-menu">
-                            <Link to="/programmes">Tous les programmes</Link>
-                            {navProgrammes.map(p => (
-                                <Link key={p._id} to={`/programmes/${p.slug}`}>{p.name}</Link>
-                            ))}
-                        </div>
-                    </li>
+                    <li><Link to="/programmes" className={`nav-link ${pathname.startsWith('/programmes') ? 'active text-gold' : 'text-white/85'}`}>NOS PROGRAMMES</Link></li>
 
                     <li><Link to="/catalogues" className={`nav-link ${isActive('/catalogues') ? 'active text-gold' : 'text-white/85'}`}>CATALOGUES</Link></li>
                     <li><Link to="/galerie"    className={`nav-link ${isActive('/galerie')    ? 'active text-gold' : 'text-white/85'}`}>GALERIE</Link></li>
@@ -252,18 +241,9 @@ export default function Navbar() {
                         </div>
                     </li>
                     <li className="py-3 border-b border-white/[0.05]">
-                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">NOS PROGRAMMES</span>
-                        <div className="flex flex-col gap-1 pl-2">
-                            <Link to="/programmes" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">
-                                Tous les programmes
-                            </Link>
-                            {navProgrammes.map(p => (
-                                <Link key={p._id} to={`/programmes/${p.slug}`}
-                                      className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">
-                                    {p.name}
-                                </Link>
-                            ))}
-                        </div>
+                        <Link to="/programmes" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold transition-colors">
+                            NOS PROGRAMMES
+                        </Link>
                     </li>
                     <li className="py-3 border-b border-white/[0.05]">
                         <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">JOURNAL</span>

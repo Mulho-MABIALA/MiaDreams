@@ -254,6 +254,17 @@ export default function Footer() {
                             <span className="w-6 h-px bg-gold/25" />
                         </div>
                     </div>
+                    {/* Crédit développeur */}
+                    <div className="flex justify-center pt-3">
+                        <a
+                            href="https://zolaa.tech/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-glacial text-[11px] text-white/25 hover:text-gold/70 tracking-[1px] transition-colors duration-300"
+                        >
+                            Conçu par <span className="text-white/40 hover:text-gold">Zolaa Tech</span>
+                        </a>
+                    </div>
                 </div>
             </footer>
         {/* ── Modale email catalogue (footer) ─────────────────────────────── */}

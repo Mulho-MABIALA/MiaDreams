@@ -149,10 +149,28 @@ export default function ProgrammeDetail() {
                             <div className="mt-8">
                                 {programme.is_open && !isFull ? (
                                     <a href="#inscription" className="btn btn-gold">S'INSCRIRE À CETTE FORMATION</a>
+                                ) : isFull ? (
+                                    <div className="border border-red-200 bg-red-50 p-4">
+                                        <p className="font-glacial text-sm text-red-600 mb-2">
+                                            🔒 Places épuisées — cette session est complète.
+                                        </p>
+                                        <a href="/contact" className="font-glacial text-xs text-[#999] underline">Contactez-nous pour être sur liste d'attente</a>
+                                    </div>
                                 ) : (
-                                    <span className="font-glacial text-sm text-[#999]">
-                                        {isFull ? 'Places épuisées — contactez-nous pour être sur liste d\'attente.' : 'Inscriptions fermées pour le moment.'}
-                                    </span>
+                                    <div className="border border-gold/20 bg-[#fdf9f3] p-4">
+                                        <p className="font-glacial text-sm text-[#6B4F3A] font-medium mb-1">
+                                            🕐 Inscriptions bientôt disponibles
+                                        </p>
+                                        {(programme.start_date || programme.end_date) && (
+                                            <p className="font-glacial text-xs text-[#999] mt-1">
+                                                Prochaine session :
+                                                {programme.start_date && <> <span className="text-[#6B4F3A] font-medium">{programme.start_date}</span></>}
+                                                {programme.start_date && programme.end_date && ' → '}
+                                                {programme.end_date && <span className="text-[#6B4F3A] font-medium">{programme.end_date}</span>}
+                                            </p>
+                                        )}
+                                        <a href="/contact" className="font-glacial text-xs text-gold underline mt-2 block">Être notifié à l'ouverture des inscriptions →</a>
+                                    </div>
                                 )}
                             </div>
                         </div>

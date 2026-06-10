@@ -149,7 +149,7 @@ function TestimonialsSection({ testimonials }) {
                             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
                         </button>
                     )}
-                    <div className="border border-gold/8 px-5 py-10 sm:px-8 sm:py-12 lg:px-16 lg:py-14 text-center relative overflow-hidden"
+                    <div className="card-testimonial border border-gold/8 px-5 py-10 sm:px-8 sm:py-12 lg:px-16 lg:py-14 text-center relative overflow-hidden"
                          style={{ background: 'linear-gradient(135deg, rgba(196,162,103,0.03) 0%, rgba(8,8,8,0) 60%)' }}>
                         <div className="absolute top-6 left-1/2 -translate-x-1/2 font-glacial text-[100px] leading-none select-none pointer-events-none"
                              style={{ color: 'rgba(196,162,103,0.05)', fontStyle: 'italic' }}>"</div>

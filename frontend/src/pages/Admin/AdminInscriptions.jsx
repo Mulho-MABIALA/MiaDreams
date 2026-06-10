@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useToast } from '../../components/Toast';
+import { useConfirm } from '../../components/ConfirmDialog';
 
 const GOLD = '#C9A84C';
 
@@ -12,6 +14,8 @@ const STATUS_COLORS = {
 const EMPTY_FORM = { programme: '', nom: '', email: '', telephone: '', message: '', status: 'en attente' };
 
 export default function AdminInscriptions() {
+    const toast   = useToast();
+    const confirm = useConfirm();
     const [inscriptions, setInscriptions] = useState([]);
     const [programmes, setProgrammes]     = useState([]);
     const [filter, setFilter]             = useState('');
@@ -37,12 +41,20 @@ export default function AdminInscriptions() {
     const changeStatus = async (id, status) => {
         await axios.put(`/api/admin/inscriptions/${id}`, { status });
         setInscriptions(prev => prev.map(i => i._id === id ? { ...i, status } : i));
+        toast('Statut mis à jour.', 'success');
     };
 
     const del = async (id) => {
-        if (!window.confirm('Supprimer cette inscription ?')) return;
+        const ok = await confirm({
+            title: 'Supprimer cette inscription ?',
+            message: 'Cette inscription sera définitivement supprimée.',
+            confirmLabel: 'Supprimer',
+            danger: true,
+        });
+        if (!ok) return;
         await axios.delete(`/api/admin/inscriptions/${id}`);
         setInscriptions(prev => prev.filter(i => i._id !== id));
+        toast('Inscription supprimée.', 'success');
     };
 
     const handleFilterChange = (e) => {
@@ -68,6 +80,7 @@ export default function AdminInscriptions() {
             const { data } = await axios.post('/api/admin/inscriptions', form);
             setInscriptions(prev => [data.inscription, ...prev]);
             setShowModal(false);
+            toast('Inscription ajoutée avec succès !', 'success');
         } catch (err) {
             setFormError(err.response?.data?.message || 'Erreur lors de l\'enregistrement.');
         } finally {

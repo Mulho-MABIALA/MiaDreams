@@ -136,14 +136,14 @@ export default function ProgrammeDetail() {
                             )}
                             {/* Infos formation */}
                             <div className="grid grid-cols-2 gap-4 mt-6">
-                                {programme.duration   && <InfoItem icon="⏱" label="Durée"   value={programme.duration} />}
-                                {programme.price      && <InfoItem icon="💰" label="Tarif"   value={programme.price} />}
-                                {programme.format     && <InfoItem icon="📍" label="Format"  value={programme.format} />}
-                                {programme.level      && <InfoItem icon="📚" label="Niveau"  value={programme.level} />}
-                                {programme.start_date && <InfoItem icon="📅" label="Début" value={programme.start_date} />}
-                                {programme.end_date   && <InfoItem icon="🏁" label="Fin"   value={programme.end_date} />}
+                                {programme.duration   && <InfoItem icon={<IcoClock />}  label="Durée"   value={programme.duration} />}
+                                {programme.price      && <InfoItem icon={<IcoPrice />}  label="Tarif"   value={programme.price} />}
+                                {programme.format     && <InfoItem icon={<IcoFormat />} label="Format"  value={programme.format} />}
+                                {programme.level      && <InfoItem icon={<IcoLevel />}  label="Niveau"  value={programme.level} />}
+                                {programme.start_date && <InfoItem icon={<IcoCal />}    label="Début"   value={programme.start_date} />}
+                                {programme.end_date   && <InfoItem icon={<IcoFlag />}   label="Fin"     value={programme.end_date} />}
                                 {programme.max_places > 0 && (
-                                    <InfoItem icon="👥" label="Places" value={isFull ? 'Complet' : `${placesLeft} place${placesLeft > 1 ? 's' : ''} restante${placesLeft > 1 ? 's' : ''}`} />
+                                    <InfoItem icon={<IcoUsers />} label="Places" value={isFull ? 'Complet' : `${placesLeft} place${placesLeft > 1 ? 's' : ''} restante${placesLeft > 1 ? 's' : ''}`} />
                                 )}
                             </div>
                             <div className="mt-8">
@@ -295,10 +295,26 @@ export default function ProgrammeDetail() {
 
 function InfoItem({ icon, label, value }) {
     return (
-        <div className="border border-[#e8e0d0] p-4">
-            <div className="text-lg mb-1">{icon}</div>
+        <div className="border border-[#e8e0d0] p-4 relative overflow-hidden group hover:border-[#C4A267]/40 transition-colors"
+             style={{ background: 'linear-gradient(135deg, #fff 0%, #fdfaf6 100%)' }}>
+            {/* Reflet miroir subtil au hover */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                 style={{ background: 'linear-gradient(135deg, rgba(196,162,103,0.06) 0%, transparent 60%)' }} />
+            <div className="text-[#C4A267] mb-2">{icon}</div>
             <p className="font-lastica text-[9px] tracking-[2px] text-[#999] uppercase mb-1">{label}</p>
             <p className="font-glacial text-sm text-[#1a1a1a] font-medium">{value}</p>
         </div>
     );
 }
+
+// ── Icônes SVG sémantiques ────────────────────────────────────────────────────
+const ico = (d, vb = '0 0 24 24') => (
+    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox={vb}><path strokeLinecap="round" strokeLinejoin="round" d={d}/></svg>
+);
+const IcoClock = () => ico('M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 5v5l3 3');
+const IcoPrice = () => ico('M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6');
+const IcoFormat = () => ico('M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 10m-3 0a3 3 0 1 0 6 0 3 3 0 0 0-6 0');
+const IcoLevel = () => ico('M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z');
+const IcoCal  = () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+const IcoFlag = () => ico('M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z M4 22v-7');
+const IcoUsers= () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;

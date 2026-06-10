@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useToast } from '../../components/Toast';
+import { useConfirm } from '../../components/ConfirmDialog';
 
 const GOLD = '#C9A84C';
 
@@ -38,6 +40,8 @@ const MODULE_GROUPS = [
 const empty = { name: '', email: '', password: '', role: 'admin', permissions: [], is_active: true };
 
 export default function AdminUsers() {
+    const toast   = useToast();
+    const confirm = useConfirm();
     const [users, setUsers]   = useState([]);
     const [modules, setModules] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -118,12 +122,19 @@ export default function AdminUsers() {
     };
 
     const del = async (id) => {
-        if (!window.confirm('Supprimer cet utilisateur ?')) return;
+        const ok = await confirm({
+            title: 'Supprimer cet utilisateur ?',
+            message: 'Cet utilisateur perdra définitivement son accès à l\'administration.',
+            confirmLabel: 'Supprimer',
+            danger: true,
+        });
+        if (!ok) return;
         try {
             await axios.delete(`/api/admin/users/${id}`);
             load();
+            toast('Utilisateur supprimé.', 'success');
         } catch (e) {
-            alert(e.response?.data?.message || 'Erreur suppression');
+            toast(e.response?.data?.message || 'Erreur lors de la suppression.', 'error');
         }
     };
 

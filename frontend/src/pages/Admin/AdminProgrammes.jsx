@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { useToast } from '../../components/Toast';
+import { useConfirm } from '../../components/ConfirmDialog';
 
 const GOLD = '#C9A84C';
 const API = '/api/admin/programmes';
@@ -14,6 +16,8 @@ const empty = {
 export default function AdminProgrammes() {
     const [programmes, setProgrammes] = useState([]);
     const [loading, setLoading] = useState(true);
+    const toast   = useToast();
+    const confirm = useConfirm();
     const [modal, setModal] = useState(null); // null | 'create' | programme object
     const [form, setForm] = useState(empty);
     const [imageFile, setImageFile] = useState(null);
@@ -68,6 +72,7 @@ export default function AdminProgrammes() {
             }
             load();
             setModal(null);
+            toast(modal === 'create' ? 'Programme créé avec succès !' : 'Programme mis à jour !', 'success');
         } catch (e) {
             setError(e.response?.data?.message || 'Erreur');
         } finally {
@@ -76,9 +81,20 @@ export default function AdminProgrammes() {
     };
 
     const del = async (id) => {
-        if (!window.confirm('Supprimer ce programme et toutes ses inscriptions ?')) return;
-        await axios.delete(`${API}/${id}`);
-        load();
+        const ok = await confirm({
+            title: 'Supprimer ce programme ?',
+            message: 'Cette action supprimera le programme et toutes ses inscriptions. Elle est irréversible.',
+            confirmLabel: 'Supprimer',
+            danger: true,
+        });
+        if (!ok) return;
+        try {
+            await axios.delete(`${API}/${id}`);
+            load();
+            toast('Programme supprimé.', 'success');
+        } catch {
+            toast('Erreur lors de la suppression.', 'error');
+        }
     };
 
     const addModule = () => setForm(f => ({ ...f, modules: [...f.modules, { title: '', description: '' }] }));

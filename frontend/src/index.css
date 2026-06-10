@@ -461,12 +461,81 @@ body {
     background: var(--gold);
     overflow: hidden; position: relative;
 }
+/* Shimmer horizontal */
 .gold-strip::before {
     content: '';
     position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.15) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
     animation: shimmer 3s ease infinite;
     background-size: 200% 100%;
+}
+/* Reflet miroir vertical — effet verre givré */
+.gold-strip::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+        rgba(255,255,255,0.10) 0%,
+        transparent 50%,
+        rgba(0,0,0,0.06) 100%
+    );
+    pointer-events: none;
+}
+
+/* ── Cards éditoriales — reflet miroir doré au hover ── */
+.card-editorial {
+    position: relative;
+    overflow: hidden;
+}
+.card-editorial::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+        rgba(196,162,103,0.08) 0%,
+        transparent 55%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+.card-editorial:hover::after { opacity: 1; }
+
+/* ── Cards témoignages — radial doré depuis le centre ── */
+.card-testimonial {
+    position: relative;
+    overflow: hidden;
+}
+.card-testimonial::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 80%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(196,162,103,0.3), transparent);
+}
+.card-testimonial::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%,
+        rgba(196,162,103,0.07) 0%,
+        transparent 65%
+    );
+    pointer-events: none;
+}
+
+/* ── Focus ring doré — accessibilité WCAG 2.1 ── */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid rgba(196,162,103,0.6) !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(196,162,103,0.08);
+}
+
+/* ── Input glass focus (pages sombres) ── */
+.input-glass:focus {
+    border-color: rgba(196,162,103,0.6) !important;
+    box-shadow: inset 0 -2px 0 rgba(196,162,103,0.5),
+                0 2px 12px rgba(196,162,103,0.12);
 }
 
 /* ══════════════════════════════════════

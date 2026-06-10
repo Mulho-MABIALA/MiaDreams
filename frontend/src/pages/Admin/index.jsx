@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, NavLink, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { ToastProvider } from '../../components/Toast';
+import { ConfirmProvider } from '../../components/ConfirmDialog';
 import Dashboard from './Dashboard';
 import AdminBrands from './AdminBrands';
 import AdminBlogPodcast from './AdminBlogPodcast';
@@ -189,6 +191,8 @@ export default function Admin() {
     if (!user) return null;
 
     return (
+        <ToastProvider>
+        <ConfirmProvider>
         <div className="h-screen flex overflow-hidden" style={{ background: '#F2F3F5', fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif" }}>
             {/* SIDEBAR */}
             <aside
@@ -518,6 +522,8 @@ export default function Admin() {
                 </main>
             </div>
         </div>
+        </ConfirmProvider>
+        </ToastProvider>
     );
 }
 
@@ -548,3 +554,4 @@ function IconPOS()    { return <svg width="15" height="15" viewBox="0 0 24 24" f
 function IconProgrammes()   { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> }
 function IconInscriptions() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> }
 function IconUsers()        { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 11h6M19 8v6"/></svg> }
+

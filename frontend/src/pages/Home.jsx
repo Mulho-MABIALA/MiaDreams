@@ -952,16 +952,14 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Carte Google Maps */}
+                    {/* Carte OpenStreetMap — gratuit, sans clé API */}
                     <div className="relative h-[320px] lg:h-auto overflow-hidden reveal" style={{ transitionDelay: '.1s' }}>
                         <iframe
                             title="MIA DREAMS & CO — Notre emplacement"
-                            src="https://maps.google.com/maps?q=5.3808284,-3.9060769&z=16&output=embed"
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=-3.9160769%2C5.3708284%2C-3.8960769%2C5.3908284&layer=mapnik&marker=5.3808284%2C-3.9060769"
                             className="absolute inset-0 w-full h-full border-0"
                             loading="lazy"
-                            allowFullScreen
-                            referrerPolicy="no-referrer-when-downgrade"
-                            style={{ filter: 'grayscale(30%) contrast(1.05)' }}
+                            style={{ filter: 'grayscale(30%) contrast(1.05) sepia(10%)' }}
                         />
                         {/* Trait doré en haut */}
                         <div className="absolute top-0 inset-x-0 h-px z-10" style={{ background: 'rgba(196,162,103,.3)' }} />

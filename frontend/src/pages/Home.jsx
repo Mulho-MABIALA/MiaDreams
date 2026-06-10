@@ -953,7 +953,7 @@ export default function Home() {
                     </div>
 
                     {/* Carte OpenStreetMap — gratuit, sans clé API */}
-                    <div className="relative h-[320px] lg:h-auto overflow-hidden reveal" style={{ transitionDelay: '.1s' }}>
+                    <div className="relative h-[320px] lg:h-auto overflow-hidden reveal" style={{ transitionDelay: '.1s', minHeight: '320px' }}>
                         <iframe
                             title="MIA DREAMS & CO — Notre emplacement"
                             src="https://www.openstreetmap.org/export/embed.html?bbox=-3.9160769%2C5.3708284%2C-3.8960769%2C5.3908284&layer=mapnik&marker=5.3808284%2C-3.9060769"
@@ -963,6 +963,31 @@ export default function Home() {
                         />
                         {/* Trait doré en haut */}
                         <div className="absolute top-0 inset-x-0 h-px z-10" style={{ background: 'rgba(196,162,103,.3)' }} />
+                        {/* Bouton voir sur Google Maps */}
+                        <a
+                            href="https://www.google.com/maps?q=5.3808284,-3.9060769"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute bottom-4 right-4 z-20 flex items-center gap-2"
+                            style={{
+                                background: 'rgba(8,8,8,0.85)',
+                                backdropFilter: 'blur(8px)',
+                                border: '1px solid rgba(196,162,103,0.3)',
+                                color: '#C9A84C',
+                                padding: '8px 14px',
+                                fontSize: '11px',
+                                letterSpacing: '1px',
+                                textDecoration: 'none',
+                                fontFamily: 'Lastica, sans-serif',
+                                textTransform: 'uppercase',
+                            }}
+                        >
+                            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            Voir sur Google Maps
+                        </a>
                     </div>
                 </div>
             </section>

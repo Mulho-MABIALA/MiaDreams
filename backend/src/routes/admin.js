@@ -620,4 +620,28 @@ router.delete('/inscriptions/:id', async (req, res) => {
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
+// POST /api/admin/inscriptions — inscription manuelle par l'admin
+router.post('/inscriptions', async (req, res) => {
+    try {
+        const { programme, nom, email, telephone, message, status } = req.body;
+        if (!programme || !nom || !email) {
+            return res.status(400).json({ message: 'Programme, nom et email sont requis.' });
+        }
+        const Programme = require('../models/Programme');
+        const prog = await Programme.findById(programme);
+        if (!prog) return res.status(404).json({ message: 'Programme introuvable.' });
+
+        const inscription = await Inscription.create({
+            programme,
+            nom,
+            email,
+            telephone: telephone || '',
+            message:   message   || '',
+            status:    status    || 'en attente',
+        });
+        await inscription.populate('programme', 'name slug');
+        res.status(201).json({ inscription });
+    } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
 module.exports = router;

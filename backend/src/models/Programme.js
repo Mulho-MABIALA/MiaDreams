@@ -16,7 +16,8 @@ const programmeSchema = new mongoose.Schema({
     price:        String,   // ex: "150 000 FCFA"
     format:       { type: String, enum: ['présentiel', 'en ligne', 'hybride'], default: 'présentiel' },
     level:        { type: String, enum: ['débutant', 'intermédiaire', 'avancé', 'tous niveaux'], default: 'tous niveaux' },
-    start_date:   String,
+    start_date:   String,   // ex: "15 janvier 2025"
+    end_date:     String,   // ex: "28 mars 2025"
     max_places:   { type: Number, default: 0 },  // 0 = illimité
     is_open:      { type: Boolean, default: true },
     modules:      [moduleSchema],

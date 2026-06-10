@@ -140,7 +140,8 @@ export default function ProgrammeDetail() {
                                 {programme.price      && <InfoItem icon="💰" label="Tarif"   value={programme.price} />}
                                 {programme.format     && <InfoItem icon="📍" label="Format"  value={programme.format} />}
                                 {programme.level      && <InfoItem icon="📚" label="Niveau"  value={programme.level} />}
-                                {programme.start_date && <InfoItem icon="📅" label="Début"   value={programme.start_date} />}
+                                {programme.start_date && <InfoItem icon="📅" label="Début" value={programme.start_date} />}
+                                {programme.end_date   && <InfoItem icon="🏁" label="Fin"   value={programme.end_date} />}
                                 {programme.max_places > 0 && (
                                     <InfoItem icon="👥" label="Places" value={isFull ? 'Complet' : `${placesLeft} place${placesLeft > 1 ? 's' : ''} restante${placesLeft > 1 ? 's' : ''}`} />
                                 )}

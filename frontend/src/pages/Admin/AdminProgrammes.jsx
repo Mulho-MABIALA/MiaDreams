@@ -7,7 +7,7 @@ const API = '/api/admin/programmes';
 const empty = {
     name: '', description: '', duration: '', price: '',
     format: 'présentiel', level: 'tous niveaux',
-    start_date: '', max_places: 0, is_open: true, is_active: true, order: 0,
+    start_date: '', end_date: '', max_places: 0, is_open: true, is_active: true, order: 0,
     youtube_id: '', modules: [],
 };
 
@@ -40,7 +40,7 @@ export default function AdminProgrammes() {
             name: p.name || '', description: p.description || '',
             duration: p.duration || '', price: p.price || '',
             format: p.format || 'présentiel', level: p.level || 'tous niveaux',
-            start_date: p.start_date || '', max_places: p.max_places || 0,
+            start_date: p.start_date || '', end_date: p.end_date || '', max_places: p.max_places || 0,
             is_open: p.is_open !== false, is_active: p.is_active !== false,
             order: p.order || 0, youtube_id: p.youtube_id || '',
             modules: p.modules || [],
@@ -170,7 +170,8 @@ export default function AdminProgrammes() {
                                         {['débutant','intermédiaire','avancé','tous niveaux'].map(o => <option key={o}>{o}</option>)}
                                     </select>
                                 </div>
-                                <Field label="Date de début" placeholder="ex: Janvier 2025" value={form.start_date} onChange={v => setForm(f => ({ ...f, start_date: v }))} />
+                                <Field label="Date de début" placeholder="ex: 15 janvier 2025" value={form.start_date} onChange={v => setForm(f => ({ ...f, start_date: v }))} />
+                                <Field label="Date de fin" placeholder="ex: 28 mars 2025" value={form.end_date} onChange={v => setForm(f => ({ ...f, end_date: v }))} />
                                 <Field label="Places max (0 = illimité)" type="number" value={form.max_places} onChange={v => setForm(f => ({ ...f, max_places: Number(v) }))} />
                                 <Field label="Ordre" type="number" value={form.order} onChange={v => setForm(f => ({ ...f, order: Number(v) }))} />
                                 <Field label="YouTube ID / URL" value={form.youtube_id} onChange={v => setForm(f => ({ ...f, youtube_id: v }))} />

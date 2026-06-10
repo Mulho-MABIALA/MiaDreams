@@ -963,6 +963,8 @@ export default function Home() {
                         />
                         {/* Trait doré en haut */}
                         <div className="absolute top-0 inset-x-0 h-px z-10" style={{ background: 'rgba(196,162,103,.3)' }} />
+                        {/* Masque le footer OSM */}
+                        <div className="absolute bottom-0 inset-x-0 h-7 z-10" style={{ background: '#080808' }} />
                         {/* Bouton voir sur Google Maps */}
                         <a
                             href="https://www.google.com/maps?q=5.3808284,-3.9060769"

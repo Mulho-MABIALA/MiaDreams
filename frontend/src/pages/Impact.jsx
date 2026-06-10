@@ -202,11 +202,26 @@ export default function Impact() {
                             {initiatives.map((init, i) => (
                                 <div key={init._id} className="reveal border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 overflow-hidden transition-colors group" style={{ transitionDelay: `${i * 0.1}s` }}>
                                     {init.youtube_id && (
-                                        <div className="relative" style={{ paddingBottom: '56.25%' }}>
-                                            <iframe className="absolute inset-0 w-full h-full"
-                                                    src={`https://www.youtube.com/embed/${init.youtube_id}`}
-                                                    frameBorder="0" allowFullScreen loading="lazy" title={init.name} />
-                                        </div>
+                                        <a href={`https://www.youtube.com/watch?v=${init.youtube_id}`}
+                                           target="_blank" rel="noopener noreferrer"
+                                           className="relative block group"
+                                           style={{ paddingBottom: '56.25%', background: '#111', overflow: 'hidden' }}>
+                                            <img
+                                                src={`https://img.youtube.com/vi/${init.youtube_id}/maxresdefault.jpg`}
+                                                alt={init.name}
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                onError={e => { e.target.src = `https://img.youtube.com/vi/${init.youtube_id}/hqdefault.jpg`; }}
+                                            />
+                                            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="w-16 h-16 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                                                     style={{ background: 'rgba(201,168,76,0.95)' }}>
+                                                    <svg className="w-6 h-6 ml-1" fill="white" viewBox="0 0 24 24">
+                                                        <path d="M8 5v14l11-7z"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </a>
                                     )}
                                     {init.image && !init.youtube_id && (
                                         <img src={imgSrc(init.image)} className="w-full h-48 object-cover object-top" alt={init.name} loading="lazy" />

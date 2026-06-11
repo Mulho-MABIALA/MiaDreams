@@ -338,6 +338,62 @@ router.get('/sections-page', async (req, res) => {
 });
 router.use('/initiatives',  crudRouter(Initiative, ['image']));
 router.use('/team',         crudRouter(TeamMember, ['photo']));
+
+// POST /api/admin/contacts/:id/reply — répondre par email à un message de contact
+router.post('/contacts/:id/reply', async (req, res) => {
+    try {
+        if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
+            return res.status(503).json({ message: 'SMTP non configuré.' });
+        }
+        const contact = await Contact.findById(req.params.id);
+        if (!contact) return res.status(404).json({ message: 'Message introuvable.' });
+
+        const { subject, body } = req.body;
+        if (!subject || !body) return res.status(422).json({ message: 'Sujet et message requis.' });
+
+        const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F0E8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(45,27,14,.10);">
+  <div style="background:linear-gradient(135deg,#1a0f07 0%,#2D1B0E 60%,#4A2C18 100%);padding:32px 36px;">
+    <p style="margin:0 0 4px;font-size:10px;letter-spacing:4px;color:rgba(201,168,76,.6);text-transform:uppercase;">MIA DREAMS & CO</p>
+    <h1 style="margin:0;font-size:20px;font-weight:600;color:#C9A84C;letter-spacing:1px;">${subject}</h1>
+  </div>
+  <div style="padding:32px 36px;">
+    <p style="margin:0 0 20px;font-size:14px;color:#6B4F3A;">Bonjour <strong>${contact.name}</strong>,</p>
+    <div style="font-size:14px;color:#374151;line-height:1.8;white-space:pre-wrap;">${body.replace(/\n/g, '<br>')}</div>
+  </div>
+  <div style="padding:20px 36px;border-top:1px solid #F0E8D8;">
+    <p style="margin:0 0 4px;font-size:12px;color:#9E8272;font-style:italic;">En réponse à votre message : "${contact.subject || contact.message?.slice(0,60)}…"</p>
+  </div>
+  <div style="padding:16px 36px;background:#FDF8F2;text-align:center;">
+    <p style="margin:0;font-size:10px;color:#C8B8A0;">MIA DREAMS & CO · Maison de mode africaine d'excellence</p>
+  </div>
+</div></body></html>`;
+
+        const nodemailer = require('nodemailer');
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST || 'smtp.gmail.com',
+            port: Number(process.env.MAIL_PORT) || 587,
+            secure: false,
+            auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+        });
+        await transporter.sendMail({
+            from:    `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+            to:      contact.email,
+            subject,
+            html,
+        });
+
+        // Marquer comme lu
+        await Contact.findByIdAndUpdate(req.params.id, { is_read: true });
+
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Erreur reply contact :', e.message);
+        res.status(500).json({ message: e.message });
+    }
+});
+
 router.use('/contacts',     crudRouter(Contact));
 router.use('/reservations', crudRouter(Reservation));
 router.use('/newsletters',  crudRouter(Newsletter));

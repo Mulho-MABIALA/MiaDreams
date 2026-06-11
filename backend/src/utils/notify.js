@@ -338,4 +338,4 @@ async function notifyStatusUpdate(order) {
     });
 }
 
-module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, sendEmail };
+module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, sendEmail, getTransporter };

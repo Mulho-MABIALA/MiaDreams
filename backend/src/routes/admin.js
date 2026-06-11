@@ -25,6 +25,7 @@ const Order = require('../models/Order');
 const CaisseTransaction = require('../models/CaisseTransaction');
 const AdminUser = require('../models/Admin');
 const { notifyStatusUpdate } = require('../utils/notify');
+const CatalogueDownload = require('../models/CatalogueDownload');
 
 // Middleware : réservé au super_admin uniquement
 function superAdminOnly(req, res, next) {
@@ -391,6 +392,17 @@ router.post('/newsletter/send-campaign', async (req, res) => {
     } catch (e) {
         res.status(500).json({ message: e.message });
     }
+});
+
+// ─── Statistiques téléchargements catalogues ──────────────────────────────────
+router.get('/catalogues-downloads', async (req, res) => {
+    try {
+        const downloads = await CatalogueDownload.find({})
+            .sort({ downloaded_at: -1 })
+            .limit(500);
+        const catalogues = await Catalogue.find({}).select('name downloads_count cover_image');
+        res.json({ downloads, catalogues });
+    } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
 // ─── Orders (lecture + gestion statut) ────────────────────────────────────────

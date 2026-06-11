@@ -5,7 +5,8 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 const Catalogue = require('../models/Catalogue');
-const { sendEmail } = require('../utils/notify');
+const CatalogueDownload = require('../models/CatalogueDownload');
+const { sendEmail, getTransporter } = require('../utils/notify');
 
 // GET /api/catalogues
 router.get('/', async (req, res) => {
@@ -31,7 +32,6 @@ router.get('/:id/download', async (req, res) => {
 
         // PDF stocké sur Cloudinary → proxy pour forcer le bon nom de fichier
         if (catalogue.pdf_path.startsWith('http')) {
-            const https = require('https');
             res.setHeader('Content-Disposition', `attachment; filename="${fileName}"; filename*=UTF-8''${encodedName}`);
             res.setHeader('Content-Type', 'application/pdf');
             const request = https.get(catalogue.pdf_path, (stream) => {
@@ -106,12 +106,19 @@ router.post('/:id/send-email', async (req, res) => {
   </div>
 </div></body></html>`;
 
+        // Envoie l'email avec le PDF en pièce jointe
         await sendEmail({
             to:          email,
             subject:     `📄 Votre catalogue ${catalogue.name} — MIA DREAMS`,
             html,
             attachments: [{ filename: fileName, content: pdfBuffer, contentType: 'application/pdf' }],
         });
+
+        // Enregistre le téléchargement et incrémente le compteur
+        await Promise.all([
+            CatalogueDownload.create({ catalogue: catalogue._id, catalogue_name: catalogue.name, email }),
+            Catalogue.findByIdAndUpdate(catalogue._id, { $inc: { downloads_count: 1 } }),
+        ]);
 
         res.json({ success: true });
     } catch (err) {

@@ -227,6 +227,8 @@ function InvoiceModal({ order, onClose }) {
 
     // ── Envoie le PDF via WhatsApp ──
     const [sending, setSending] = useState(false);
+    const [sendingEmail, setSendingEmail] = useState(false);
+    const [emailStatus, setEmailStatus] = useState(null); // 'ok' | 'error' | null
     const handleWhatsAppPDF = async () => {
         setSending(true);
         try {
@@ -257,8 +259,20 @@ Merci pour votre confiance ! 🙏✨`;
         }
     };
 
-    const emailBody = `Bonjour ${order.customer.name},\n\nVeuillez trouver ci-joint votre facture ${order.order_number} pour un montant de ${order.total.toLocaleString('fr-FR')} FCFA.\n\nMerci de votre confiance.\nMIA DREAMS & CO`;
-    const mailtoUrl = `mailto:${order.customer.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    const sendInvoiceEmail = async () => {
+        setSendingEmail(true);
+        setEmailStatus(null);
+        try {
+            await axios.post(`/api/admin/orders/${order._id}/send-invoice`);
+            setEmailStatus('ok');
+            setTimeout(() => setEmailStatus(null), 4000);
+        } catch {
+            setEmailStatus('error');
+            setTimeout(() => setEmailStatus(null), 4000);
+        } finally {
+            setSendingEmail(false);
+        }
+    };
     const subtotal = order.subtotal || order.total;
     const shipping = 0;
 
@@ -281,11 +295,17 @@ Merci pour votre confiance ! 🙏✨`;
                         }
                         {sending ? 'Génération…' : 'WhatsApp PDF'}
                     </button>
-                    <a href={mailtoUrl}
-                        className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-colors">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        Email
-                    </a>
+                    <button onClick={sendInvoiceEmail} disabled={sendingEmail}
+                        className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg border transition-colors disabled:opacity-50"
+                        style={ emailStatus === 'ok' ? { borderColor: '#22C55E', color: '#22C55E' } : emailStatus === 'error' ? { borderColor: '#EF4444', color: '#EF4444' } : { borderColor: 'rgba(255,255,255,.2)', color: 'rgba(255,255,255,.6)' } }>
+                        {sendingEmail
+                            ? <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".25"/><path d="M12 2a10 10 0 0110 10"/></svg>
+                            : emailStatus === 'ok'
+                                ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        }
+                        {sendingEmail ? 'Envoi…' : emailStatus === 'ok' ? 'Envoyé !' : emailStatus === 'error' ? 'Erreur' : 'Email'}
+                    </button>
                     <button onClick={onClose} className="ml-auto text-sm font-medium px-4 py-2.5 rounded-lg border border-white/20 text-white/50 hover:text-white/80 hover:border-white/40 transition-colors">
                         ✕ Fermer
                     </button>

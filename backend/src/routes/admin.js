@@ -547,6 +547,164 @@ router.delete('/orders/:id', async (req, res) => {
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
+// POST /api/admin/orders/:id/send-invoice — envoie le reçu par email au client
+router.post('/orders/:id/send-invoice', async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) return res.status(404).json({ message: 'Commande introuvable' });
+        if (!order.customer?.email) return res.status(422).json({ message: 'Pas d\'email client' });
+
+        const processedBy = req.user?.name || 'Équipe MIA DREAMS';
+        const nodemailer  = require('nodemailer');
+        const transporter = nodemailer.createTransport({
+            host:   process.env.MAIL_HOST || 'smtp.gmail.com',
+            port:   Number(process.env.MAIL_PORT) || 587,
+            secure: false,
+            auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+        });
+
+        const fmt     = (n) => Number(n || 0).toLocaleString('fr-FR') + ' FCFA';
+        const fmtDate = (d) => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+        const PAYMENT_LABELS = { wave: 'Wave', orange_money: 'Orange Money', free_money: 'Free Money', cash: 'Espèces / Livraison', cinetpay: 'Paiement en ligne' };
+        const STATUS_LABELS  = { pending: 'En attente', confirmed: 'Confirmée', processing: 'En préparation', shipped: 'En livraison', delivered: 'Livrée', cancelled: 'Annulée' };
+
+        const payLabel  = PAYMENT_LABELS[order.payment_method] || order.payment_method;
+        const statLabel = STATUS_LABELS[order.order_status]    || order.order_status;
+        const orderDate = fmtDate(order.createdAt || new Date());
+        const subtotal  = order.subtotal ?? order.total;
+        const remise    = Math.max(0, subtotal - order.total);
+
+        const itemRows = order.items.map(i => `
+            <tr>
+              <td style="padding:14px 16px;border-bottom:1px solid #F3F4F6;vertical-align:middle;">
+                <div style="display:flex;align-items:center;gap:14px;">
+                  ${i.image ? `<img src="${i.image}" alt="${i.name}" width="52" height="52" style="width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid #F0E8D8;flex-shrink:0;" />` : `<div style="width:52px;height:52px;border-radius:8px;background:#FDF8F2;border:1px solid #F0E8D8;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">👗</div>`}
+                  <div>
+                    <div style="font-size:14px;font-weight:600;color:#1a1a1a;">${i.name}</div>
+                    ${i.size || i.color ? `<div style="font-size:11px;color:#9CA3AF;margin-top:3px;">${[i.size && 'Taille : '+i.size, i.color && 'Couleur : '+i.color].filter(Boolean).join(' · ')}</div>` : ''}
+                  </div>
+                </div>
+              </td>
+              <td style="padding:14px 16px;border-bottom:1px solid #F3F4F6;text-align:center;font-size:14px;font-weight:600;color:#374151;">×${i.quantity}</td>
+              <td style="padding:14px 16px;border-bottom:1px solid #F3F4F6;text-align:right;font-size:13px;color:#6B7280;">${fmt(i.price)}</td>
+              <td style="padding:14px 16px;border-bottom:1px solid #F3F4F6;text-align:right;font-size:14px;font-weight:700;color:#C9A84C;">${fmt(i.price * i.quantity)}</td>
+            </tr>`
+        ).join('');
+
+        const trackUrl = `${process.env.FRONTEND_URL || 'https://mia-dreams.com'}/commande/suivi/${order.order_number}`;
+
+        const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#ECEEF1;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<div style="max-width:640px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,.12);">
+
+  <!-- EN-TÊTE -->
+  <div style="background:linear-gradient(135deg,#1a0f07 0%,#2D1B0E 60%,#4A2C18 100%);padding:36px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+    <div>
+      <p style="margin:0 0 3px;font-size:9px;letter-spacing:4px;color:rgba(201,168,76,.55);text-transform:uppercase;">MIA DREAMS & CO</p>
+      <p style="margin:0 0 2px;font-size:22px;font-weight:800;color:#fff;letter-spacing:3px;text-transform:uppercase;">REÇU</p>
+      <p style="margin:0;font-size:11px;color:rgba(255,255,255,.35);">Mode Africaine d'Excellence</p>
+    </div>
+    <div style="text-align:right;flex-shrink:0;">
+      <p style="margin:0 0 2px;font-size:9px;letter-spacing:2px;color:rgba(201,168,76,.55);text-transform:uppercase;">N° Commande</p>
+      <p style="margin:0 0 4px;font-size:20px;font-weight:800;color:#C9A84C;font-family:monospace;">${order.order_number}</p>
+      <p style="margin:0;font-size:11px;color:rgba(255,255,255,.35);">${orderDate}</p>
+    </div>
+  </div>
+
+  <!-- BARRE DORÉE -->
+  <div style="height:4px;background:linear-gradient(90deg,#8B6914,#C9A84C,#E8C66A,#C9A84C,#8B6914);"></div>
+
+  <!-- STATUT PAIEMENT -->
+  <div style="background:#F0FDF4;border-bottom:1px solid #DCFCE7;padding:10px 40px;display:flex;align-items:center;gap:8px;">
+    <div style="width:8px;height:8px;background:#22C55E;border-radius:50%;flex-shrink:0;"></div>
+    <span style="font-size:12px;font-weight:600;color:#15803D;">Commande ${statLabel} · Paiement : ${order.payment_status === 'paid' ? 'Payé ✓' : 'En attente'}</span>
+  </div>
+
+  <!-- INFOS CLIENT + COMMANDE -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #F3F4F6;">
+    <div style="padding:24px 40px;border-right:1px solid #F3F4F6;">
+      <p style="margin:0 0 12px;font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#C9A84C;padding-bottom:8px;border-bottom:1px solid #F3F4F6;">Client</p>
+      <p style="margin:0 0 5px;font-size:15px;font-weight:700;color:#1a1a1a;">${order.customer.name}</p>
+      <p style="margin:0 0 3px;font-size:12px;color:#6B7280;">${order.customer.email}</p>
+      <p style="margin:0 0 3px;font-size:12px;color:#6B7280;">${order.customer.phone}</p>
+      ${order.customer.address ? `<p style="margin:4px 0 0;font-size:12px;color:#6B7280;">${order.customer.address}${order.customer.city ? ', '+order.customer.city : ''}</p>` : ''}
+    </div>
+    <div style="padding:24px 40px;">
+      <p style="margin:0 0 12px;font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#C9A84C;padding-bottom:8px;border-bottom:1px solid #F3F4F6;">Détails</p>
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;color:#9CA3AF;">Date</span><span style="font-size:12px;font-weight:600;color:#1a1a1a;">${orderDate}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;color:#9CA3AF;">Paiement</span><span style="font-size:12px;font-weight:600;color:#1a1a1a;">${payLabel}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;color:#9CA3AF;">Statut</span><span style="font-size:12px;font-weight:600;color:#1a1a1a;">${statLabel}</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:#9CA3AF;">Traité par</span><span style="font-size:12px;font-weight:600;color:#C9A84C;">${processedBy}</span></div>
+    </div>
+  </div>
+
+  <!-- ARTICLES -->
+  <div style="padding:24px 40px 0;">
+    <p style="margin:0 0 14px;font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#9CA3AF;">Articles commandés</p>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:#1E110A;">
+          <th style="padding:10px 16px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6);">Produit</th>
+          <th style="padding:10px 16px;text-align:center;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6);">Qté</th>
+          <th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6);">P.U.</th>
+          <th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6);">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemRows}
+        ${remise > 0 ? `
+        <tr><td colspan="3" style="padding:10px 16px;text-align:right;font-size:12px;color:#6B7280;border-bottom:1px solid #F3F4F6;">Sous-total</td><td style="padding:10px 16px;text-align:right;font-size:12px;color:#374151;font-weight:600;border-bottom:1px solid #F3F4F6;">${fmt(subtotal)}</td></tr>
+        <tr><td colspan="3" style="padding:10px 16px;text-align:right;font-size:12px;color:#EF4444;border-bottom:1px solid #F3F4F6;">Remise</td><td style="padding:10px 16px;text-align:right;font-size:12px;color:#EF4444;font-weight:700;border-bottom:1px solid #F3F4F6;">− ${fmt(remise)}</td></tr>` : ''}
+        ${order.shipping_fee > 0 ? `<tr><td colspan="3" style="padding:10px 16px;text-align:right;font-size:12px;color:#6B7280;border-bottom:1px solid #F3F4F6;">Livraison</td><td style="padding:10px 16px;text-align:right;font-size:12px;font-weight:600;color:#374151;border-bottom:1px solid #F3F4F6;">${fmt(order.shipping_fee)}</td></tr>` : ''}
+        <tr style="background:#FFFBF0;">
+          <td colspan="3" style="padding:18px 16px;text-align:right;font-size:14px;font-weight:700;color:#374151;border-top:2px solid #C9A84C;">TOTAL</td>
+          <td style="padding:18px 16px;text-align:right;font-size:22px;font-weight:900;color:#C9A84C;border-top:2px solid #C9A84C;white-space:nowrap;">${fmt(order.total)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- BOUTON SUIVI -->
+  <div style="padding:28px 40px;">
+    <a href="${trackUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#C9A84C,#E0BC6A);color:#1E110A;font-weight:800;font-size:12px;letter-spacing:3px;text-transform:uppercase;padding:18px 24px;border-radius:10px;text-decoration:none;">
+      SUIVRE MA COMMANDE →
+    </a>
+  </div>
+
+  <!-- SIGNATURE ADMIN -->
+  <div style="margin:0 40px 28px;background:#FDF8F2;border:1px solid #F0E8D8;border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#C9A84C,#E0BC6A);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#1E110A;flex-shrink:0;">${processedBy.charAt(0).toUpperCase()}</div>
+    <div>
+      <p style="margin:0 0 2px;font-size:12px;font-weight:700;color:#1E110A;">Traité par ${processedBy}</p>
+      <p style="margin:0;font-size:11px;color:#9E8272;">Équipe MIA DREAMS & CO</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="background:#1E110A;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+    <div>
+      <p style="margin:0 0 3px;font-size:13px;font-weight:700;color:#C9A84C;">Merci pour votre confiance !</p>
+      <p style="margin:0;font-size:10px;color:rgba(255,255,255,.3);line-height:1.6;">MIA DREAMS & CO · Mode Africaine d'Excellence<br/>www.mia-dreams.com</p>
+    </div>
+    <p style="margin:0;font-size:28px;">✨</p>
+  </div>
+
+</div></body></html>`;
+
+        await transporter.sendMail({
+            from:    `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+            to:      order.customer.email,
+            subject: `🧾 Votre reçu ${order.order_number} — MIA DREAMS & CO`,
+            html,
+        });
+
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Send invoice error:', e.message);
+        res.status(500).json({ message: e.message });
+    }
+});
+
 // Company info (singleton)
 router.get('/company-info', async (req, res) => {
     try { res.json(await CompanyInfo.findOne() || {}); } catch(e){ res.status(500).json({message:e.message}); }

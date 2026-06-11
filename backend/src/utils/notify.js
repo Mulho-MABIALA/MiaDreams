@@ -42,20 +42,21 @@ async function sendWhatsApp(message) {
 
 // ── Email HTML ────────────────────────────────────────────────────────────────
 async function sendEmail({ to, subject, html, attachments }) {
-    const transporter = getTransporter();
-    if (!transporter) return;
-    try {
-        await transporter.sendMail({
-            from: `"MIA DREAMS" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
-            to,
-            subject,
-            html,
-            ...(attachments ? { attachments } : {}),
-        });
-        console.log(`✅ Email envoyé à ${to}`);
-    } catch (e) {
-        console.error('❌ Erreur email notify :', e.message);
-    }
+    if (!process.env.MAIL_USER || !process.env.MAIL_PASS) return;
+    const transporter = nodemailer.createTransport({
+        host:   process.env.MAIL_HOST || 'smtp.gmail.com',
+        port:   Number(process.env.MAIL_PORT) || 587,
+        secure: false,
+        auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+    });
+    await transporter.sendMail({
+        from: `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+        to,
+        subject,
+        html,
+        ...(attachments ? { attachments } : {}),
+    });
+    console.log(`✅ Email envoyé à ${to}`);
 }
 
 // ── Formater les articles ─────────────────────────────────────────────────────

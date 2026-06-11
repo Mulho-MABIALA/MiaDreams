@@ -3,9 +3,9 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+const nodemailer = require('nodemailer');
 const Catalogue = require('../models/Catalogue');
 const CatalogueDownload = require('../models/CatalogueDownload');
-const { sendEmail } = require('../utils/notify');
 
 const SITE_URL = process.env.FRONTEND_URL || 'https://mia-dreams.com';
 
@@ -126,15 +126,28 @@ router.post('/:id/send-email', async (req, res) => {
 </body>
 </html>`;
 
-        await sendEmail({
+        // Transporter créé à la volée — même méthode que la campagne newsletter (qui fonctionne)
+        const transporter = nodemailer.createTransport({
+            host:   process.env.MAIL_HOST || 'smtp.gmail.com',
+            port:   Number(process.env.MAIL_PORT) || 587,
+            secure: false,
+            auth: {
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS,
+            },
+        });
+
+        await transporter.sendMail({
+            from:    `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
             to:      email,
             subject: `📄 Votre catalogue ${catalogue.name} — MIA DREAMS`,
             html,
         });
 
+        console.log(`✅ Catalogue envoyé par email à ${email}`);
         res.json({ success: true });
     } catch (err) {
-        console.error('Erreur send-email catalogue :', err.message);
+        console.error('❌ Erreur send-email catalogue :', err.message);
         res.status(500).json({ message: err.message });
     }
 });

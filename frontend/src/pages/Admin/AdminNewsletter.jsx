@@ -293,7 +293,7 @@ function buildEmailHtml(subject, bodyHtml) {
     <div style="padding:36px;">
       ${bodyHtml}
       <div style="margin-top:32px;text-align:center;">
-        <a href="https://miadreams.netlify.app/boutique" style="display:inline-block;background:#C9A84C;color:#1a1a1a;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:14px 28px;border-radius:8px;text-decoration:none;">
+        <a href="https://mia-dreams.com/boutique" style="display:inline-block;background:#C9A84C;color:#1a1a1a;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:14px 28px;border-radius:8px;text-decoration:none;">
           VOIR LA BOUTIQUE
         </a>
       </div>

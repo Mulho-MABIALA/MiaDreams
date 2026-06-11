@@ -21,7 +21,7 @@ function ComposeModal({ items, selected, onClose }) {
     const [audience,   setAudience]   = useState(selected.size > 0 ? 'selected' : 'all');
     const [result,     setResult]     = useState(null);
     const [error,      setError]      = useState('');
-    const [attachment, setAttachment] = useState(null); // { filename, content (base64), contentType }
+    const [attachments, setAttachments] = useState([]); // [{ filename, content (base64), contentType }]
 
     const recipientCount = audience === 'all'
         ? items.length
@@ -34,17 +34,23 @@ function ComposeModal({ items, selected, onClose }) {
         : items.filter(i => selected.has(i._id)).map(i => i.email);
 
     const handleFile = (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        if (file.size > 5 * 1024 * 1024) { setError('Fichier trop volumineux (max 5 Mo).'); return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const base64 = ev.target.result.split(',')[1];
-            setAttachment({ filename: file.name, content: base64, contentType: file.type });
-            setError('');
-        };
-        reader.readAsDataURL(file);
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        const oversized = files.filter(f => f.size > 5 * 1024 * 1024);
+        if (oversized.length) { setError(`Fichier(s) trop volumineux (max 5 Mo chacun) : ${oversized.map(f => f.name).join(', ')}`); return; }
+        setError('');
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const base64 = ev.target.result.split(',')[1];
+                setAttachments(prev => [...prev, { filename: file.name, content: base64, contentType: file.type }]);
+            };
+            reader.readAsDataURL(file);
+        });
+        e.target.value = '';
     };
+
+    const removeAttachment = (idx) => setAttachments(prev => prev.filter((_, i) => i !== idx));
 
     const handleSend = async () => {
         if (!subject.trim() || !body.trim()) { setError('Sujet et message requis.'); return; }
@@ -61,7 +67,7 @@ function ComposeModal({ items, selected, onClose }) {
                 subject,
                 html_body: finalHtml,
                 recipients: recipientEmails,
-                attachment: attachment || undefined,
+                attachments: attachments.length ? attachments : undefined,
             });
             setResult(data);
             setStep('done');
@@ -153,24 +159,28 @@ function ComposeModal({ items, selected, onClose }) {
                                     className="w-full bg-white border border-[#E5E7EB] text-[#374151] text-sm px-4 py-3 rounded-xl outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/10 transition-colors placeholder:text-[#9CA3AF] resize-none font-mono leading-relaxed" />
                             </div>
 
-                            {/* Pièce jointe */}
+                            {/* Pièces jointes */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#374151] uppercase tracking-wider mb-2">Pièce jointe (optionnel)</label>
-                                {attachment ? (
-                                    <div className="flex items-center gap-3 bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-4 py-3">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                                        <span className="text-sm text-[#374151] flex-1 truncate">{attachment.filename}</span>
-                                        <button type="button" onClick={() => setAttachment(null)} className="text-[#9CA3AF] hover:text-[#DC2626] transition-colors">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                        </button>
-                                    </div>
-                                ) : (
+                                <label className="block text-xs font-semibold text-[#374151] uppercase tracking-wider mb-2">
+                                    Pièces jointes (optionnel)
+                                    {attachments.length > 0 && <span className="ml-2 text-[#C9A84C]">{attachments.length} fichier{attachments.length > 1 ? 's' : ''}</span>}
+                                </label>
+                                <div className="space-y-2">
+                                    {attachments.map((att, idx) => (
+                                        <div key={idx} className="flex items-center gap-3 bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-4 py-2.5">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                                            <span className="text-sm text-[#374151] flex-1 truncate">{att.filename}</span>
+                                            <button type="button" onClick={() => removeAttachment(idx)} className="text-[#9CA3AF] hover:text-[#DC2626] transition-colors flex-shrink-0">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        </div>
+                                    ))}
                                     <label className="flex items-center gap-3 cursor-pointer bg-[#F9FAFB] border border-dashed border-[#D1D5DB] hover:border-[#C9A84C] rounded-xl px-4 py-3 transition-colors">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                                        <span className="text-sm text-[#9CA3AF]">Joindre un PDF ou une image (max 5 Mo)</span>
-                                        <input type="file" accept=".pdf,image/*" className="hidden" onChange={handleFile} />
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        <span className="text-sm text-[#9CA3AF]">Ajouter un PDF ou une image (max 5 Mo chacun)</span>
+                                        <input type="file" accept=".pdf,image/*" multiple className="hidden" onChange={handleFile} />
                                     </label>
-                                )}
+                                </div>
                             </div>
 
                             {error && (

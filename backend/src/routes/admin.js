@@ -682,15 +682,17 @@ router.delete('/newsletters/:id', async (req, res) => {
 
 // POST /api/admin/newsletter/send-campaign — envoyer une campagne
 router.post('/newsletter/send-campaign', async (req, res) => {
-    const { subject, html_body, recipients, attachment } = req.body;
+    const { subject, html_body, recipients, attachments: rawAttachments } = req.body;
     if (!subject || !html_body || !Array.isArray(recipients) || recipients.length === 0)
         return res.status(422).json({ message: 'Sujet, contenu et destinataires requis.' });
 
-    const attachments = attachment?.content ? [{
-        filename:    attachment.filename,
-        content:     Buffer.from(attachment.content, 'base64'),
-        contentType: attachment.contentType,
-    }] : [];
+    const attachments = Array.isArray(rawAttachments)
+        ? rawAttachments.filter(a => a?.content).map(a => ({
+            filename:    a.filename,
+            content:     Buffer.from(a.content, 'base64'),
+            contentType: a.contentType,
+          }))
+        : [];
 
     let sent = 0, failed = 0;
     for (const email of recipients) {

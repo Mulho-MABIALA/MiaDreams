@@ -656,10 +656,10 @@ const { sendEmail } = (() => {
             auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
         });
     }
-    async function sendEmail({ to, subject, html }) {
+    async function sendEmail({ to, subject, html, attachments = [] }) {
         const t = getTransporter();
         if (!t) throw new Error('Email non configuré (MAIL_USER/MAIL_PASS manquants)');
-        await t.sendMail({ from: `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`, to, subject, html });
+        await t.sendMail({ from: `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`, to, subject, html, attachments });
     }
     return { sendEmail };
 })();
@@ -682,14 +682,20 @@ router.delete('/newsletters/:id', async (req, res) => {
 
 // POST /api/admin/newsletter/send-campaign — envoyer une campagne
 router.post('/newsletter/send-campaign', async (req, res) => {
-    const { subject, html_body, recipients } = req.body;
+    const { subject, html_body, recipients, attachment } = req.body;
     if (!subject || !html_body || !Array.isArray(recipients) || recipients.length === 0)
         return res.status(422).json({ message: 'Sujet, contenu et destinataires requis.' });
+
+    const attachments = attachment?.content ? [{
+        filename:    attachment.filename,
+        content:     Buffer.from(attachment.content, 'base64'),
+        contentType: attachment.contentType,
+    }] : [];
 
     let sent = 0, failed = 0;
     for (const email of recipients) {
         try {
-            await sendEmail({ to: email, subject, html: html_body });
+            await sendEmail({ to: email, subject, html: html_body, attachments });
             sent++;
         } catch {
             failed++;

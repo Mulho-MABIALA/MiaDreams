@@ -1,3 +1,1 @@
-/api/*      https://miadreams-l9z0.onrender.com/api/:splat      200
-/uploads/*  https://miadreams-l9z0.onrender.com/uploads/:splat  200
-/*          /index.html                                          200
+/*          https://mia-dreams.com/:splat                       301!

@@ -16,7 +16,7 @@ const inp = inputCls;
 
 // ─── Ticket thermique (impression rapide) ─────────────────────────────────────
 function printReceipt(order, remiseMt) {
-    const LOGO    = 'https://miadreams.netlify.app/img/logo_MIA.png';
+    const LOGO    = 'https://mia-dreams.com/img/logo_MIA.png';
     const modeLbl = MODES.find(m => m.value === order.payment_method)?.label || order.payment_method;
     const now     = new Date();
     const dateStr = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -235,7 +235,7 @@ function printReceipt(order, remiseMt) {
 }
 
 // ─── URL de la facture ────────────────────────────────────────────────────────
-const SITE_URL = 'https://miadreams.netlify.app';
+const SITE_URL = 'https://mia-dreams.com';
 function invoiceUrl(order) {
     return `${SITE_URL}/api/invoices/order/${order._id}`;
 }

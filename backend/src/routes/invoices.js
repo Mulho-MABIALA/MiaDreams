@@ -10,7 +10,7 @@ const fmtDate = (d) => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit',
 const payLabel = { especes: 'Espèces', wave: 'Wave', orange_money: 'Orange Money', cash: 'Espèces' };
 
 // ── HTML Invoice template ─────────────────────────────────────────────────────
-const LOGO_URL = 'https://miadreams.netlify.app/img/logo_MIA.png';
+const LOGO_URL = 'https://mia-dreams.com/img/logo_MIA.png';
 
 function buildInvoiceHTML(order) {
     const subtotal    = order.subtotal ?? order.total;
@@ -424,7 +424,7 @@ router.get('/:token', async (req, res) => {
   <div class="icon">🧾</div>
   <h2>${title}</h2>
   <p>${msg}</p>
-  <a href="https://miadreams.netlify.app">Retour à la boutique</a>
+  <a href="https://mia-dreams.com">Retour à la boutique</a>
 </div></body></html>`;
 
     try {

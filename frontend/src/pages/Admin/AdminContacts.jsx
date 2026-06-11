@@ -19,6 +19,11 @@ export default function AdminContacts() {
     const [items, setItems]       = useState([]);
     const [selected, setSelected] = useState(null);
     const [filter, setFilter]     = useState('all');
+    const [showReply, setShowReply] = useState(false);
+    const [replySubject, setReplySubject] = useState('');
+    const [replyBody,    setReplyBody]    = useState('');
+    const [replySending, setReplySending] = useState(false);
+    const [replyStatus,  setReplyStatus]  = useState(null); // 'ok' | 'error' | null
 
     const load = () => axios.get('/api/admin/contacts').then(r => setItems(r.data)).catch(() => {});
     useEffect(() => { load(); }, []);
@@ -45,6 +50,28 @@ export default function AdminContacts() {
     const unread   = items.filter(i => !i.is_read).length;
     const filtered = filter === 'unread' ? items.filter(i => !i.is_read) : items;
 
+    const openReply = (item) => {
+        setReplySubject(`Re: ${item.subject || 'Votre message'} — MIA DREAMS & CO`);
+        setReplyBody(`Bonjour ${item.name},\n\n`);
+        setReplyStatus(null);
+        setShowReply(true);
+    };
+
+    const sendReply = async () => {
+        if (!replySubject.trim() || !replyBody.trim()) return;
+        setReplySending(true);
+        setReplyStatus(null);
+        try {
+            await axios.post(`/api/admin/contacts/${selected._id}/reply`, { subject: replySubject, body: replyBody });
+            setReplyStatus('ok');
+            setTimeout(() => setShowReply(false), 1500);
+        } catch {
+            setReplyStatus('error');
+        } finally {
+            setReplySending(false);
+        }
+    };
+
     const buildWa = (item) => {
         const raw = (item.phone || '').replace(/\D/g, '');
         if (!raw) return null;
@@ -59,6 +86,7 @@ export default function AdminContacts() {
     };
 
     return (
+        <>
         <div className="flex flex-col h-full">
             {/* Header */}
             <div className="flex items-start justify-between mb-6">
@@ -185,13 +213,13 @@ export default function AdminContacts() {
                         <div className="px-6 py-4 border-t border-[#E5E7EB] bg-[#F9FAFB]">
                             <p className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3">Répondre via</p>
                             <div className="flex gap-2 flex-wrap">
-                                {/* Email */}
-                                <a href={buildMail(selected)}
+                                {/* Email — ouvre le modal de réponse */}
+                                <button onClick={() => openReply(selected)}
                                     className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-opacity hover:opacity-90 shadow-sm"
                                     style={{ background: GOLD, color: '#fff' }}>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                     Répondre par email
-                                </a>
+                                </button>
 
                                 {/* WhatsApp */}
                                 {buildWa(selected) && (
@@ -226,5 +254,86 @@ export default function AdminContacts() {
                 )}
             </div>
         </div>
+
+        {/* ══ MODAL RÉPONSE EMAIL ══ */}
+        {showReply && selected && (
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
+                 onClick={e => { if (e.target === e.currentTarget) setShowReply(false); }}>
+                <div style={{ width: '100%', maxWidth: '580px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.25)', background: '#fff' }}>
+
+                    {/* Header */}
+                    <div style={{ background: 'linear-gradient(135deg,#1a0f07,#2D1B0E,#4A2C18)', padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                            <p style={{ margin: 0, fontSize: '9px', letterSpacing: '4px', color: 'rgba(201,168,76,.55)', textTransform: 'uppercase' }}>Nouvelle réponse</p>
+                            <h2 style={{ margin: '4px 0 0', fontSize: '16px', fontWeight: 700, color: '#C9A84C' }}>À : {selected.name}</h2>
+                            <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.4)' }}>{selected.email}</p>
+                        </div>
+                        <button onClick={() => setShowReply(false)} style={{ background: 'rgba(255,255,255,.08)', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'rgba(255,255,255,.5)', fontSize: '18px', lineHeight: 1 }}>×</button>
+                    </div>
+
+                    {/* Message original */}
+                    <div style={{ background: '#FFFBF5', borderBottom: '1px solid #F0E8D8', padding: '12px 28px' }}>
+                        <p style={{ margin: 0, fontSize: '11px', color: '#9E8272', fontStyle: 'italic' }}>
+                            💬 "{selected.message?.slice(0, 120)}{selected.message?.length > 120 ? '…' : ''}"
+                        </p>
+                    </div>
+
+                    {/* Formulaire */}
+                    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+                        {/* Sujet */}
+                        <div>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Sujet</label>
+                            <input value={replySubject} onChange={e => setReplySubject(e.target.value)}
+                                style={{ width: '100%', border: '1px solid #E5E7EB', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#1E110A', outline: 'none', boxSizing: 'border-box' }} />
+                        </div>
+
+                        {/* Corps */}
+                        <div>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Message</label>
+                            <textarea value={replyBody} onChange={e => setReplyBody(e.target.value)} rows={8}
+                                placeholder="Écrivez votre réponse ici…"
+                                style={{ width: '100%', border: '1px solid #E5E7EB', borderRadius: '8px', padding: '12px 14px', fontSize: '14px', color: '#1E110A', outline: 'none', resize: 'vertical', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'inherit' }} />
+                        </div>
+
+                        {/* Feedback */}
+                        {replyStatus === 'ok' && (
+                            <div style={{ background: '#DCFCE7', border: '1px solid #86EFAC', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#15803D', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                ✅ Email envoyé avec succès !
+                            </div>
+                        )}
+                        {replyStatus === 'error' && (
+                            <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#DC2626', fontWeight: 600 }}>
+                                ❌ Erreur lors de l'envoi. Vérifiez la configuration SMTP.
+                            </div>
+                        )}
+
+                        {/* Actions */}
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button onClick={() => setShowReply(false)}
+                                style={{ flex: 1, padding: '11px', border: '1px solid #E5E7EB', borderRadius: '10px', background: '#fff', color: '#6B7280', fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
+                                Annuler
+                            </button>
+                            <button onClick={sendReply} disabled={replySending || !replyBody.trim()}
+                                style={{ flex: 2, padding: '11px', border: 'none', borderRadius: '10px', background: replySending ? '#9E8272' : GOLD, color: '#fff', fontSize: '13px', cursor: replySending ? 'not-allowed' : 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'background .2s', opacity: !replyBody.trim() ? 0.6 : 1 }}>
+                                {replySending ? (
+                                    <>
+                                        <svg style={{ animation: 'spin 1s linear infinite' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity=".25"/><path d="M12 2a10 10 0 0 1 10 10" strokeOpacity=".75"/></svg>
+                                        Envoi en cours…
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                        Envoyer la réponse
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </>
     );
 }

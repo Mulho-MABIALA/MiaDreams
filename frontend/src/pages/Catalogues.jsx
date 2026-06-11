@@ -49,6 +49,8 @@ export default function Catalogues() {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+        // envoie aussi le catalogue par email (sans bloquer)
+        axios.post(`/api/catalogues/${gate._id}/send-email`, { email: email.trim() }).catch(() => {});
         setTimeout(closeGate, 1800);
     };
 
@@ -145,7 +147,7 @@ export default function Catalogues() {
                                         </svg>
                                     </div>
                                     <p className="font-glacial text-sm text-white/70 tracking-[1px]">Téléchargement en cours…</p>
-                                    <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">Merci pour votre inscription !</p>
+                                    <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">Le catalogue vous a aussi été envoyé par email !</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit}>

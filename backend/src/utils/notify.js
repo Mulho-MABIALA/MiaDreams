@@ -41,7 +41,7 @@ async function sendWhatsApp(message) {
 }
 
 // ── Email HTML ────────────────────────────────────────────────────────────────
-async function sendEmail({ to, subject, html }) {
+async function sendEmail({ to, subject, html, attachments }) {
     const transporter = getTransporter();
     if (!transporter) return;
     try {
@@ -50,6 +50,7 @@ async function sendEmail({ to, subject, html }) {
             to,
             subject,
             html,
+            ...(attachments ? { attachments } : {}),
         });
         console.log(`✅ Email envoyé à ${to}`);
     } catch (e) {
@@ -337,4 +338,4 @@ async function notifyStatusUpdate(order) {
     });
 }
 
-module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate };
+module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, sendEmail };

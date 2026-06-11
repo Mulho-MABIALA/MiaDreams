@@ -424,7 +424,7 @@ body {
     border: none; border-bottom: 1px solid rgba(255,255,255,.22);
     color: #fff;
     font-family: 'GlacialIndifference', sans-serif;
-    font-size: .875rem; letter-spacing: .05em;
+    font-size: 1rem; letter-spacing: .05em;
     padding: .875rem 0;
     outline: none;
     transition: border-color .3s ease;

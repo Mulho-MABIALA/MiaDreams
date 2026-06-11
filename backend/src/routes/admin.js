@@ -644,4 +644,58 @@ router.post('/inscriptions', async (req, res) => {
     } catch (e) { res.status(400).json({ message: e.message }); }
 });
 
+// ── Newsletter admin ──────────────────────────────────────────────────────────
+const { sendEmail } = (() => {
+    const nodemailer = require('nodemailer');
+    function getTransporter() {
+        if (!process.env.MAIL_USER || !process.env.MAIL_PASS) return null;
+        return nodemailer.createTransport({
+            host: process.env.MAIL_HOST || 'smtp.gmail.com',
+            port: Number(process.env.MAIL_PORT) || 587,
+            secure: false,
+            auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+        });
+    }
+    async function sendEmail({ to, subject, html }) {
+        const t = getTransporter();
+        if (!t) throw new Error('Email non configuré (MAIL_USER/MAIL_PASS manquants)');
+        await t.sendMail({ from: `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`, to, subject, html });
+    }
+    return { sendEmail };
+})();
+
+// GET /api/admin/newsletters — liste des abonnés
+router.get('/newsletters', async (req, res) => {
+    try {
+        const list = await Newsletter.find().sort({ createdAt: -1 });
+        res.json(list);
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+// DELETE /api/admin/newsletters/:id — supprimer un abonné
+router.delete('/newsletters/:id', async (req, res) => {
+    try {
+        await Newsletter.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+// POST /api/admin/newsletter/send-campaign — envoyer une campagne
+router.post('/newsletter/send-campaign', async (req, res) => {
+    const { subject, html_body, recipients } = req.body;
+    if (!subject || !html_body || !Array.isArray(recipients) || recipients.length === 0)
+        return res.status(422).json({ message: 'Sujet, contenu et destinataires requis.' });
+
+    let sent = 0, failed = 0;
+    for (const email of recipients) {
+        try {
+            await sendEmail({ to: email, subject, html: html_body });
+            sent++;
+        } catch {
+            failed++;
+        }
+    }
+    res.json({ sent, failed, total: recipients.length });
+});
+
 module.exports = router;

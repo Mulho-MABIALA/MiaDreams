@@ -9,6 +9,7 @@ export default function Catalogues() {
     const [email, setEmail]             = useState('');
     const [status, setStatus]           = useState('idle'); // idle | loading | done | error
     const [errorMsg, setErrorMsg]       = useState('');
+    const [emailSent, setEmailSent]     = useState(false);
     const inputRef                      = useRef(null);
 
     useEffect(() => {
@@ -23,35 +24,49 @@ export default function Catalogues() {
         setTimeout(() => inputRef.current?.focus(), 80);
     };
 
-    const closeGate = () => { setGate(null); setStatus('idle'); };
+    const closeGate = () => { setGate(null); setStatus('idle'); setEmailSent(false); };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!email.trim()) return;
         setStatus('loading');
         setErrorMsg('');
+
+        // Inscription newsletter — on tolère l'erreur "déjà inscrit"
         try {
             await axios.post('/api/newsletter', { email: email.trim() });
         } catch (err) {
-            const msg = err.response?.data?.message || '';
-            // email déjà inscrit → on laisse télécharger quand même
-            if (!msg.toLowerCase().includes('déjà') && !msg.toLowerCase().includes('exist')) {
-                setErrorMsg(msg || 'Une erreur est survenue.');
+            const msg = (
+                err.response?.data?.message ||
+                err.response?.data?.errors?.email ||
+                ''
+            ).toLowerCase();
+            const isAlreadySubscribed = msg.includes('déjà') || msg.includes('exist') || msg.includes('inscrit');
+            if (!isAlreadySubscribed) {
+                setErrorMsg(err.response?.data?.message || err.response?.data?.errors?.email || 'Une erreur est survenue.');
                 setStatus('error');
                 return;
             }
         }
-        setStatus('done');
-        // déclenche le téléchargement via un lien temporaire
+
+        // Déclenche le téléchargement direct
         const a = document.createElement('a');
         a.href = `/api/catalogues/${gate._id}/download`;
         a.download = `${gate.name}.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        // envoie aussi le catalogue par email (sans bloquer)
-        axios.post(`/api/catalogues/${gate._id}/send-email`, { email: email.trim() }).catch(() => {});
-        setTimeout(closeGate, 1800);
+
+        // Envoie le catalogue par email et attend le résultat
+        setStatus('done');
+        try {
+            await axios.post(`/api/catalogues/${gate._id}/send-email`, { email: email.trim() });
+            setEmailSent(true);
+        } catch (_) {
+            setEmailSent(false);
+        }
+
+        setTimeout(closeGate, 3000);
     };
 
     return (
@@ -147,7 +162,16 @@ export default function Catalogues() {
                                         </svg>
                                     </div>
                                     <p className="font-glacial text-sm text-white/70 tracking-[1px]">Téléchargement en cours…</p>
-                                    <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">Le catalogue vous a aussi été envoyé par email !</p>
+                                    {emailSent ? (
+                                        <div className="mt-3 flex items-center justify-center gap-2 bg-gold/10 border border-gold/20 rounded px-4 py-2">
+                                            <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                            <p className="font-glacial text-xs text-gold tracking-[0.5px]">Catalogue envoyé dans votre boîte mail !</p>
+                                        </div>
+                                    ) : (
+                                        <p className="font-glacial text-xs text-white/30 mt-2 tracking-[0.5px]">Envoi email en cours…</p>
+                                    )}
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit}>

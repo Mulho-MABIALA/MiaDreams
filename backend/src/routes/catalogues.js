@@ -106,6 +106,11 @@ router.post('/:id/send-email', async (req, res) => {
   </div>
 </div></body></html>`;
 
+        // Vérifie que le SMTP est configuré avant d'essayer
+        if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
+            return res.status(503).json({ message: 'Email SMTP non configuré sur le serveur. Ajoutez MAIL_USER et MAIL_PASS dans les variables d\'environnement Render.' });
+        }
+
         // Envoie l'email avec le PDF en pièce jointe
         await sendEmail({
             to:          email,

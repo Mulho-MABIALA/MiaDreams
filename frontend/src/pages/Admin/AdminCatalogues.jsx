@@ -17,7 +17,7 @@ function StatsPanel() {
     useEffect(() => {
         axios.get('/api/admin/catalogues-downloads')
             .then(r => setData(r.data))
-            .catch(() => {});
+            .catch(() => setData({ downloads: [], catalogues: [] }));
     }, []);
 
     if (!data) return (

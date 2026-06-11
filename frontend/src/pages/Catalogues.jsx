@@ -5,11 +5,10 @@ import { imgSrc } from '../utils/imgSrc';
 
 export default function Catalogues() {
     const [catalogues, setCatalogues]   = useState([]);
-    const [gate, setGate]               = useState(null);   // catalogue en attente de download
+    const [gate, setGate]               = useState(null);
     const [email, setEmail]             = useState('');
     const [status, setStatus]           = useState('idle'); // idle | loading | done | error
     const [errorMsg, setErrorMsg]       = useState('');
-    const [emailSent, setEmailSent]     = useState(false);
     const inputRef                      = useRef(null);
 
     useEffect(() => {
@@ -24,7 +23,7 @@ export default function Catalogues() {
         setTimeout(() => inputRef.current?.focus(), 80);
     };
 
-    const closeGate = () => { setGate(null); setStatus('idle'); setEmailSent(false); };
+    const closeGate = () => { setGate(null); setStatus('idle'); };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -49,7 +48,10 @@ export default function Catalogues() {
             }
         }
 
-        // Déclenche le téléchargement direct
+        // Enregistre le téléchargement (sans email)
+        axios.post(`/api/catalogues/${gate._id}/record`, { email: email.trim() }).catch(() => {});
+
+        // Déclenche le téléchargement
         const a = document.createElement('a');
         a.href = `/api/catalogues/${gate._id}/download`;
         a.download = `${gate.name}.pdf`;
@@ -57,16 +59,8 @@ export default function Catalogues() {
         a.click();
         document.body.removeChild(a);
 
-        // Envoie le catalogue par email et attend le résultat
         setStatus('done');
-        try {
-            await axios.post(`/api/catalogues/${gate._id}/send-email`, { email: email.trim() });
-            setEmailSent(true);
-        } catch (_) {
-            setEmailSent(false);
-        }
-
-        setTimeout(closeGate, 3000);
+        setTimeout(closeGate, 1800);
     };
 
     return (
@@ -162,16 +156,7 @@ export default function Catalogues() {
                                         </svg>
                                     </div>
                                     <p className="font-glacial text-sm text-white/70 tracking-[1px]">Téléchargement en cours…</p>
-                                    {emailSent ? (
-                                        <div className="mt-3 flex items-center justify-center gap-2 bg-gold/10 border border-gold/20 rounded px-4 py-2">
-                                            <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                            </svg>
-                                            <p className="font-glacial text-xs text-gold tracking-[0.5px]">Catalogue envoyé dans votre boîte mail !</p>
-                                        </div>
-                                    ) : (
-                                        <p className="font-glacial text-xs text-white/30 mt-2 tracking-[0.5px]">Envoi email en cours…</p>
-                                    )}
+                                    <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">Merci pour votre inscription !</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit}>

@@ -69,9 +69,10 @@ app.use('/api/', apiLimiter);
 
 // Capture le corps brut pour vérification de signature webhook (Wave)
 app.use(express.json({
+    limit: '25mb',
     verify: (req, res, buf) => { req.rawBody = buf; }
 }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // Health check en premier — Render pingue cette URL pour savoir si le service est up
 app.get('/api/health', (req, res) => {

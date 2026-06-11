@@ -66,6 +66,7 @@ function ComposeModal({ items, selected, onClose }) {
             const { data } = await axios.post('/api/admin/newsletter/send-campaign', {
                 subject,
                 html_body: finalHtml,
+                body_text: body,
                 recipients: recipientEmails,
                 attachments: attachments.length ? attachments : undefined,
             });
@@ -364,6 +365,9 @@ export default function AdminNewsletter() {
     const [addError,   setAddError]   = useState('');
     const [copied,     setCopied]     = useState('');
     const [compose,    setCompose]    = useState(false);
+    const [tab,        setTab]        = useState('subscribers'); // subscribers | history
+    const [campaigns,  setCampaigns]  = useState([]);
+    const [campLoading,setCampLoading]= useState(false);
 
     const load = () => {
         setLoading(true);
@@ -371,7 +375,14 @@ export default function AdminNewsletter() {
             .then(r => { setItems(r.data); setLoading(false); })
             .catch(() => setLoading(false));
     };
+    const loadCampaigns = () => {
+        setCampLoading(true);
+        axios.get('/api/admin/newsletter/campaigns')
+            .then(r => { setCampaigns(r.data); setCampLoading(false); })
+            .catch(() => setCampLoading(false));
+    };
     useEffect(() => { load(); }, []);
+    useEffect(() => { if (tab === 'history') loadCampaigns(); }, [tab]);
 
     const stats = useMemo(() => {
         const now   = new Date();
@@ -457,6 +468,16 @@ export default function AdminNewsletter() {
         </div>
     );
 
+    const fmtDatetime = (iso) => iso
+        ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : '—';
+
+    const handleDeleteCampaign = async (id) => {
+        if (!confirm('Supprimer cette campagne de l\'historique ?')) return;
+        await axios.delete(`/api/admin/newsletter/campaigns/${id}`).catch(() => {});
+        setCampaigns(p => p.filter(c => c._id !== id));
+    };
+
     return (
         <div>
             {/* Header */}
@@ -506,6 +527,73 @@ export default function AdminNewsletter() {
                 <StatCard label="Cette semaine"  value={stats.thisWeek}  sub="7 derniers jours"  color="#3B82F6" />
             </div>
 
+            {/* Onglets */}
+            <div className="flex gap-1 mb-6 bg-[#F3F4F6] p-1 rounded-xl w-fit">
+                <button onClick={() => setTab('subscribers')}
+                    className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'subscribers' ? 'bg-white text-[#111827] shadow-sm' : 'text-[#6B7280] hover:text-[#374151]'}`}>
+                    Abonnés
+                </button>
+                <button onClick={() => setTab('history')}
+                    className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'history' ? 'bg-white text-[#111827] shadow-sm' : 'text-[#6B7280] hover:text-[#374151]'}`}>
+                    Historique
+                    {campaigns.length > 0 && <span className="ml-2 text-xs font-bold px-1.5 py-0.5 rounded-md bg-[#C9A84C]/15 text-[#C9A84C]">{campaigns.length}</span>}
+                </button>
+            </div>
+
+            {/* ── HISTORIQUE ── */}
+            {tab === 'history' && (
+                <div>
+                    {campLoading ? (
+                        <div className="flex items-center justify-center py-16">
+                            <svg className="animate-spin w-6 h-6 text-[#C9A84C]" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"/>
+                            </svg>
+                        </div>
+                    ) : campaigns.length === 0 ? (
+                        <div className="bg-white rounded-xl border border-[#E5E7EB] py-16 text-center">
+                            <div className="w-12 h-12 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] flex items-center justify-center mx-auto mb-3">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </div>
+                            <p className="text-sm text-[#6B7280]">Aucun email envoyé pour l'instant</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {campaigns.map(c => (
+                                <div key={c._id} className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm px-5 py-4">
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                                                <p className="text-sm font-semibold text-[#111827] truncate">{c.subject}</p>
+                                                <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">{c.sent} envoyé{c.sent > 1 ? 's' : ''}</span>
+                                                {c.failed > 0 && <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">{c.failed} échoué{c.failed > 1 ? 's' : ''}</span>}
+                                            </div>
+                                            <p className="text-xs text-[#9CA3AF] mb-2">{fmtDatetime(c.sentAt)} · {c.recipients?.length || 0} destinataire{(c.recipients?.length || 0) > 1 ? 's' : ''}</p>
+                                            {c.body_text && <p className="text-xs text-[#6B7280] line-clamp-2 leading-relaxed">{c.body_text}</p>}
+                                            {c.attachments?.length > 0 && (
+                                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                                    {c.attachments.map((a, i) => (
+                                                        <span key={i} className="flex items-center gap-1 text-xs text-[#C9A84C] bg-[#FDF8EC] border border-[#C9A84C]/20 px-2 py-0.5 rounded-full">
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                                                            {a.filename}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button onClick={() => handleDeleteCampaign(c._id)}
+                                            className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {tab === 'subscribers' && <>
             {/* Barre de recherche + actions masse */}
             <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className="relative flex-1 min-w-[200px]">
@@ -647,9 +735,11 @@ export default function AdminNewsletter() {
                 )}
             </div>
 
+            </> /* fin tab subscribers */}
+
             {/* Modal composeur */}
             {compose && (
-                <ComposeModal items={items} selected={selected} onClose={() => setCompose(false)} />
+                <ComposeModal items={items} selected={selected} onClose={() => { setCompose(false); if (tab === 'history') loadCampaigns(); }} />
             )}
 
             {/* Modal ajouter */}

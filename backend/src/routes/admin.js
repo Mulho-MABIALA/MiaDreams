@@ -645,6 +645,7 @@ router.post('/inscriptions', async (req, res) => {
 });
 
 // ── Newsletter admin ──────────────────────────────────────────────────────────
+const NewsletterCampaign = require('../models/NewsletterCampaign');
 const { sendEmail } = (() => {
     const nodemailer = require('nodemailer');
     function getTransporter() {
@@ -703,7 +704,34 @@ router.post('/newsletter/send-campaign', async (req, res) => {
             failed++;
         }
     }
+
+    // Sauvegarder dans l'historique
+    await NewsletterCampaign.create({
+        subject,
+        body_text: req.body.body_text || '',
+        recipients,
+        sent,
+        failed,
+        attachments: (rawAttachments || []).map(a => ({ filename: a.filename, contentType: a.contentType })),
+    }).catch(() => {});
+
     res.json({ sent, failed, total: recipients.length });
+});
+
+// GET /api/admin/newsletter/campaigns — historique des campagnes
+router.get('/newsletter/campaigns', async (req, res) => {
+    try {
+        const campaigns = await NewsletterCampaign.find().sort({ sentAt: -1 }).limit(100);
+        res.json(campaigns);
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+// DELETE /api/admin/newsletter/campaigns/:id — supprimer une campagne de l'historique
+router.delete('/newsletter/campaigns/:id', async (req, res) => {
+    try {
+        await NewsletterCampaign.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
 module.exports = router;

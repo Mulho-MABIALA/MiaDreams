@@ -225,81 +225,100 @@ export default function AdminInscriptions() {
             ══════════════════════════════════════════════════════════ */}
             {showFiche && (
                 <ModalOverlay onClose={() => setShowFiche(null)}>
-                    <div style={{ width: '100%', maxWidth: '520px' }}>
-                        {/* Header */}
-                        <div style={{ background: 'linear-gradient(135deg,#1a0f07,#2D1B0E,#4A2C18)', borderRadius: '12px 12px 0 0', padding: '24px 28px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <Avatar nom={showFiche.nom} />
-                            <div style={{ flex: 1 }}>
-                                <p style={{ margin: 0, fontSize: '10px', letterSpacing: '3px', color: 'rgba(201,168,76,.6)', textTransform: 'uppercase' }}>Fiche d'inscription</p>
-                                <h2 style={{ margin: '4px 0 0', fontSize: '18px', fontWeight: 700, color: '#C9A84C' }}>{showFiche.nom}</h2>
+                    <div style={{ width: '100%', maxWidth: '560px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.25)' }}>
+
+                        {/* ── Header doré ── */}
+                        <div style={{ background: 'linear-gradient(135deg,#1a0f07 0%,#2D1B0E 55%,#4A2C18 100%)', padding: '28px 32px' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
+                                <p style={{ margin: 0, fontSize: '9px', letterSpacing: '4px', color: 'rgba(201,168,76,.55)', textTransform: 'uppercase' }}>MIA DREAMS & CO · Fiche d'inscription</p>
+                                <button onClick={() => setShowFiche(null)} style={{ background: 'rgba(255,255,255,.08)', border: 'none', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'rgba(255,255,255,.5)', fontSize: '16px', lineHeight: 1, flexShrink: 0 }}>×</button>
                             </div>
-                            <StatusBadge status={showFiche.status} />
-                            <button onClick={() => setShowFiche(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,.4)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, marginLeft: '4px' }}>×</button>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                {/* Grand avatar */}
+                                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#C9A84C,#E0BC6A)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 700, color: '#1E110A', flexShrink: 0, boxShadow: '0 0 0 3px rgba(201,168,76,.25)' }}>
+                                    {(showFiche.nom || '?').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#fff', letterSpacing: '.5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{showFiche.nom}</h2>
+                                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'rgba(255,255,255,.45)' }}>{showFiche.email}</p>
+                                </div>
+                                <StatusBadge status={showFiche.status} />
+                            </div>
                         </div>
 
-                        {/* Corps */}
-                        <div style={{ background: '#fff', padding: '28px', borderRadius: '0 0 12px 12px' }}>
-                            {/* Infos */}
-                            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+                        {/* ── Corps ── */}
+                        <div style={{ background: '#fff' }}>
+
+                            {/* Infos en grille */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, borderBottom: '1px solid #F3F4F6' }}>
                                 {[
-                                    ['Programme', showFiche.programme?.name || '—'],
-                                    ['Email',     showFiche.email],
-                                    ['Téléphone', showFiche.telephone || '—'],
-                                    ['Date',      new Date(showFiche.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })],
-                                ].map(([k, v]) => (
-                                    <tr key={k} style={{ borderBottom: '1px solid #F0E8D8' }}>
-                                        <td style={{ padding: '10px 0', fontSize: '11px', color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px', width: '120px' }}>{k}</td>
-                                        <td style={{ padding: '10px 0', fontSize: '14px', color: '#1E110A', fontWeight: 500 }}>{v}</td>
-                                    </tr>
+                                    ['📚 Programme', showFiche.programme?.name || '—'],
+                                    ['📱 Téléphone', showFiche.telephone || '—'],
+                                    ['📅 Date d\'inscription', new Date(showFiche.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })],
+                                    ['📧 Email', showFiche.email],
+                                ].map(([k, v], i) => (
+                                    <div key={k} style={{ padding: '16px 24px', borderRight: i % 2 === 0 ? '1px solid #F3F4F6' : 'none', borderBottom: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
+                                        <p style={{ margin: '0 0 4px', fontSize: '10px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>{k}</p>
+                                        <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#1E110A', wordBreak: 'break-all' }}>{v}</p>
+                                    </div>
                                 ))}
-                            </table>
+                            </div>
 
                             {/* Message motivation */}
                             {showFiche.message && (
-                                <div style={{ background: '#FDF8F2', borderLeft: '3px solid #C9A84C', padding: '14px 16px', borderRadius: '0 8px 8px 0', marginBottom: '20px' }}>
-                                    <p style={{ margin: '0 0 4px', fontSize: '11px', color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>Message de motivation</p>
-                                    <p style={{ margin: 0, fontSize: '13px', color: '#3D2214', lineHeight: 1.7 }}>{showFiche.message}</p>
+                                <div style={{ margin: '0', padding: '20px 24px', background: '#FFFBF5', borderBottom: '1px solid #F3F4F6' }}>
+                                    <p style={{ margin: '0 0 8px', fontSize: '10px', fontWeight: 600, color: '#C9A84C', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <span style={{ display: 'inline-block', width: 16, height: 2, background: '#C9A84C', borderRadius: 2 }} />
+                                        Message de motivation
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: '14px', color: '#3D2214', lineHeight: 1.75, fontStyle: 'italic' }}>"{showFiche.message}"</p>
                                 </div>
                             )}
 
-                            {/* Changer statut */}
-                            <div style={{ marginBottom: '20px' }}>
-                                <p style={{ margin: '0 0 8px', fontSize: '11px', color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>Changer le statut</p>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    {STATUS_OPTS.map(o => (
-                                        <button key={o.value} onClick={() => changeStatus(showFiche._id, o.value)}
-                                            style={{ flex: 1, padding: '8px 4px', border: showFiche.status === o.value ? `2px solid ${o.color}` : '2px solid #E5E7EB', borderRadius: '8px', background: showFiche.status === o.value ? o.bg : '#fff', color: showFiche.status === o.value ? o.color : '#6B7280', fontSize: '11px', fontWeight: 600, cursor: 'pointer', transition: 'all .15s' }}>
-                                            {o.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                            {/* Envoyer la fiche par email */}
-                            <div style={{ borderTop: '1px solid #F0E8D8', paddingTop: '20px' }}>
-                                <p style={{ margin: '0 0 8px', fontSize: '11px', color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>Envoyer la fiche par email</p>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <input value={ficheEmail} onChange={e => setFicheEmail(e.target.value)}
-                                        placeholder={showFiche.email}
-                                        style={{ flex: 1, border: '1px solid #E5E7EB', borderRadius: '8px', padding: '9px 12px', fontSize: '13px', color: '#1E110A', outline: 'none', background: '#fff' }} />
-                                    <button onClick={() => sendFiche(showFiche)} disabled={sendingFiche}
-                                        style={{ ...btnGold, opacity: sendingFiche ? 0.7 : 1, cursor: sendingFiche ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap', padding: '9px 16px' }}>
-                                        {sendingFiche ? 'Envoi…' : '✉ Envoyer'}
+                                {/* Changer statut */}
+                                <div>
+                                    <p style={{ margin: '0 0 10px', fontSize: '10px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Statut de la candidature</p>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        {STATUS_OPTS.map(o => (
+                                            <button key={o.value} onClick={() => changeStatus(showFiche._id, o.value)}
+                                                style={{ flex: 1, padding: '10px 6px', border: showFiche.status === o.value ? `2px solid ${o.color}` : '1px solid #E5E7EB', borderRadius: '10px', background: showFiche.status === o.value ? o.bg : '#FAFAFA', color: showFiche.status === o.value ? o.color : '#9CA3AF', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all .15s', textTransform: 'uppercase', letterSpacing: '.5px' }}>
+                                                {o.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Envoyer fiche */}
+                                <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '16px' }}>
+                                    <p style={{ margin: '0 0 10px', fontSize: '10px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1.5px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        ✉ Envoyer la fiche par email
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <input value={ficheEmail} onChange={e => setFicheEmail(e.target.value)}
+                                            placeholder={showFiche.email}
+                                            style={{ flex: 1, border: '1px solid #E5E7EB', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#1E110A', outline: 'none', background: '#fff', minWidth: 0 }} />
+                                        <button onClick={() => sendFiche(showFiche)} disabled={sendingFiche}
+                                            style={{ background: sendingFiche ? '#9E8272' : GOLD, color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 18px', fontSize: '13px', fontWeight: 700, cursor: sendingFiche ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap', transition: 'background .2s' }}>
+                                            {sendingFiche ? '…' : 'Envoyer'}
+                                        </button>
+                                    </div>
+                                    <p style={{ margin: '8px 0 0', fontSize: '11px', color: '#9CA3AF' }}>Laisser vide → envoi à <strong>{showFiche.email}</strong></p>
+                                </div>
+
+                                {/* Actions */}
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button onClick={() => { setShowFiche(null); openEdit(showFiche); }}
+                                        style={{ flex: 1, padding: '11px', border: '1px solid #E5E7EB', borderRadius: '10px', background: '#fff', color: '#374151', fontSize: '13px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                        ✏ Modifier
+                                    </button>
+                                    <button onClick={() => del(showFiche._id)}
+                                        style={{ flex: 1, padding: '11px', border: '1px solid #FECACA', borderRadius: '10px', background: '#FEF2F2', color: '#DC2626', fontSize: '13px', cursor: 'pointer', fontWeight: 600 }}>
+                                        Supprimer
                                     </button>
                                 </div>
-                                <p style={{ margin: '6px 0 0', fontSize: '11px', color: '#9CA3AF' }}>Laissez vide pour envoyer à {showFiche.email}</p>
-                            </div>
 
-                            {/* Actions bas */}
-                            <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
-                                <button onClick={() => { setShowFiche(null); openEdit(showFiche); }}
-                                    style={{ flex: 1, padding: '10px', border: '1px solid #E5E7EB', borderRadius: '8px', background: '#fff', color: '#374151', fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
-                                    ✏ Modifier
-                                </button>
-                                <button onClick={() => del(showFiche._id)}
-                                    style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '8px', background: '#FEF2F2', color: '#DC2626', fontSize: '13px', cursor: 'pointer', fontWeight: 600 }}>
-                                    Supprimer
-                                </button>
                             </div>
                         </div>
                     </div>

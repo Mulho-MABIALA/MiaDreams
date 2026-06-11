@@ -619,10 +619,102 @@ router.get('/inscriptions', async (req, res) => {
 
 router.put('/inscriptions/:id', async (req, res) => {
     try {
-        const insc = await Inscription.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
+        const { status, nom, email, telephone, message } = req.body;
+        const update = {};
+        if (status    !== undefined) update.status    = status;
+        if (nom       !== undefined) update.nom       = nom;
+        if (email     !== undefined) update.email     = email;
+        if (telephone !== undefined) update.telephone = telephone;
+        if (message   !== undefined) update.message   = message;
+        const insc = await Inscription.findByIdAndUpdate(req.params.id, update, { new: true })
+            .populate('programme', 'name slug');
         if (!insc) return res.status(404).json({ message: 'Inscription introuvable' });
         res.json(insc);
     } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
+// POST /api/admin/inscriptions/:id/send-fiche — envoie la fiche par email
+router.post('/inscriptions/:id/send-fiche', async (req, res) => {
+    try {
+        if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
+            return res.status(503).json({ message: 'SMTP non configuré.' });
+        }
+        const insc = await Inscription.findById(req.params.id).populate('programme', 'name');
+        if (!insc) return res.status(404).json({ message: 'Inscription introuvable.' });
+
+        const { to } = req.body; // email destinataire (par défaut celui de l'inscrit)
+        const dest = to || insc.email;
+
+        const statusLabel = { 'en attente': '⏳ En attente', 'acceptée': '✅ Acceptée', 'refusée': '❌ Refusée' }[insc.status] || insc.status;
+        const dateStr = new Date(insc.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F0E8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(45,27,14,.10);">
+  <div style="background:linear-gradient(135deg,#1a0f07 0%,#2D1B0E 60%,#4A2C18 100%);padding:36px;text-align:center;">
+    <p style="margin:0 0 6px;font-size:10px;letter-spacing:5px;color:rgba(201,168,76,.6);text-transform:uppercase;">MIA DREAMS & CO</p>
+    <h1 style="margin:0 0 6px;font-size:22px;font-weight:600;color:#C9A84C;letter-spacing:2px;text-transform:uppercase;">Fiche d'inscription</h1>
+    <p style="margin:0;font-size:13px;color:rgba(255,255,255,.4);">${insc.programme?.name || ''}</p>
+  </div>
+  <div style="padding:32px 36px;">
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+      <tr style="border-bottom:1px solid #F0E8D8;">
+        <td style="padding:10px 0;font-size:12px;color:#9E8272;text-transform:uppercase;letter-spacing:1px;width:140px;">Nom complet</td>
+        <td style="padding:10px 0;font-size:14px;font-weight:600;color:#1E110A;">${insc.nom}</td>
+      </tr>
+      <tr style="border-bottom:1px solid #F0E8D8;">
+        <td style="padding:10px 0;font-size:12px;color:#9E8272;text-transform:uppercase;letter-spacing:1px;">Email</td>
+        <td style="padding:10px 0;font-size:14px;color:#1E110A;">${insc.email}</td>
+      </tr>
+      <tr style="border-bottom:1px solid #F0E8D8;">
+        <td style="padding:10px 0;font-size:12px;color:#9E8272;text-transform:uppercase;letter-spacing:1px;">Téléphone</td>
+        <td style="padding:10px 0;font-size:14px;color:#1E110A;">${insc.telephone || '—'}</td>
+      </tr>
+      <tr style="border-bottom:1px solid #F0E8D8;">
+        <td style="padding:10px 0;font-size:12px;color:#9E8272;text-transform:uppercase;letter-spacing:1px;">Programme</td>
+        <td style="padding:10px 0;font-size:14px;color:#1E110A;">${insc.programme?.name || '—'}</td>
+      </tr>
+      <tr style="border-bottom:1px solid #F0E8D8;">
+        <td style="padding:10px 0;font-size:12px;color:#9E8272;text-transform:uppercase;letter-spacing:1px;">Date</td>
+        <td style="padding:10px 0;font-size:14px;color:#1E110A;">${dateStr}</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;font-size:12px;color:#9E8272;text-transform:uppercase;letter-spacing:1px;">Statut</td>
+        <td style="padding:10px 0;font-size:14px;font-weight:600;color:#C9A84C;">${statusLabel}</td>
+      </tr>
+    </table>
+    ${insc.message ? `
+    <div style="background:#FDF8F2;border-left:3px solid #C9A84C;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
+      <p style="margin:0 0 4px;font-size:11px;color:#9E8272;text-transform:uppercase;letter-spacing:1px;">Message de motivation</p>
+      <p style="margin:0;font-size:14px;color:#3D2214;line-height:1.7;">${insc.message}</p>
+    </div>` : ''}
+    <a href="https://mia-dreams.com" style="display:block;text-align:center;background:linear-gradient(135deg,#C9A84C,#E0BC6A);color:#1E110A;font-weight:700;font-size:12px;letter-spacing:3px;text-transform:uppercase;padding:16px 24px;border-radius:8px;text-decoration:none;">
+      VISITER MIA DREAMS →
+    </a>
+  </div>
+  <div style="padding:20px 36px;border-top:1px solid #F0E8D8;text-align:center;">
+    <p style="margin:0;font-size:10px;color:#C8B8A0;">MIA DREAMS & CO · Maison de mode africaine d'excellence</p>
+  </div>
+</div></body></html>`;
+
+        const nodemailer = require('nodemailer');
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST || 'smtp.gmail.com',
+            port: Number(process.env.MAIL_PORT) || 587,
+            secure: false,
+            auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+        });
+        await transporter.sendMail({
+            from:    `"MIA DREAMS & CO" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+            to:      dest,
+            subject: `📋 Fiche d'inscription — ${insc.nom} · ${insc.programme?.name || 'MIA DREAMS'}`,
+            html,
+        });
+        res.json({ success: true, sent_to: dest });
+    } catch (e) {
+        console.error('Erreur send-fiche :', e.message);
+        res.status(500).json({ message: e.message });
+    }
 });
 
 router.delete('/inscriptions/:id', async (req, res) => {

@@ -26,7 +26,7 @@ function ImageGallery({ mainImage, images = [] }) {
             {/* Image principale */}
             <div className="relative overflow-hidden" style={{ background: '#0c0c0c' }}>
                 <img key={active} src={imgSrc(all[active])} alt="Produit"
-                     className="w-full aspect-[4/5] object-cover object-top"
+                     className="w-full aspect-[4/5] object-contain"
                      style={{ animation: 'fadeIn .2s ease' }} />
 
                 {all.length > 1 && (
@@ -57,7 +57,7 @@ function ImageGallery({ mainImage, images = [] }) {
                         <button key={i} onClick={() => setActive(i)}
                             className="flex-shrink-0 w-16 h-20 overflow-hidden transition-all duration-200"
                             style={{ outline: i === active ? `2px solid ${GOLD}` : '2px solid transparent', outlineOffset: '2px', opacity: i === active ? 1 : 0.55 }}>
-                            <img src={imgSrc(img)} className="w-full h-full object-cover object-top" alt="" />
+                            <img src={imgSrc(img)} className="w-full h-full object-contain" alt="" />
                         </button>
                     ))}
                 </div>

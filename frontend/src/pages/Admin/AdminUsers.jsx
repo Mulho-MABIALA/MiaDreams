@@ -5,36 +5,60 @@ import { useConfirm } from '../../components/ConfirmDialog';
 
 const GOLD = '#C9A84C';
 
-// Labels affichés pour chaque module
-const MODULE_LABELS = {
-    pages:        'Pages dynamiques',
-    marques:      'Marques',
-    collections:  'Collections',
-    blog:         'Blog & Podcast',
-    galerie:      'Galerie',
-    catalogues:   'Catalogues',
-    temoignages:  'Témoignages',
-    equipe:       'Équipe',
-    initiatives:  'Initiatives',
-    programmes:   'Formations',
-    inscriptions: 'Inscriptions',
-    produits:     'Produits',
-    commandes:    'Commandes',
-    reservations: 'Réservations',
-    contacts:     'Messages',
-    newsletter:   'Newsletter',
-    pos:          'Point de Vente',
-    caisse:       'Caisse',
-    parametres:   'Paramètres',
+// Labels + icônes pour chaque module
+const MODULE_META = {
+    pages:        { label: 'Pages dynamiques', icon: '📄' },
+    marques:      { label: 'Marques',          icon: '⭐' },
+    collections:  { label: 'Collections',      icon: '🗂️' },
+    blog:         { label: 'Blog & Podcast',   icon: '✍️' },
+    galerie:      { label: 'Galerie',          icon: '🖼️' },
+    catalogues:   { label: 'Catalogues',       icon: '📚' },
+    temoignages:  { label: 'Témoignages',      icon: '💬' },
+    equipe:       { label: 'Équipe',           icon: '👥' },
+    initiatives:  { label: 'Initiatives',      icon: '🌍' },
+    programmes:   { label: 'Formations',       icon: '🎓' },
+    inscriptions: { label: 'Inscriptions',     icon: '📝' },
+    produits:     { label: 'Produits',         icon: '🛍️' },
+    commandes:    { label: 'Commandes',        icon: '🛒' },
+    reservations: { label: 'Réservations',     icon: '📅' },
+    contacts:     { label: 'Messages',         icon: '✉️' },
+    newsletter:   { label: 'Newsletter',       icon: '📬' },
+    pos:          { label: 'Point de Vente',   icon: '🏪' },
+    caisse:       { label: 'Caisse',           icon: '💰' },
+    parametres:   { label: 'Paramètres',       icon: '⚙️' },
 };
+const MODULE_LABELS = Object.fromEntries(Object.entries(MODULE_META).map(([k,v]) => [k, v.label]));
 
 const MODULE_GROUPS = [
-    { label: 'Contenu',      keys: ['pages','marques','collections','blog','galerie','catalogues','temoignages','equipe','initiatives'] },
-    { label: 'Programmes',   keys: ['programmes','inscriptions'] },
-    { label: 'Boutique',     keys: ['produits','commandes'] },
-    { label: 'Finance',      keys: ['pos','caisse'] },
-    { label: 'Clients',      keys: ['reservations','contacts','newsletter'] },
-    { label: 'Configuration',keys: ['parametres'] },
+    {
+        label: 'Principal', color: '#C9A84C',
+        fixed: [{ key: 'dashboard', label: 'Dashboard', icon: '🏠', desc: 'Toujours accessible' }],
+        keys: ['pages'],
+    },
+    {
+        label: 'Contenu', color: '#7C9A84',
+        keys: ['marques','collections','blog','galerie','catalogues','temoignages','equipe','initiatives'],
+    },
+    {
+        label: 'Programmes', color: '#9A7C84',
+        keys: ['programmes','inscriptions'],
+    },
+    {
+        label: 'Boutique', color: '#7C849A',
+        keys: ['produits','commandes'],
+    },
+    {
+        label: 'Finance', color: '#C9A84C',
+        keys: ['pos','caisse'],
+    },
+    {
+        label: 'Clients', color: '#9A847C',
+        keys: ['reservations','contacts','newsletter'],
+    },
+    {
+        label: 'Configuration', color: '#6B7280',
+        keys: ['parametres'],
+    },
 ];
 
 const empty = { name: '', email: '', password: '', role: 'admin', permissions: [], is_active: true };
@@ -312,49 +336,92 @@ export default function AdminUsers() {
                         {/* Permissions — seulement si role = admin */}
                         {form.role === 'admin' && (
                             <Section title="Droits d'accès">
-                                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                                    <button onClick={selectAll} style={{ fontSize: '11px', background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', borderRadius: '6px', padding: '4px 12px', cursor: 'pointer' }}>
-                                        ✓ Tout sélectionner
+                                {/* Barre d'actions */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', padding: '10px 14px', background: '#F9FAFB', borderRadius: '10px', border: '1px solid #F0E8D8' }}>
+                                    <button onClick={selectAll} style={{ fontSize: '11px', fontWeight: 600, background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', borderRadius: '7px', padding: '5px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
+                                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#15803D" strokeWidth="2" strokeLinecap="round"/></svg>
+                                        Tout sélectionner
                                     </button>
-                                    <button onClick={clearAll} style={{ fontSize: '11px', background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', borderRadius: '6px', padding: '4px 12px', cursor: 'pointer' }}>
-                                        ✕ Tout désélectionner
+                                    <button onClick={clearAll} style={{ fontSize: '11px', fontWeight: 600, background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', borderRadius: '7px', padding: '5px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
+                                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><line x1="2" y1="2" x2="10" y2="10" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"/></svg>
+                                        Tout désélectionner
                                     </button>
-                                    <span style={{ fontSize: '11px', color: '#9E8272', marginLeft: 'auto', alignSelf: 'center' }}>
-                                        {form.permissions.length}/{modules.length} sélectionnés
-                                    </span>
+                                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <div style={{ width: 28, height: 28, borderRadius: '50%', background: `conic-gradient(${GOLD} ${(form.permissions.length/modules.length)*360}deg, #E5E7EB 0deg)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#F9FAFB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, color: GOLD }}>
+                                                {form.permissions.length}
+                                            </div>
+                                        </div>
+                                        <span style={{ fontSize: '11px', color: '#9E8272', fontWeight: 500 }}>{form.permissions.length}/{modules.length}</span>
+                                    </div>
                                 </div>
 
+                                {/* Groupes */}
                                 {MODULE_GROUPS.map(group => (
-                                    <div key={group.label} style={{ marginBottom: '14px' }}>
-                                        <p style={{ fontSize: '10px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '6px' }}>
-                                            {group.label}
-                                        </p>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px' }}>
+                                    <div key={group.label} style={{ marginBottom: '18px' }}>
+                                        {/* Header groupe */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '8px' }}>
+                                            <div style={{ width: 3, height: 14, borderRadius: 2, background: group.color, flexShrink: 0 }} />
+                                            <p style={{ fontSize: '10px', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '2px', margin: 0 }}>
+                                                {group.label}
+                                            </p>
+                                            {group.fixed && (
+                                                <span style={{ fontSize: '9px', color: '#9CA3AF', letterSpacing: 1 }}>· accès inclus par défaut</span>
+                                            )}
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(155px, 1fr))', gap: '6px' }}>
+                                            {/* Items toujours actifs (dashboard…) */}
+                                            {(group.fixed || []).map(item => (
+                                                <div key={item.key} style={{
+                                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                                    padding: '9px 11px', borderRadius: '9px',
+                                                    border: `1px solid ${group.color}40`,
+                                                    background: `${group.color}08`,
+                                                    opacity: 0.75,
+                                                    cursor: 'default',
+                                                }}>
+                                                    <span style={{ fontSize: '14px', lineHeight: 1 }}>{item.icon}</span>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <span style={{ fontSize: '12px', color: '#374151', fontWeight: 500, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
+                                                        <span style={{ fontSize: '9px', color: '#9CA3AF', letterSpacing: '0.5px' }}>{item.desc}</span>
+                                                    </div>
+                                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M11 7V5a3 3 0 00-6 0v2M5 7h6a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1z" stroke={group.color} strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                                </div>
+                                            ))}
+
+                                            {/* Items sélectionnables */}
                                             {group.keys.filter(k => modules.includes(k)).map(key => {
+                                                const meta    = MODULE_META[key] || { label: key, icon: '📌' };
                                                 const checked = form.permissions.includes(key);
                                                 return (
                                                     <div
                                                         key={key}
                                                         onClick={() => togglePerm(key)}
                                                         style={{
-                                                            display: 'flex', alignItems: 'center', gap: '8px',
-                                                            padding: '8px 10px', borderRadius: '7px', cursor: 'pointer',
-                                                            border: `1px solid ${checked ? GOLD + '60' : '#E5E7EB'}`,
-                                                            background: checked ? GOLD + '08' : '#FAFAFA',
+                                                            display: 'flex', alignItems: 'center', gap: '9px',
+                                                            padding: '9px 11px', borderRadius: '9px', cursor: 'pointer',
+                                                            border: `1px solid ${checked ? group.color + '50' : '#E5E7EB'}`,
+                                                            background: checked ? group.color + '0D' : '#FAFAFA',
                                                             transition: 'all .15s',
+                                                            userSelect: 'none',
                                                         }}
+                                                        onMouseEnter={e => { if (!checked) e.currentTarget.style.background = '#F5F5F5'; }}
+                                                        onMouseLeave={e => { if (!checked) e.currentTarget.style.background = '#FAFAFA'; }}
                                                     >
+                                                        {/* Checkbox */}
                                                         <div style={{
-                                                            width: '16px', height: '16px', borderRadius: '4px', flexShrink: 0,
-                                                            border: `2px solid ${checked ? GOLD : '#D1D5DB'}`,
-                                                            background: checked ? GOLD : 'transparent',
+                                                            width: '17px', height: '17px', borderRadius: '5px', flexShrink: 0,
+                                                            border: `2px solid ${checked ? group.color : '#D1D5DB'}`,
+                                                            background: checked ? group.color : 'transparent',
                                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                             transition: 'all .15s',
                                                         }}>
-                                                            {checked && <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#1E110A" strokeWidth="2" strokeLinecap="round"/></svg>}
+                                                            {checked && <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/></svg>}
                                                         </div>
-                                                        <span style={{ fontSize: '12px', color: checked ? '#1E110A' : '#6B7280', fontWeight: checked ? 500 : 400 }}>
-                                                            {MODULE_LABELS[key] || key}
+                                                        <span style={{ fontSize: '13px', lineHeight: 1, flexShrink: 0 }}>{meta.icon}</span>
+                                                        <span style={{ fontSize: '12px', color: checked ? '#1E110A' : '#6B7280', fontWeight: checked ? 600 : 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>
+                                                            {meta.label}
                                                         </span>
                                                     </div>
                                                 );

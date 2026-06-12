@@ -592,6 +592,8 @@ router.post('/orders/:id/send-invoice', async (req, res) => {
         ).join('');
 
         const trackUrl = `${process.env.FRONTEND_URL || 'https://mia-dreams.com'}/commande/suivi/${order.order_number}`;
+        const reviewUrl = `${process.env.FRONTEND_URL || 'https://mia-dreams.com'}/temoignages`;
+        const LOGO_URL  = 'https://mia-dreams.com/img/logo_MIA.png';
 
         const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#ECEEF1;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -599,10 +601,13 @@ router.post('/orders/:id/send-invoice', async (req, res) => {
 
   <!-- EN-TÊTE -->
   <div style="background:linear-gradient(135deg,#1a0f07 0%,#2D1B0E 60%,#4A2C18 100%);padding:36px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-    <div>
-      <p style="margin:0 0 3px;font-size:9px;letter-spacing:4px;color:rgba(201,168,76,.55);text-transform:uppercase;">MIA DREAMS & CO</p>
-      <p style="margin:0 0 2px;font-size:22px;font-weight:800;color:#fff;letter-spacing:3px;text-transform:uppercase;">REÇU</p>
-      <p style="margin:0;font-size:11px;color:rgba(255,255,255,.35);">Mode Africaine d'Excellence</p>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <img src="${LOGO_URL}" alt="MIA DREAMS" width="56" height="56" style="width:56px;height:56px;object-fit:contain;filter:brightness(0) invert(1);opacity:.88;flex-shrink:0;" onerror="this.style.display='none'" />
+      <div>
+        <p style="margin:0 0 3px;font-size:9px;letter-spacing:4px;color:rgba(201,168,76,.55);text-transform:uppercase;">MIA DREAMS & CO</p>
+        <p style="margin:0 0 2px;font-size:22px;font-weight:800;color:#fff;letter-spacing:3px;text-transform:uppercase;">REÇU</p>
+        <p style="margin:0;font-size:11px;color:rgba(255,255,255,.35);">Mode Africaine d'Excellence</p>
+      </div>
     </div>
     <div style="text-align:right;flex-shrink:0;">
       <p style="margin:0 0 2px;font-size:9px;letter-spacing:2px;color:rgba(201,168,76,.55);text-transform:uppercase;">N° Commande</p>
@@ -672,12 +677,22 @@ router.post('/orders/:id/send-invoice', async (req, res) => {
   </div>
 
   <!-- SIGNATURE ADMIN -->
-  <div style="margin:0 40px 28px;background:#FDF8F2;border:1px solid #F0E8D8;border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
+  <div style="margin:0 40px 24px;background:#FDF8F2;border:1px solid #F0E8D8;border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
     <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#C9A84C,#E0BC6A);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#1E110A;flex-shrink:0;">${processedBy.charAt(0).toUpperCase()}</div>
     <div>
       <p style="margin:0 0 2px;font-size:12px;font-weight:700;color:#1E110A;">Traité par ${processedBy}</p>
       <p style="margin:0;font-size:11px;color:#9E8272;">Équipe MIA DREAMS & CO</p>
     </div>
+  </div>
+
+  <!-- LAISSER UN AVIS -->
+  <div style="margin:0 40px 28px;background:linear-gradient(135deg,#1a0f07,#2D1B0E);border-radius:12px;padding:24px 28px;text-align:center;">
+    <p style="margin:0 0 4px;font-size:20px;">⭐</p>
+    <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#C9A84C;">Votre avis compte !</p>
+    <p style="margin:0 0 16px;font-size:12px;color:rgba(255,255,255,.45);line-height:1.6;">Partagez votre expérience et aidez d'autres clientes à nous découvrir.</p>
+    <a href="${reviewUrl}" style="display:inline-block;background:linear-gradient(135deg,#C9A84C,#E0BC6A);color:#1E110A;font-weight:800;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;padding:13px 28px;border-radius:8px;text-decoration:none;">
+      LAISSER MON AVIS →
+    </a>
   </div>
 
   <!-- FOOTER -->
@@ -686,7 +701,7 @@ router.post('/orders/:id/send-invoice', async (req, res) => {
       <p style="margin:0 0 3px;font-size:13px;font-weight:700;color:#C9A84C;">Merci pour votre confiance !</p>
       <p style="margin:0;font-size:10px;color:rgba(255,255,255,.3);line-height:1.6;">MIA DREAMS & CO · Mode Africaine d'Excellence<br/>www.mia-dreams.com</p>
     </div>
-    <p style="margin:0;font-size:28px;">✨</p>
+    <img src="${LOGO_URL}" alt="" width="36" height="36" style="width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1);opacity:.35;flex-shrink:0;" onerror="this.style.display='none'" />
   </div>
 
 </div></body></html>`;

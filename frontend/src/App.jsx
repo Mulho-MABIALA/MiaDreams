@@ -49,6 +49,7 @@ import CommandeSuivi from './pages/CommandeSuivi';
 import ProgrammesIndex from './pages/Programmes/Index';
 import ProgrammeDetail from './pages/Programmes/Detail';
 import NotFound from './pages/NotFound';
+import Temoignages from './pages/Temoignages';
 
 function ScrollToTop() {
     const { pathname } = useLocation();
@@ -88,6 +89,7 @@ export default function App() {
                 <Route path="/mes-commandes"     element={<MesCommandes />} />
                 <Route path="/commande/suivi"           element={<CommandeSuivi />} />
                 <Route path="/commande/suivi/:number"   element={<CommandeSuivi />} />
+                <Route path="/temoignages"       element={<Temoignages />} />
                 <Route path="/login"             element={<Login />} />
                 <Route path="/admin/*"           element={<Admin />} />
                 <Route path="*"                 element={<NotFound />} />

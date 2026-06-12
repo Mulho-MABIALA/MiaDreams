@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import AdminCard from '../../components/AdminCard';
 
 const GOLD = '#C9A84C';
 
@@ -28,60 +29,7 @@ const CARD_STYLE = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)',
 };
 
-function StatCard({ label, value, sub, icon, color = GOLD, to }) {
-    const card = (
-        <div
-            className="relative overflow-hidden group cursor-pointer transition-all duration-200"
-            style={{
-                ...CARD_STYLE,
-                padding: '20px',
-                borderLeft: `4px solid ${color}`,
-                transform: 'translateY(0)',
-            }}
-            onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(45,27,14,0.10), 0 16px 32px rgba(45,27,14,0.08)';
-            }}
-            onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 1px 4px rgba(45,27,14,0.06), 0 8px 24px rgba(45,27,14,0.04)';
-            }}
-        >
-            <div className="flex items-start justify-between mb-3">
-                <div
-                    className="flex items-center justify-center flex-shrink-0"
-                    style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '10px',
-                        background: `${color}18`,
-                    }}
-                >
-                    <span style={{ color }}>{icon}</span>
-                </div>
-                <span
-                    style={{
-                        fontSize: '30px',
-                        fontWeight: 700,
-                        color: '#1E110A',
-                        lineHeight: 1,
-                        fontVariantNumeric: 'tabular-nums',
-                        opacity: value !== undefined ? 1 : 0.2,
-                    }}
-                >
-                    {value ?? '—'}
-                </span>
-            </div>
-            <p style={{ fontSize: '11px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                {label}
-            </p>
-            {sub && (
-                <p style={{ fontSize: '11px', color: '#B8A090', marginTop: '2px' }}>{sub}</p>
-            )}
-        </div>
-    );
-    return to ? <Link to={to} style={{ textDecoration: 'none', display: 'block' }}>{card}</Link> : card;
-}
+
 
 function getInitials(name) {
     if (!name) return '?';
@@ -406,10 +354,10 @@ export default function Dashboard() {
                 className="grid gap-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '16px' }}
             >
-                <StatCard label="Produits"   value={stats.products}        icon={<IcoShop />} color={COLORS.products} to="/admin/produits"  sub="en boutique" />
-                <StatCard label="Commandes"  value={stats.orders}          icon={<IcoCart />} color={COLORS.orders}   to="/admin/commandes" sub="total reçues" />
-                <StatCard label="En attente" value={stats.ordersPending}   icon={<IcoCart />} color="#E8A838"         to="/admin/commandes" sub="à traiter" />
-                <StatCard label="Livrées"    value={stats.ordersDelivered} icon={<IcoCart />} color="#7C9A84"         to="/admin/commandes" sub="commandes" />
+                <AdminCard label="Produits"   value={stats.products}        icon={<IcoShop />} color={COLORS.products} to="/admin/produits"  sub="en boutique" />
+                <AdminCard label="Commandes"  value={stats.orders}          icon={<IcoCart />} color={COLORS.orders}   to="/admin/commandes" sub="total reçues" />
+                <AdminCard label="En attente" value={stats.ordersPending}   icon={<IcoCart />} color="#E8A838"         to="/admin/commandes" sub="à traiter" />
+                <AdminCard label="Livrées"    value={stats.ordersDelivered} icon={<IcoCart />} color="#7C9A84"         to="/admin/commandes" sub="commandes" />
 
                 {/* Revenue total */}
                 <div className="relative overflow-hidden" style={{
@@ -471,15 +419,15 @@ export default function Dashboard() {
                 className="grid gap-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', marginBottom: '32px' }}
             >
-                <StatCard label="Marques"     value={stats.brands}      icon={<IcoStar />}     color={COLORS.brands}       to="/admin/marques" />
-                <StatCard label="Articles"    value={stats.posts}       icon={<IcoPosts />}    color={COLORS.posts}        to="/admin/blog" />
-                <StatCard label="Galerie"     value={stats.gallery}     icon={<IcoGallery />}  color={COLORS.gallery}      to="/admin/galerie" />
-                <StatCard label="Catalogues"  value={stats.catalogues}  icon={<IcoBook />}     color={COLORS.catalogues}   to="/admin/catalogues" />
-                <StatCard label="Podcasts"    value={stats.podcasts}    icon={<IcoPodcast />}  color={COLORS.podcasts}     to="/admin/blog" />
-                <StatCard label="Témoignages" value={stats.testimonials} icon={<IcoQuote />}   color={COLORS.testimonials} to="/admin/temoignages" />
-                <StatCard label="Équipe"      value={stats.team}        icon={<IcoTeam />}     color={COLORS.team}         to="/admin/equipe" />
-                <StatCard label="Services"    value={stats.services}    icon={<IcoServices />} color={COLORS.services}     to="/admin/services" />
-                <StatCard label="Initiatives" value={stats.initiatives} icon={<IcoGlobe />}    color={COLORS.initiatives}  to="/admin/initiatives" />
+                <AdminCard label="Marques"     value={stats.brands}      icon={<IcoStar />}     color={COLORS.brands}       to="/admin/marques" />
+                <AdminCard label="Articles"    value={stats.posts}       icon={<IcoPosts />}    color={COLORS.posts}        to="/admin/blog" />
+                <AdminCard label="Galerie"     value={stats.gallery}     icon={<IcoGallery />}  color={COLORS.gallery}      to="/admin/galerie" />
+                <AdminCard label="Catalogues"  value={stats.catalogues}  icon={<IcoBook />}     color={COLORS.catalogues}   to="/admin/catalogues" />
+                <AdminCard label="Podcasts"    value={stats.podcasts}    icon={<IcoPodcast />}  color={COLORS.podcasts}     to="/admin/blog" />
+                <AdminCard label="Témoignages" value={stats.testimonials} icon={<IcoQuote />}   color={COLORS.testimonials} to="/admin/temoignages" />
+                <AdminCard label="Équipe"      value={stats.team}        icon={<IcoTeam />}     color={COLORS.team}         to="/admin/equipe" />
+                <AdminCard label="Services"    value={stats.services}    icon={<IcoServices />} color={COLORS.services}     to="/admin/services" />
+                <AdminCard label="Initiatives" value={stats.initiatives} icon={<IcoGlobe />}    color={COLORS.initiatives}  to="/admin/initiatives" />
             </div>
 
             {/* ─── ACTIVITÉ CLIENTS ─── */}
@@ -490,9 +438,9 @@ export default function Dashboard() {
                 className="grid gap-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: '32px' }}
             >
-                <StatCard label="Réservations" value={stats.reservations} icon={<IcoCal />}   color={COLORS.reservations} to="/admin/reservations" sub="demandes reçues" />
-                <StatCard label="Messages"     value={stats.contacts}     icon={<IcoMail />}  color={COLORS.contacts}     to="/admin/contacts"     sub="via le formulaire" />
-                <StatCard label="Abonnés"      value={stats.newsletters}  icon={<IcoUsers />} color={COLORS.newsletters}  to="/admin/newsletter"   sub="newsletter" />
+                <AdminCard label="Réservations" value={stats.reservations} icon={<IcoCal />}   color={COLORS.reservations} to="/admin/reservations" sub="demandes reçues" />
+                <AdminCard label="Messages"     value={stats.contacts}     icon={<IcoMail />}  color={COLORS.contacts}     to="/admin/contacts"     sub="via le formulaire" />
+                <AdminCard label="Abonnés"      value={stats.newsletters}  icon={<IcoUsers />} color={COLORS.newsletters}  to="/admin/newsletter"   sub="newsletter" />
             </div>
 
             {/* ─── PANNEAUX RÉCENTS ─── */}

@@ -198,33 +198,57 @@ export default function Admin() {
             <aside
                 className="flex-shrink-0 flex flex-col h-full overflow-hidden transition-all duration-300 ease-in-out"
                 style={{
-                    background: '#1E110A',
-                    width: collapsed ? '64px' : '240px',
-                    boxShadow: '2px 0 16px rgba(30,17,10,0.18)',
+                    width: collapsed ? '68px' : '248px',
+                    position: 'relative',
+                    background: 'linear-gradient(180deg,#1a0d06 0%,#2D1B0E 40%,#1a0d06 100%)',
+                    boxShadow: '4px 0 32px rgba(0,0,0,0.45)',
+                    borderRight: '1px solid rgba(201,168,76,0.08)',
                 }}
             >
+                {/* Effet miroir / reflet */}
+                <div style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+                    background: 'linear-gradient(135deg, rgba(201,168,76,0.07) 0%, transparent 50%, rgba(201,168,76,0.03) 100%)',
+                }} />
+                <div style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, height: '1px', zIndex: 1,
+                    background: 'linear-gradient(90deg,transparent,rgba(201,168,76,0.5),transparent)',
+                }} />
+                <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', zIndex: 1,
+                    background: 'linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent)',
+                }} />
+
                 {/* Brand */}
                 <div
                     className="flex items-center flex-shrink-0 overflow-hidden"
                     style={{
-                        height: '64px',
-                        borderBottom: '1px solid rgba(255,255,255,0.07)',
-                        padding: collapsed ? '0 16px' : '0 20px',
-                        gap: collapsed ? 0 : '12px',
+                        position: 'relative', zIndex: 2,
+                        height: '72px',
+                        borderBottom: '1px solid rgba(201,168,76,0.1)',
+                        padding: collapsed ? '0 18px' : '0 20px',
+                        gap: collapsed ? 0 : '14px',
                         justifyContent: collapsed ? 'center' : 'flex-start',
+                        background: 'rgba(0,0,0,0.2)',
                     }}
                 >
-                    <img
-                        src="/img/logo_MIA.png"
-                        alt="MIA"
-                        style={{ height: '28px', flexShrink: 0, filter: 'brightness(0) invert(1)', opacity: 0.9 }}
-                    />
+                    <div style={{
+                        width: collapsed ? '32px' : '36px', height: collapsed ? '32px' : '36px',
+                        borderRadius: '10px', flexShrink: 0, overflow: 'hidden',
+                        background: 'linear-gradient(135deg,#C9A84C,#E0BC6A)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 2px 12px rgba(201,168,76,0.4)',
+                        transition: 'all .3s',
+                    }}>
+                        <img src="/img/logo_MIA.png" alt="MIA"
+                            style={{ width: '22px', height: '22px', objectFit: 'contain', filter: 'brightness(0)', opacity: 0.85 }} />
+                    </div>
                     {!collapsed && (
                         <div style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                            <p style={{ fontFamily: 'inherit', fontSize: '11px', letterSpacing: '3px', color: '#FFFFFF', textTransform: 'uppercase', lineHeight: 1, fontWeight: 700 }}>
+                            <p style={{ fontSize: '12px', letterSpacing: '3px', color: '#FFFFFF', textTransform: 'uppercase', lineHeight: 1, fontWeight: 800 }}>
                                 MIA DREAMS
                             </p>
-                            <p style={{ fontSize: '9px', color: 'rgba(255,255,255,0.35)', marginTop: '3px', letterSpacing: '1px' }}>
+                            <p style={{ fontSize: '9px', color: '#C9A84C', marginTop: '4px', letterSpacing: '2px', opacity: 0.7, fontWeight: 600, textTransform: 'uppercase' }}>
                                 Administration
                             </p>
                         </div>
@@ -232,52 +256,57 @@ export default function Admin() {
                 </div>
 
                 {/* Nav */}
-                <nav className="flex-1 overflow-y-auto" style={{ padding: '16px 8px', overflowX: 'hidden' }}>
+                <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '12px 8px' : '14px 10px', overflowX: 'hidden', position: 'relative', zIndex: 2 }}
+                    onScroll={e => e.stopPropagation()}>
+                    <style>{`
+                        .sidebar-nav::-webkit-scrollbar { width: 3px; }
+                        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+                        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
+                        .sidebar-item { position: relative; display: flex; align-items: center; border-radius: 10px; transition: all 0.18s ease; text-decoration: none; }
+                        .sidebar-item:hover { background: rgba(255,255,255,0.06) !important; }
+                        .sidebar-item.active-link { background: linear-gradient(135deg,#C9A84C,#D4B05E) !important; box-shadow: 0 4px 16px rgba(201,168,76,0.35); }
+                        .sidebar-item.active-link::before { content:''; position:absolute; left:-10px; top:50%; transform:translateY(-50%); width:3px; height:60%; background:#C9A84C; border-radius:0 3px 3px 0; box-shadow:0 0 8px rgba(201,168,76,0.8); }
+                    `}</style>
                     {NAV_GROUPS.map(group => (
-                        <div key={group.label} style={{ marginBottom: '20px' }}>
+                        <div key={group.label} style={{ marginBottom: '18px' }}>
                             {!collapsed && (
                                 <p style={{
-                                    fontSize: '10px',
-                                    letterSpacing: '2.5px',
-                                    color: 'rgba(255,255,255,0.25)',
-                                    textTransform: 'uppercase',
-                                    padding: '0 12px',
-                                    marginBottom: '6px',
-                                    fontWeight: 600,
+                                    fontSize: '9px', letterSpacing: '3px', color: 'rgba(201,168,76,0.4)',
+                                    textTransform: 'uppercase', padding: '0 10px', marginBottom: '5px', fontWeight: 700,
                                 }}>
                                     {group.label}
                                 </p>
                             )}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            {collapsed && <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '6px 4px 8px' }} />}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                                 {group.items.map(item => (
                                     <NavLink
                                         key={item.to}
                                         to={item.to}
                                         end={item.end}
-                                        className={({ isActive }) =>
-                                            `flex items-center transition-all duration-150 rounded-lg ${
-                                                collapsed ? 'justify-center' : 'gap-3'
-                                            } ${
-                                                isActive
-                                                    ? 'bg-[#C9A84C] text-[#1E110A]'
-                                                    : 'text-[rgba(255,255,255,0.55)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white'
-                                            }`
-                                        }
-                                        style={{ padding: collapsed ? '10px 0' : '9px 12px' }}
+                                        className={({ isActive }) => `sidebar-item${isActive ? ' active-link' : ''}`}
+                                        style={{ padding: collapsed ? '10px 0' : '9px 11px', justifyContent: collapsed ? 'center' : 'flex-start', gap: collapsed ? 0 : '11px' }}
+                                        title={collapsed ? item.label : undefined}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <span className="flex-shrink-0" style={{ opacity: isActive ? 1 : 0.8 }}>
+                                                <span style={{
+                                                    flexShrink: 0,
+                                                    color: isActive ? '#1E110A' : 'rgba(255,255,255,0.5)',
+                                                    transition: 'color .18s',
+                                                }}>
                                                     {item.icon}
                                                 </span>
                                                 {!collapsed && (
                                                     <span style={{
                                                         fontSize: '13px',
-                                                        fontWeight: isActive ? 600 : 400,
-                                                        letterSpacing: '0.2px',
+                                                        fontWeight: isActive ? 700 : 400,
+                                                        color: isActive ? '#1E110A' : 'rgba(255,255,255,0.65)',
+                                                        letterSpacing: '0.1px',
                                                         whiteSpace: 'nowrap',
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
+                                                        transition: 'color .18s',
                                                     }}>
                                                         {item.label}
                                                     </span>
@@ -291,23 +320,46 @@ export default function Admin() {
                     ))}
                 </nav>
 
-                {/* Footer */}
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '8px', flexShrink: 0 }}>
+                {/* Footer admin info + logout */}
+                <div style={{ position: 'relative', zIndex: 2, borderTop: '1px solid rgba(201,168,76,0.08)', padding: '10px', flexShrink: 0, background: 'rgba(0,0,0,0.15)' }}>
+                    {!collapsed && user && (
+                        <div style={{ padding: '8px 10px 10px', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{
+                                width: '30px', height: '30px', borderRadius: '8px', flexShrink: 0,
+                                background: 'linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.1))',
+                                border: '1px solid rgba(201,168,76,.25)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: '12px', fontWeight: 800, color: '#C9A84C',
+                            }}>
+                                {(user.name || user.email || 'A').charAt(0).toUpperCase()}
+                            </div>
+                            <div style={{ overflow: 'hidden' }}>
+                                <p style={{ margin: 0, fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {user.name || 'Admin'}
+                                </p>
+                                <p style={{ margin: 0, fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>
+                                    {user.role === 'super_admin' ? 'Super Admin' : 'Administrateur'}
+                                </p>
+                            </div>
+                        </div>
+                    )}
                     <button
                         onClick={logout}
-                        className="flex items-center w-full rounded-lg transition-all duration-150 hover:bg-red-900/30"
+                        className="sidebar-item"
                         style={{
-                            gap: collapsed ? 0 : '12px',
-                            padding: collapsed ? '10px 0' : '9px 12px',
+                            width: '100%', border: 'none', background: 'transparent', cursor: 'pointer',
+                            padding: collapsed ? '10px 0' : '9px 11px',
                             justifyContent: collapsed ? 'center' : 'flex-start',
+                            gap: collapsed ? 0 : '11px',
                             color: 'rgba(255,255,255,0.35)',
                         }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
-                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.color = '#f87171'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; }}
+                        title={collapsed ? 'Déconnexion' : undefined}
                     >
                         <IconLogout />
                         {!collapsed && (
-                            <span style={{ fontSize: '13px', letterSpacing: '0.2px' }}>Déconnexion</span>
+                            <span style={{ fontSize: '13px', letterSpacing: '0.1px', fontWeight: 400 }}>Déconnexion</span>
                         )}
                     </button>
                 </div>

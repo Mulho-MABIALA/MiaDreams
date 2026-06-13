@@ -149,6 +149,37 @@ export default {
     temoignages_submit: 'Envoyer mon témoignage',
     temoignages_success: 'Merci pour votre témoignage ! Il sera publié après validation.',
 
+    // Produit
+    product_size: 'Taille',
+    product_color: 'Couleur',
+    product_qty: 'Quantité',
+    product_in_stock: 'En stock',
+    product_out_stock: 'Rupture de stock',
+    product_add: '+ AJOUTER AU PANIER',
+    product_added: '✓ AJOUTÉ AU PANIER',
+    product_sold_out: 'ÉPUISÉ',
+    product_cart: 'VOIR LE PANIER',
+    product_whatsapp: 'COMMANDER VIA WHATSAPP',
+    product_info: 'Informations',
+    product_similar: 'Vous aimerez aussi',
+    product_similar_sub: 'similaires',
+    product_see_all: 'Voir tout',
+    product_share: 'Partager',
+    product_delivery: 'Livraison à domicile à Abidjan et environs',
+    product_payment: 'Paiement sécurisé — Wave · Orange Money · Espèces',
+
+    // Blog
+    blog_latest: 'Derniers articles',
+    blog_no_posts: 'Aucun article trouvé.',
+    blog_podcasts: 'Podcasts',
+
+    // Programmes
+    prog_enroll_cta: 'S\'inscrire au programme',
+    prog_duration: 'Durée',
+    prog_price: 'Tarif',
+    prog_start_date: 'Début',
+    prog_back: 'Voir tous les programmes',
+
     // Home page
     home_slide1_sub: 'Maison de mode africaine',
     home_slide1_title: 'RÉVOLUTION',

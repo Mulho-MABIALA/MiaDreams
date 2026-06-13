@@ -149,6 +149,37 @@ export default {
     temoignages_submit: 'Submit my testimonial',
     temoignages_success: 'Thank you for your testimonial! It will be published after review.',
 
+    // Produit
+    product_size: 'Size',
+    product_color: 'Color',
+    product_qty: 'Quantity',
+    product_in_stock: 'In stock',
+    product_out_stock: 'Out of stock',
+    product_add: '+ ADD TO CART',
+    product_added: '✓ ADDED TO CART',
+    product_sold_out: 'SOLD OUT',
+    product_cart: 'VIEW CART',
+    product_whatsapp: 'ORDER VIA WHATSAPP',
+    product_info: 'Information',
+    product_similar: 'You may also like',
+    product_similar_sub: 'similar',
+    product_see_all: 'View all',
+    product_share: 'Share',
+    product_delivery: 'Home delivery in Abidjan and surroundings',
+    product_payment: 'Secure payment — Wave · Orange Money · Cash',
+
+    // Blog
+    blog_latest: 'Latest articles',
+    blog_no_posts: 'No articles found.',
+    blog_podcasts: 'Podcasts',
+
+    // Programmes
+    prog_enroll_cta: 'Enroll in the program',
+    prog_duration: 'Duration',
+    prog_price: 'Price',
+    prog_start_date: 'Start',
+    prog_back: 'View all programs',
+
     // Home page
     home_slide1_sub: 'African fashion house',
     home_slide1_title: 'REVOLUTION',

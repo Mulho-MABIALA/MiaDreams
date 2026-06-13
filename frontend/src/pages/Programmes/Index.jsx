@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { imgSrc } from '../../utils/imgSrc';
+import { useLanguage } from '../../context/LanguageContext';
+import TranslatedText from '../../components/TranslatedText';
 
 export default function ProgrammesIndex() {
+    const { t } = useLanguage();
     const [programmes, setProgrammes] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -36,13 +39,10 @@ export default function ProgrammesIndex() {
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
-                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Formations</span>
+                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('home_trainings')}</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
-                                NOS<br /><span className="text-gold">PROGRAMMES</span>
+                                {t('programmes_title')}
                             </h1>
-                            <p className="font-glacial text-base text-white/55 tracking-[1px] leading-relaxed mt-5" style={{ opacity: 0, animation: 'fadeUp .8s .7s forwards' }}>
-                                Des formations d'excellence pour les créateurs et entrepreneurs de la mode africaine.
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -85,13 +85,12 @@ export default function ProgrammesIndex() {
                                                     <span className="font-glacial text-[10px] tracking-[1px] text-[#999] bg-[#f5f5f5] px-2 py-0.5">Inscriptions fermées</span>
                                                 )}
                                             </div>
-                                            <h2 className="font-glacial text-xl text-[#1a1a1a] uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">
-                                                {prog.name}
+                                                            <h2 className="font-glacial text-xl text-[#1a1a1a] uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">
+                                                <TranslatedText text={prog.name} />
                                             </h2>
                                             {prog.description && (
-                                                <p className="font-glacial text-sm text-[#666] leading-relaxed mb-5 line-clamp-3">
-                                                    {prog.description}
-                                                </p>
+                                                <TranslatedText text={prog.description} as="p"
+                                                    className="font-glacial text-sm text-[#666] leading-relaxed mb-5 line-clamp-3" />
                                             )}
                                             <div className="flex flex-wrap gap-4 text-[11px] font-glacial text-[#888] mb-6">
                                                 {prog.duration && <span>⏱ {prog.duration}</span>}

@@ -3,11 +3,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { imgSrc as getImgSrc } from '../../utils/imgSrc';
+import { useLanguage } from '../../context/LanguageContext';
+import TranslatedText from '../../components/TranslatedText';
 
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 const epLabel = (p) => `${p.season ? `S${p.season} ` : ''}EP.${String(p.episode_number ?? 0).padStart(2, '0')}`;
 
 function PostCard({ post, featured = false }) {
+    const { t } = useLanguage();
     const imgSrc = getImgSrc(post.cover_image, '/img/index/home-image7.webp');
     if (featured) return (
         <Link to={`/blog/${post.slug}`} className="group relative overflow-hidden block h-[320px] sm:h-[420px] lg:h-[480px]">
@@ -15,9 +18,9 @@ function PostCard({ post, featured = false }) {
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,rgba(8,8,8,.9) 0%,transparent 55%)' }} />
             <div className="absolute bottom-0 inset-x-0 p-5 sm:p-8 lg:p-12">
                 <span className="inline-block font-lastica text-[8px] tracking-[3px] text-gold uppercase border border-gold/50 px-3 py-1 mb-3 sm:mb-5">{post.category || 'Article'} · À la une</span>
-                <h2 className="display-title text-xl sm:text-2xl lg:text-3xl text-white leading-tight mb-3 sm:mb-4">{post.title}</h2>
-                {post.excerpt && <p className="font-glacial text-sm text-white/60 leading-relaxed max-w-2xl mb-6">{post.excerpt.slice(0, 180)}</p>}
-                <span className="btn btn-gold inline-flex">LIRE L'ARTICLE →</span>
+                <h2 className="display-title text-xl sm:text-2xl lg:text-3xl text-white leading-tight mb-3 sm:mb-4"><TranslatedText text={post.title} /></h2>
+                {post.excerpt && <TranslatedText text={post.excerpt.slice(0, 180)} as="p" className="font-glacial text-sm text-white/60 leading-relaxed max-w-2xl mb-6" />}
+                <span className="btn btn-gold inline-flex">{t('blog_read_more')} →</span>
             </div>
         </Link>
     );
@@ -28,14 +31,15 @@ function PostCard({ post, featured = false }) {
                 <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/50 transition-colors duration-400" />
             </div>
             {post.category && <span className="font-lastica text-[7px] tracking-[3px] text-gold uppercase mb-2 block">{post.category}</span>}
-            <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] leading-tight mb-2.5 group-hover:text-gold transition-colors duration-250">{post.title}</h3>
-            {post.excerpt && <p className="font-glacial text-sm text-white/60 leading-relaxed line-clamp-3">{post.excerpt}</p>}
+            <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] leading-tight mb-2.5 group-hover:text-gold transition-colors duration-250"><TranslatedText text={post.title} /></h3>
+            {post.excerpt && <TranslatedText text={post.excerpt} as="p" className="font-glacial text-sm text-white/60 leading-relaxed line-clamp-3" />}
             <div className="mt-4 w-0 group-hover:w-8 h-px bg-gold transition-all duration-400" />
         </Link>
     );
 }
 
 export default function BlogIndex() {
+    const { t } = useLanguage();
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');

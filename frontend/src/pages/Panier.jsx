@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
 import { imgSrc } from '../utils/imgSrc';
+import { useLanguage } from '../context/LanguageContext';
 
 const GOLD = '#C9A84C';
 
 export default function Panier() {
     const { items, removeItem, updateQty, subtotal, clearCart } = useCart();
+    const { t } = useLanguage();
     const shipping = 0;
     const total = subtotal;
     const [confirmClear, setConfirmClear] = useState(false);
@@ -20,13 +22,13 @@ export default function Panier() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
                 </div>
-                <p className="font-lastica text-[8px] tracking-[6px] text-white/65 uppercase">Panier vide</p>
+                <p className="font-lastica text-[8px] tracking-[6px] text-white/65 uppercase">{t('cart_empty_title')}</p>
                 <p className="font-glacial text-sm text-white/65 text-center max-w-[220px] leading-relaxed">
-                    Découvrez nos créations et ajoutez vos favoris.
+                    {t('cart_empty_msg')}
                 </p>
                 <Link to="/boutique" className="mt-4 font-lastica text-[8px] tracking-[4px] uppercase px-7 py-3.5"
                       style={{ background: GOLD, color: '#050505' }}>
-                    DÉCOUVRIR LA BOUTIQUE
+                    {t('cart_discover')}
                 </Link>
             </div>
         </Layout>
@@ -40,8 +42,8 @@ export default function Panier() {
                     {/* En-tête */}
                     <div className="flex items-end justify-between mb-12 pb-6 border-b border-white/[0.10]">
                         <div>
-                            <span className="font-lastica text-[10px] tracking-[5px] text-white/60 uppercase block mb-2">Shopping</span>
-                            <h1 className="font-glacial text-3xl lg:text-4xl text-white uppercase tracking-[4px]">Mon Panier</h1>
+                            <span className="font-lastica text-[10px] tracking-[5px] text-white/60 uppercase block mb-2">{t('cart_shopping')}</span>
+                            <h1 className="font-glacial text-3xl lg:text-4xl text-white uppercase tracking-[4px]">{t('cart_title')}</h1>
                         </div>
                         <span className="font-lastica text-[8px] tracking-[3px] text-white/65 uppercase">
                             {items.length} article{items.length > 1 ? 's' : ''}
@@ -78,7 +80,7 @@ export default function Panier() {
                                             </div>
 
                                             <div className="flex flex-wrap gap-x-3 gap-y-0.5 mb-4">
-                                                {item.size  && <span className="font-glacial text-sm text-white/70">Taille : {item.size}</span>}
+                                                {item.size  && <span className="font-glacial text-sm text-white/70">{t('cart_size')} {item.size}</span>}
                                                 {item.color && <span className="font-glacial text-sm text-white/70">{item.color}</span>}
                                             </div>
 
@@ -109,21 +111,21 @@ export default function Panier() {
                             <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/[0.08]">
                                 <Link to="/boutique"
                                     className="font-lastica text-[10px] tracking-[3px] text-white/40 hover:text-white/70 transition-colors uppercase flex items-center gap-2">
-                                    <span>←</span> Continuer les achats
+                                    <span>←</span> {t('cart_continue')}
                                 </Link>
                                 {confirmClear ? (
                                     <div className="flex items-center gap-3">
-                                        <span className="font-lastica text-[10px] tracking-[2px] text-white/60 uppercase">Confirmer ?</span>
+                                        <span className="font-lastica text-[10px] tracking-[2px] text-white/60 uppercase">{t('cart_clear_confirm')}</span>
                                         <button
                                             onClick={() => { clearCart(); setConfirmClear(false); }}
                                             className="font-lastica text-[10px] tracking-[2px] uppercase px-3 py-1.5 transition-all"
                                             style={{ background: '#b91c1c22', color: '#f87171', border: '1px solid #b91c1c44' }}>
-                                            Oui, vider
+                                            {t('cart_clear_yes')}
                                         </button>
                                         <button
                                             onClick={() => setConfirmClear(false)}
                                             className="font-lastica text-[10px] tracking-[2px] text-white/30 hover:text-white/55 uppercase transition-colors">
-                                            Annuler
+                                            {t('cancel')}
                                         </button>
                                     </div>
                                 ) : (
@@ -133,7 +135,7 @@ export default function Panier() {
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                         </svg>
-                                        Vider le panier
+                                        {t('cart_clear')}
                                     </button>
                                 )}
                             </div>
@@ -142,18 +144,18 @@ export default function Panier() {
                         {/* ── Récapitulatif ── */}
                         <div className="lg:pt-0">
                             <div className="bg-[#0c0c0c] border border-white/[0.12] p-5 sm:p-7">
-                                <p className="font-lastica text-[10px] tracking-[5px] text-white/65 uppercase mb-7">Récapitulatif</p>
+                                <p className="font-lastica text-[10px] tracking-[5px] text-white/65 uppercase mb-7">{t('order_summary')}</p>
 
                                 <div className="space-y-3.5 mb-6">
                                     <div className="flex justify-between">
-                                        <span className="font-glacial text-sm text-white/55">Sous-total</span>
+                                        <span className="font-glacial text-sm text-white/55">{t('cart_subtotal')}</span>
                                         <span className="font-glacial text-sm text-white/75">{subtotal.toLocaleString('fr-FR')} FCFA</span>
                                     </div>
                                 </div>
 
                                 <div className="border-t border-white/[0.10] pt-5 mb-7">
                                     <div className="flex justify-between items-baseline">
-                                        <span className="font-glacial text-sm text-white/75">Total</span>
+                                        <span className="font-glacial text-sm text-white/75">{t('cart_total')}</span>
                                         <span className="font-glacial text-xl font-medium" style={{ color: GOLD }}>
                                             {total.toLocaleString('fr-FR')} <span className="text-sm">FCFA</span>
                                         </span>
@@ -163,12 +165,12 @@ export default function Panier() {
                                 <Link to="/commande"
                                     className="block w-full py-4 text-center font-lastica text-[9px] tracking-[4px] uppercase hover:brightness-110 transition-all"
                                     style={{ background: GOLD, color: '#050505' }}>
-                                    PASSER LA COMMANDE →
+                                    {t('cart_checkout')}
                                 </Link>
 
                                 {/* Modes de paiement */}
                                 <div className="mt-6 pt-5 border-t border-white/[0.08]">
-                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/70 uppercase mb-3 text-center">Paiements acceptés</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/70 uppercase mb-3 text-center">{t('cart_payment_accepted')}</p>
                                     <div className="flex items-center justify-center gap-3 flex-wrap">
                                         {/* Wave */}
                                         <div className="flex items-center gap-1 opacity-65 hover:opacity-90 transition-opacity">

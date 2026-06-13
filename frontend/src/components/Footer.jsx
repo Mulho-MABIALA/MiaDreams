@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import axios from 'axios';
 
 const SOCIAL_ICONS = {
@@ -29,6 +30,7 @@ function SocialIcon({ platform, url }) {
 
 export default function Footer() {
     const { companyInfo, socialMediaLinks, navBrands, navCatalogues } = useApp();
+    const { t } = useLanguage();
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
     const [subError, setSubError] = useState('');
@@ -105,23 +107,23 @@ export default function Footer() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
                     <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 sm:gap-10">
                         <div className="flex-1">
-                            <p className="font-lastica text-[8px] tracking-[5px] text-[#080808]/55 uppercase mb-2">Restez connecté</p>
+                            <p className="font-lastica text-[8px] tracking-[5px] text-[#080808]/55 uppercase mb-2">{t('footer_newsletter_label')}</p>
                             <h4 className="font-glacial text-xl sm:text-2xl lg:text-3xl font-light text-[#080808] tracking-[3px] sm:tracking-[4px] uppercase leading-tight">
-                                NEWSLETTER MIA DREAMS
+                                {t('footer_newsletter_title')}
                             </h4>
                         </div>
                         <div className="w-full lg:w-[420px]">
                             {subscribed ? (
-                                <p className="font-glacial text-sm text-[#080808] tracking-[3px]">✓ Inscription confirmée !</p>
+                                <p className="font-glacial text-sm text-[#080808] tracking-[3px]">✓ {t('footer_newsletter_success')}</p>
                             ) : (
                                 <form onSubmit={handleNewsletter}>
                                     <div className="flex">
                                         <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                                               placeholder="VOTRE ADRESSE EMAIL" required
+                                               placeholder={t('footer_newsletter_placeholder')} required
                                                className="flex-1 min-w-0 bg-[#080808]/12 border border-[#080808]/20 border-r-0 text-[#080808] placeholder-[#080808]/35 px-4 py-3.5 sm:px-5 sm:py-4 font-glacial text-sm tracking-wide outline-none focus:border-[#080808]/40 transition-colors" />
                                         <button type="submit"
                                                 className="bg-[#080808] text-gold border-none px-4 sm:px-6 py-3.5 sm:py-4 font-glacial text-[9px] tracking-[2px] sm:tracking-[3px] uppercase whitespace-nowrap hover:bg-[#1c1c1c] transition-colors cursor-pointer flex-shrink-0">
-                                            S'ABONNER
+                                            {t('footer_newsletter_btn')}
                                         </button>
                                     </div>
                                     {subError && <p className="text-red-700 text-xs mt-2 font-glacial">{subError}</p>}
@@ -142,10 +144,10 @@ export default function Footer() {
                             <img src={logoSrc} alt={companyInfo?.name || 'MIA DREAMS'}
                                  className={`h-11 w-auto mb-5 ${logoIsCustom ? 'opacity-90 object-contain' : 'brightness-0 invert opacity-70'}`} />
                             <p className="font-glacial text-[14px] text-white/65 leading-relaxed mb-8 max-w-[240px]">
-                                Maison de mode africaine d'excellence, basée à Dakar. Chaque pièce raconte une histoire.
+                                {t('footer_about')}
                             </p>
                             <div className="mb-8">
-                                <p className="font-lastica text-[9px] tracking-[4px] text-gold/70 uppercase mb-4">Nous suivre</p>
+                                <p className="font-lastica text-[9px] tracking-[4px] text-gold/70 uppercase mb-4">{t('footer_follow')}</p>
                                 <div className="flex flex-wrap gap-2">
                                     {socialMediaLinks && socialMediaLinks.length > 0
                                         ? socialMediaLinks.map(s => <SocialIcon key={s._id} platform={s.platform} url={s.url} />)
@@ -177,16 +179,16 @@ export default function Footer() {
 
                         {/* Navigation */}
                         <div className="lg:col-span-2 lg:col-start-6">
-                            <p className="eyebrow mb-6">Navigation</p>
+                            <p className="eyebrow mb-6">{t('footer_nav')}</p>
                             <ul className="space-y-3.5">
                                 {[
-                                    { to: '/', label: 'Home' },
-                                    { to: '/galerie', label: 'Galerie' },
-                                    { to: '/catalogues', label: 'Catalogues' },
-                                    { to: '/apropos', label: 'À Propos' },
-                                    { to: '/impact', label: 'Notre Impact' },
-                                    { to: '/blog', label: 'Blog & Podcast' },
-                                    { to: '/reservation', label: 'Réservation' },
+                                    { to: '/', label: t('footer_nav_home') },
+                                    { to: '/galerie', label: t('footer_nav_gallery') },
+                                    { to: '/catalogues', label: t('footer_nav_catalogues') },
+                                    { to: '/apropos', label: t('footer_nav_about') },
+                                    { to: '/impact', label: t('footer_nav_impact') },
+                                    { to: '/blog', label: t('footer_nav_blog') },
+                                    { to: '/reservation', label: t('footer_nav_reservation') },
                                 ].map(item => (
                                     <li key={item.to}>
                                         <Link to={item.to}
@@ -200,7 +202,7 @@ export default function Footer() {
 
                         {/* Marques */}
                         <div className="lg:col-span-2">
-                            <p className="eyebrow mb-6">Nos Marques</p>
+                            <p className="eyebrow mb-6">{t('footer_brands')}</p>
                             <ul className="space-y-3.5">
                                 {brands.map(b => (
                                     <li key={b.slug || b.name}>
@@ -215,7 +217,7 @@ export default function Footer() {
 
                         {/* Catalogues */}
                         <div className="lg:col-span-2">
-                            <p className="eyebrow mb-6">Catalogues</p>
+                            <p className="eyebrow mb-6">{t('nav_catalogues')}</p>
                             <ul className="space-y-3.5">
                                 {navCatalogues && navCatalogues.length > 0
                                     ? navCatalogues.slice(0, 5).map(c => (
@@ -229,16 +231,16 @@ export default function Footer() {
                                             </button>
                                         </li>
                                     ))
-                                    : <li className="font-glacial text-[13px] text-white/20">Aucun catalogue</li>
+                                    : <li className="font-glacial text-[13px] text-white/20">{t('footer_no_catalogue')}</li>
                                 }
                                 <li className="pt-1">
                                     <Link to="/catalogues" className="font-glacial text-[12px] text-gold/50 tracking-wide hover:text-gold transition-colors">
-                                        Voir tous →
+                                        {t('footer_see_all')}
                                     </Link>
                                 </li>
                             </ul>
                             <div className="mt-10">
-                                <Link to="/contact" className="btn btn-gold text-[9px] py-3 px-5">NOUS ÉCRIRE</Link>
+                                <Link to="/contact" className="btn btn-gold text-[9px] py-3 px-5">{t('footer_write')}</Link>
                             </div>
                         </div>
                     </div>
@@ -246,11 +248,11 @@ export default function Footer() {
                     {/* Copyright */}
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-7">
                         <p className="font-glacial text-[12px] text-white/50 tracking-wide">
-                            © {new Date().getFullYear()} <span className="text-white/70">MIA DREAMS & CO</span> — Tous droits réservés
+                            © {new Date().getFullYear()} <span className="text-white/70">MIA DREAMS & CO</span> — {t('footer_copyright')}
                         </p>
                         <div className="flex items-center gap-3">
                             <span className="w-6 h-px bg-gold/25" />
-                            <p className="font-lastica text-[9px] tracking-[4px] text-gold/80 uppercase">Made In Africa</p>
+                            <p className="font-lastica text-[9px] tracking-[4px] text-gold/80 uppercase">{t('footer_made')}</p>
                             <span className="w-6 h-px bg-gold/25" />
                         </div>
                     </div>
@@ -262,7 +264,7 @@ export default function Footer() {
                             rel="noopener noreferrer"
                             className="font-glacial text-[11px] text-white/25 hover:text-gold/70 tracking-[1px] transition-colors duration-300"
                         >
-                            Conçu par <span className="text-white/40 hover:text-gold">Zolaa Tech</span>
+                            {t('footer_credit')}
                         </a>
                     </div>
                 </div>
@@ -276,7 +278,7 @@ export default function Footer() {
                     <div className="relative p-6 pb-4 border-b border-white/5">
                         <button onClick={closeDlGate}
                                 className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors text-lg leading-none">✕</button>
-                        <span className="font-lastica text-[7px] tracking-[4px] text-gold uppercase block mb-2">Catalogue</span>
+                        <span className="font-lastica text-[7px] tracking-[4px] text-gold uppercase block mb-2">{t('cat_modal_title')}</span>
                         <p className="font-glacial text-base text-white uppercase tracking-[2px]">{dlGate.name}</p>
                     </div>
                     <div className="p-6">
@@ -287,18 +289,18 @@ export default function Footer() {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
                                     </svg>
                                 </div>
-                                <p className="font-glacial text-sm text-white/70 tracking-[1px]">Téléchargement en cours…</p>
-                                <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">Merci pour votre inscription !</p>
+                                <p className="font-glacial text-sm text-white/70 tracking-[1px]">{t('loading')}</p>
+                                <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">{t('cat_success')}</p>
                             </div>
                         ) : (
                             <form onSubmit={handleDlSubmit}>
                                 <p className="font-glacial text-sm text-white/65 leading-relaxed mb-5 tracking-[0.5px]">
-                                    Entrez votre adresse e-mail pour recevoir le catalogue et rester informé de nos actualités.
+                                    {t('cat_email_intro')}
                                 </p>
                                 <div className="mb-4">
                                     <input ref={dlInputRef} type="email" required value={dlEmail}
                                         onChange={e => setDlEmail(e.target.value)}
-                                        placeholder="votre@email.com"
+                                        placeholder={t('cat_email_placeholder')}
                                         className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-4 py-3 outline-none placeholder:text-white/20 font-glacial tracking-[1px] transition-colors" />
                                     {dlError && <p className="mt-2 font-glacial text-xs text-red-400/80">{dlError}</p>}
                                 </div>
@@ -308,15 +310,15 @@ export default function Footer() {
                                         <><svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                                        </svg>CHARGEMENT…</>
+                                        </svg>{t('cat_loading_btn')}</>
                                     ) : (
                                         <><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                        </svg>TÉLÉCHARGER LE CATALOGUE</>
+                                        </svg>{t('cat_download_btn')}</>
                                     )}
                                 </button>
                                 <p className="mt-3 font-glacial text-[11px] text-white/45 text-center leading-relaxed">
-                                    En continuant, vous acceptez de recevoir nos communications.
+                                    {t('cat_disclaimer')}
                                 </p>
                             </form>
                         )}

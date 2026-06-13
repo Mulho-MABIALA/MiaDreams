@@ -5,8 +5,10 @@ import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function FashionProgram() {
+    const { t } = useLanguage();
     const [brand, setBrand] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -39,7 +41,7 @@ export default function FashionProgram() {
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
-                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Formation</span>
+                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('brand_eyebrow_fp')}</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
                                 {heroTitle.includes('\n')
                                     ? heroTitle.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{i === heroTitle.split('\n').length - 1 ? <span className="text-gold">{line}</span> : line}</span>)
@@ -50,7 +52,7 @@ export default function FashionProgram() {
                                 {brand?.tagline || "Notre programme de formation à la mode africaine d'excellence."}
                             </p>
                             <div style={{ opacity: 0, animation: 'fadeUp .7s 1s forwards' }}>
-                                <Link to="/reservation" className="btn btn-gold">S'INSCRIRE</Link>
+                                <Link to="/reservation" className="btn btn-gold">{t('prog_enroll_btn')}</Link>
                             </div>
                         </div>
                     </div>
@@ -84,9 +86,9 @@ export default function FashionProgram() {
                             )}
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
-                            <span className="eyebrow">Le programme</span>
+                            <span className="eyebrow">{t('brand_about_fp')}</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-[#1a1a1a] mt-4 leading-tight">
-                                FORMEZ-VOUS À<br /><span className="text-gold">L'EXCELLENCE</span>
+                                {t('brand_fp_title').split(' ').slice(0,2).join(' ')}<br /><span className="text-gold">{t('brand_fp_title').split(' ').slice(2).join(' ')}</span>
                             </h2>
                             <div className="gold-line my-6" />
                             <p className="font-glacial text-sm text-[#444] leading-loose mb-6">
@@ -95,7 +97,7 @@ export default function FashionProgram() {
                             <p className="font-glacial text-sm text-[#444] leading-loose mb-9">
                                 Du design à la commercialisation, en passant par la gestion d'atelier et le marketing digital, notre programme couvre tous les aspects essentiels de l'industrie de la mode.
                             </p>
-                            <Link to="/reservation" className="btn btn-gold">DÉCOUVRIR LE PROGRAMME</Link>
+                            <Link to="/reservation" className="btn btn-gold">{t('brand_fp_discover')}</Link>
                         </div>
                     </div>
                 </div>
@@ -105,8 +107,8 @@ export default function FashionProgram() {
             <section className="bg-texture py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">Curriculum</span>
-                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">LES <span className="text-gold">MODULES</span></h2>
+                        <span className="eyebrow justify-center">{t('prog_curriculum_label')}</span>
+                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('brand_fp_modules').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('brand_fp_modules').split(' ').slice(1).join(' ')}</span></h2>
                         <div className="gold-line-center" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-px">
@@ -138,12 +140,12 @@ export default function FashionProgram() {
             {/* CTA */}
             <section className="bg-[#080808] py-24 text-center border-t border-gold/8">
                 <div className="max-w-xl mx-auto px-6 reveal">
-                    <span className="eyebrow justify-center">Rejoignez la prochaine promotion</span>
-                    <h2 className="display-title text-3xl text-white mt-4 mb-6">CANDIDATER AU <span className="text-gold">PROGRAMME</span></h2>
-                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">Les candidatures pour la prochaine promotion sont ouvertes. Places limitées — postulez dès maintenant.</p>
+                    <span className="eyebrow justify-center">{t('brand_fp_join_eyebrow')}</span>
+                    <h2 className="display-title text-3xl text-white mt-4 mb-6">{t('brand_fp_apply_title').split(' ').slice(0,-1).join(' ')} <span className="text-gold">{t('brand_fp_apply_title').split(' ').slice(-1).join(' ')}</span></h2>
+                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">{t('brand_fp_apply_sub')}</p>
                     <div className="flex flex-wrap gap-4 justify-center">
-                        <Link to="/reservation" className="btn btn-gold">SOUMETTRE MA CANDIDATURE</Link>
-                        <Link to="/contact" className="btn btn-white">POSER UNE QUESTION</Link>
+                        <Link to="/reservation" className="btn btn-gold">{t('brand_fp_apply_btn')}</Link>
+                        <Link to="/contact" className="btn btn-white">{t('brand_fp_question_btn')}</Link>
                     </div>
                 </div>
             </section>

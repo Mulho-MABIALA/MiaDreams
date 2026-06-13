@@ -80,9 +80,9 @@ export default function ProgrammesIndex() {
                                             <div className="flex items-center gap-3 mb-3">
                                                 <span className="font-lastica text-[9px] tracking-[3px] text-gold uppercase">{prog.format || 'formation'}</span>
                                                 {prog.is_open ? (
-                                                    <span className="font-glacial text-[10px] tracking-[1px] text-green-600 bg-green-50 px-2 py-0.5">Inscriptions ouvertes</span>
+                                                    <span className="font-glacial text-[10px] tracking-[1px] text-green-600 bg-green-50 px-2 py-0.5">{t('programmes_open')}</span>
                                                 ) : (
-                                                    <span className="font-glacial text-[10px] tracking-[1px] text-[#999] bg-[#f5f5f5] px-2 py-0.5">Inscriptions fermées</span>
+                                                    <span className="font-glacial text-[10px] tracking-[1px] text-[#999] bg-[#f5f5f5] px-2 py-0.5">{t('programmes_closed')}</span>
                                                 )}
                                             </div>
                                                             <h2 className="font-glacial text-xl text-[#1a1a1a] uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">
@@ -98,7 +98,7 @@ export default function ProgrammesIndex() {
                                                 {prog.level    && <span>📚 {prog.level}</span>}
                                             </div>
                                             <span className="btn btn-gold text-[10px] py-[.7rem] px-5 inline-block">
-                                                DÉCOUVRIR LA FORMATION
+                                                {t('programmes_discover')}
                                             </span>
                                         </div>
                                     </div>

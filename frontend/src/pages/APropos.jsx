@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { imgSrc } from '../utils/imgSrc';
+import { useLanguage } from '../context/LanguageContext';
 
 function TeamModal({ member, onClose }) {
     useEffect(() => {
@@ -80,6 +81,7 @@ const DEFAULT_VALEURS = [
 ];
 
 export default function APropos() {
+    const { t } = useLanguage();
     const [teamMembers, setTeamMembers] = useState([]);
     const [histoire, setHistoire]       = useState(null);
     const [stats, setStats]             = useState([]);
@@ -113,7 +115,7 @@ export default function APropos() {
                 <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/img/index/home-image1.jpg')", filter: 'brightness(.15)' }} />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom,rgba(8,8,8,.3) 0%,rgba(8,8,8,.98) 100%)' }} />
                 <div className="relative z-10 text-center px-6">
-                    <span className="eyebrow justify-center" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Notre histoire</span>
+                    <span className="eyebrow justify-center" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('about_eyebrow')}</span>
                     <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.4rem,6vw,5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
                         À <span className="text-gold">PROPOS</span>
                     </h1>
@@ -128,9 +130,9 @@ export default function APropos() {
                             <img src={histoireImg} className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover object-top" alt="MIA DREAMS" loading="lazy" />
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
-                            <span className="eyebrow">{h.subtitle || 'Depuis 2018'}</span>
+                            <span className="eyebrow">{h.subtitle || t('about_since')}</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 leading-tight">
-                                NOTRE <span className="text-gold">HISTOIRE</span>
+                                {t('about_history_title').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('about_history_title').split(' ').slice(1).join(' ')}</span>
                             </h2>
                             <div className="gold-line my-6" />
                             {histoireParagraphs.length > 0
@@ -158,8 +160,8 @@ export default function APropos() {
             <section className="bg-texture py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">Ce qui nous guide</span>
-                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">NOS <span className="text-gold">VALEURS</span></h2>
+                        <span className="eyebrow justify-center">{t('about_values_eyebrow')}</span>
+                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('about_values_title').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('about_values_title').split(' ').slice(1).join(' ')}</span></h2>
                         <div className="gold-line-center" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px">
@@ -180,8 +182,8 @@ export default function APropos() {
                 <section className="bg-[#080808] py-24 lg:py-32">
                     <div className="max-w-7xl mx-auto px-6 lg:px-10">
                         <div className="text-center mb-16 reveal">
-                            <span className="eyebrow justify-center">Les visages de MIA DREAMS</span>
-                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">NOTRE <span className="text-gold">ÉQUIPE</span></h2>
+                            <span className="eyebrow justify-center">{t('about_team_eyebrow')}</span>
+                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('about_team_title').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('about_team_title').split(' ').slice(1).join(' ')}</span></h2>
                             <div className="gold-line-center" />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -204,7 +206,7 @@ export default function APropos() {
                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400"
                                              style={{ background: 'rgba(8,8,8,0.55)' }}>
                                             <div className="border border-gold/50 px-4 py-2">
-                                                <span className="font-lastica text-[10px] tracking-[3px] text-gold uppercase">Voir le profil</span>
+                                                <span className="font-lastica text-[10px] tracking-[3px] text-gold uppercase">{t('about_see_profile')}</span>
                                             </div>
                                         </div>
                                         <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/40 transition-colors duration-400" />

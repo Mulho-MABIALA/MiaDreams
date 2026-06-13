@@ -2,42 +2,26 @@ import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import { useLanguage } from '../context/LanguageContext';
 
 const GOLD = '#C9A84C';
 
-const STEPS = [
-    { key: 'pending',    label: 'Reçue',          icon: '📋' },
-    { key: 'confirmed',  label: 'Confirmée',       icon: '✅' },
-    { key: 'processing', label: 'En préparation',  icon: '📦' },
-    { key: 'shipped',    label: 'En livraison',    icon: '🚚' },
-    { key: 'delivered',  label: 'Livrée',          icon: '🎉' },
-];
+function Timeline({ status, t }) {
+    const STEPS = [
+        { key: 'pending',    label: t('step_received'),   icon: '📋' },
+        { key: 'confirmed',  label: t('step_confirmed'),  icon: '✅' },
+        { key: 'processing', label: t('step_processing'), icon: '📦' },
+        { key: 'shipped',    label: t('step_shipped'),    icon: '🚚' },
+        { key: 'delivered',  label: t('step_delivered'),  icon: '🎉' },
+    ];
 
-const STATUS_MSG = {
-    pending:    'Votre commande est en attente de traitement.',
-    confirmed:  'Votre commande a été confirmée et sera bientôt préparée.',
-    processing: 'Votre commande est en cours de préparation.',
-    shipped:    'Votre commande est en route ! La livraison est imminente.',
-    delivered:  'Votre commande a été livrée. Merci pour votre confiance !',
-    cancelled:  'Votre commande a été annulée. Contactez-nous pour plus d\'informations.',
-};
-
-const PAYMENT_LABELS = {
-    pending:  'En attente',
-    paid:     'Payé',
-    failed:   'Échoué',
-    refunded: 'Remboursé',
-};
-
-function Timeline({ status }) {
     if (status === 'cancelled') {
         return (
             <div className="flex items-center gap-3 py-4 px-5 border border-red-500/20 rounded-lg"
                  style={{ background: 'rgba(154,124,124,0.08)' }}>
                 <span className="text-2xl">❌</span>
                 <div>
-                    <p className="font-glacial text-sm text-red-400/70">Commande annulée</p>
-                    <p className="font-glacial text-sm text-white/55 mt-0.5">{STATUS_MSG.cancelled}</p>
+                    <p className="font-glacial text-sm text-red-400/70">{t('status_cancelled')}</p>
                 </div>
             </div>
         );
@@ -86,18 +70,13 @@ function Timeline({ status }) {
                                }}>
                                 {step.label}
                             </p>
-                            {current && (
-                                <p className="font-glacial text-sm text-white/60 mt-1 leading-relaxed">
-                                    {STATUS_MSG[status]}
-                                </p>
-                            )}
-                        </div>
+                            </div>
 
                         {current && (
                             <div className="pt-2">
                                 <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1 rounded-sm"
                                       style={{ background: `${GOLD}20`, color: GOLD }}>
-                                    ACTUEL
+                                    {t('tracking_current')}
                                 </span>
                             </div>
                         )}
@@ -110,6 +89,7 @@ function Timeline({ status }) {
 
 export default function CommandeSuivi() {
     const { number } = useParams();
+    const { t } = useLanguage();
     const navigate   = useNavigate();
 
     const [orderNumber, setOrderNumber] = useState(number || '');
@@ -129,7 +109,7 @@ export default function CommandeSuivi() {
                 navigate(`/commande/suivi/${num.trim().toUpperCase()}`, { replace: true });
             }
         } catch (e) {
-            setError(e.response?.status === 404 ? 'Commande introuvable. Vérifiez le numéro.' : 'Erreur de connexion. Réessayez.');
+            setError(e.response?.status === 404 ? t('tracking_not_found') : t('tracking_conn_error'));
         } finally { setLoading(false); }
     };
 
@@ -144,14 +124,14 @@ export default function CommandeSuivi() {
 
                     {/* En-tête */}
                     <div className="mb-10">
-                        <span className="font-lastica text-[10px] tracking-[5px] text-white/45 uppercase block mb-2">Boutique</span>
-                        <h1 className="font-glacial text-3xl text-white uppercase tracking-[4px]">Suivi commande</h1>
+                        <span className="font-lastica text-[10px] tracking-[5px] text-white/45 uppercase block mb-2">{t('order_breadcrumb')}</span>
+                        <h1 className="font-glacial text-3xl text-white uppercase tracking-[4px]">{t('tracking_title')}</h1>
                     </div>
 
                     {/* Formulaire de recherche */}
                     <form onSubmit={handleSubmit} className="mb-10">
                         <label className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase block mb-2">
-                            Numéro de commande
+                            {t('tracking_number')}
                         </label>
                         <div className="flex gap-2">
                             <input
@@ -163,7 +143,7 @@ export default function CommandeSuivi() {
                             <button type="submit" disabled={loading || !orderNumber.trim()}
                                 className="px-6 py-3 font-lastica text-[8px] tracking-[3px] uppercase disabled:opacity-40 transition-all hover:brightness-110"
                                 style={{ background: GOLD, color: '#050505' }}>
-                                {loading ? '...' : 'OK'}
+                                {loading ? '...' : t('go')}
                             </button>
                         </div>
                         {error && <p className="font-glacial text-xs text-red-400/60 mt-2">{error}</p>}
@@ -176,11 +156,11 @@ export default function CommandeSuivi() {
                             <div className="border border-white/[0.06] p-6" style={{ background: '#0c0c0c' }}>
                                 <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.05]">
                                     <div>
-                                        <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Commande</p>
+                                        <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">{t('tracking_number')}</p>
                                         <p className="font-glacial text-lg font-medium" style={{ color: GOLD }}>{order.order_number}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Date</p>
+                                        <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">{t('tracking_date')}</p>
                                         <p className="font-glacial text-sm text-white/65">
                                             {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                                         </p>
@@ -189,26 +169,26 @@ export default function CommandeSuivi() {
 
                                 {/* Timeline */}
                                 <div className="mb-5">
-                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-4">Progression</p>
-                                    <Timeline status={order.order_status} />
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-4">{t('tracking_progress')}</p>
+                                    <Timeline status={order.order_status} t={t} />
                                 </div>
 
                                 {/* Paiement */}
                                 <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
-                                    <span className="font-glacial text-sm text-white/65">Paiement</span>
+                                    <span className="font-glacial text-sm text-white/65">{t('tracking_payment')}</span>
                                     <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1"
                                           style={{
                                               background: order.payment_status === 'paid' ? 'rgba(124,154,132,0.15)' : 'rgba(201,168,76,0.12)',
                                               color:      order.payment_status === 'paid' ? '#7C9A84' : GOLD,
                                           }}>
-                                        {PAYMENT_LABELS[order.payment_status] || order.payment_status}
+                                        {t(`pay_${order.payment_status}`) || order.payment_status}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Articles */}
                             <div className="border border-white/[0.06] p-6" style={{ background: '#0c0c0c' }}>
-                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-4">Articles</p>
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-4">{t('tracking_items')}</p>
                                 <div className="space-y-3">
                                     {order.items.map((item, i) => (
                                         <div key={i} className="flex justify-between items-center">
@@ -217,7 +197,7 @@ export default function CommandeSuivi() {
                                         </div>
                                     ))}
                                     <div className="flex justify-between items-center pt-3 border-t border-white/[0.05]">
-                                        <span className="font-glacial text-sm text-white/50">Total</span>
+                                        <span className="font-glacial text-sm text-white/50">{t('tracking_total')}</span>
                                         <span className="font-glacial text-base font-medium" style={{ color: GOLD }}>
                                             {order.total.toLocaleString('fr-FR')} FCFA
                                         </span>
@@ -230,12 +210,12 @@ export default function CommandeSuivi() {
                                 <Link to="/boutique"
                                     className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase transition-all hover:brightness-110"
                                     style={{ background: GOLD, color: '#050505' }}>
-                                    CONTINUER LES ACHATS
+                                    {t('tracking_continue')}
                                 </Link>
                                 <Link to="/mes-commandes"
                                     className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase border transition-all"
                                     style={{ borderColor: `${GOLD}25`, color: `${GOLD}50` }}>
-                                    MES COMMANDES
+                                    {t('tracking_my_orders')}
                                 </Link>
                             </div>
                         </div>
@@ -243,7 +223,7 @@ export default function CommandeSuivi() {
 
                     {!order && !loading && !number && (
                         <p className="font-glacial text-sm text-white/50 text-center mt-8">
-                            Entrez votre numéro de commande pour suivre votre livraison.
+                            {t('tracking_enter')}
                         </p>
                     )}
                 </div>

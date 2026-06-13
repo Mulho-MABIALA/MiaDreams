@@ -2,28 +2,29 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import { useLanguage } from '../context/LanguageContext';
 
 const GOLD = '#C9A84C';
 
-const STATUS_LABELS = {
-    pending:    { label: 'En attente', color: '#C9A84C' },
-    confirmed:  { label: 'Confirmée', color: '#7C9A84' },
-    processing: { label: 'En préparation', color: '#9A847C' },
-    shipped:    { label: 'En livraison', color: '#7C849A' },
-    delivered:  { label: 'Livrée', color: '#7C9A84' },
-    cancelled:  { label: 'Annulée', color: '#9A7C7C' },
-};
-
-const PAYMENT_LABELS = {
-    pending: { label: 'En attente', color: '#C9A84C' },
-    paid:    { label: 'Payé', color: '#7C9A84' },
-    failed:  { label: 'Échoué', color: '#9A7C7C' },
-};
-
 export default function CommandeSucces() {
     const { id } = useParams();
+    const { t } = useLanguage();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const STATUS_LABELS = {
+        pending:    { label: t('status_pending'), color: '#C9A84C' },
+        confirmed:  { label: t('status_confirmed'), color: '#7C9A84' },
+        processing: { label: t('status_processing'), color: '#9A847C' },
+        shipped:    { label: t('status_shipped'), color: '#7C849A' },
+        delivered:  { label: t('status_delivered'), color: '#7C9A84' },
+        cancelled:  { label: t('status_cancelled'), color: '#9A7C7C' },
+    };
+    const PAYMENT_LABELS = {
+        pending: { label: t('pay_pending'), color: '#C9A84C' },
+        paid:    { label: t('pay_paid'), color: '#7C9A84' },
+        failed:  { label: t('pay_failed'), color: '#9A7C7C' },
+    };
 
     useEffect(() => {
         // Récupérer le numéro de commande stocké lors du checkout (anti-IDOR)
@@ -69,38 +70,38 @@ export default function CommandeSucces() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
                             </svg>
                         </div>
-                        <p className="font-lastica text-[10px] tracking-[5px] text-white/50 uppercase mb-2">Commande reçue</p>
-                        <h1 className="font-glacial text-3xl text-white uppercase tracking-[4px] mb-2">Merci !</h1>
-                        <p className="font-glacial text-sm text-white/65">Votre commande a bien été enregistrée.</p>
+                        <p className="font-lastica text-[10px] tracking-[5px] text-white/50 uppercase mb-2">{t('success_label')}</p>
+                        <h1 className="font-glacial text-3xl text-white uppercase tracking-[4px] mb-2">{t('success_title')}</h1>
+                        <p className="font-glacial text-sm text-white/65">{t('success_msg')}</p>
                     </div>
 
                     {/* Détails */}
                     <div className="border border-white/[0.05] p-6 mb-6" style={{ background: '#0c0c0c' }}>
                         <div className="flex items-center gap-3 mb-6">
-                            <p className="font-lastica text-[10px] tracking-[4px] text-white/50 uppercase">Détails de la commande</p>
+                            <p className="font-lastica text-[10px] tracking-[4px] text-white/50 uppercase">{t('success_details')}</p>
                             <div className="flex-1 h-px bg-white/[0.04]" />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
                             <div>
-                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">N° commande</p>
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">{t('success_number')}</p>
                                 <p className="font-glacial font-medium" style={{ color: GOLD }}>{order.order_number}</p>
                             </div>
                             <div>
-                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Date</p>
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">{t('success_date')}</p>
                                 <p className="font-glacial text-white/70">
                                     {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                                 </p>
                             </div>
                             <div>
-                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Statut commande</p>
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">{t('success_status')}</p>
                                 <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1"
                                       style={{ background: `${orderStatus.color}20`, color: orderStatus.color }}>
                                     {orderStatus.label}
                                 </span>
                             </div>
                             <div>
-                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">Paiement</p>
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/50 uppercase mb-1">{t('success_payment')}</p>
                                 <span className="font-lastica text-[10px] tracking-[2px] px-2.5 py-1"
                                       style={{ background: `${payStatus.color}20`, color: payStatus.color }}>
                                     {payStatus.label}
@@ -126,7 +127,7 @@ export default function CommandeSucces() {
                         {/* Total */}
                         <div className="border-t border-white/[0.05] pt-4 space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span className="font-glacial text-white/60">Sous-total</span>
+                                <span className="font-glacial text-white/60">{t('order_subtotal')}</span>
                                 <span className="font-glacial text-white/65">{order.subtotal.toLocaleString('fr-FR')} FCFA</span>
                             </div>
                             <div className="flex justify-between">
@@ -141,7 +142,7 @@ export default function CommandeSucces() {
                     {/* Client */}
                     <div className="border border-white/[0.05] p-6 mb-8" style={{ background: '#0c0c0c' }}>
                         <div className="flex items-center gap-3 mb-4">
-                            <p className="font-lastica text-[10px] tracking-[4px] text-white/50 uppercase">Livraison</p>
+                            <p className="font-lastica text-[10px] tracking-[4px] text-white/50 uppercase">{t('success_delivery')}</p>
                             <div className="flex-1 h-px bg-white/[0.04]" />
                         </div>
                         <div className="space-y-1.5">
@@ -156,18 +157,18 @@ export default function CommandeSucces() {
                         <Link to={`/commande/suivi/${order.order_number}`}
                             className="w-full py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase transition-all hover:brightness-110"
                             style={{ background: GOLD, color: '#050505' }}>
-                            SUIVRE MA COMMANDE →
+                            {t('success_track')}
                         </Link>
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Link to="/boutique"
                                 className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase border transition-all"
                                 style={{ borderColor: `${GOLD}30`, color: `${GOLD}60` }}>
-                                CONTINUER LES ACHATS
+                                {t('success_continue')}
                             </Link>
                             <Link to="/mes-commandes"
                                 className="flex-1 py-3.5 text-center font-lastica text-[9px] tracking-[4px] uppercase border transition-all"
                                 style={{ borderColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.25)' }}>
-                                MES COMMANDES
+                                {t('success_my_orders')}
                             </Link>
                         </div>
                     </div>

@@ -4,8 +4,10 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function ProgrammeDetail() {
+    const { t } = useLanguage();
     const { slug } = useParams();
     const [programme, setProgramme] = useState(null);
     const [inscCount, setInscCount] = useState(0);
@@ -83,7 +85,7 @@ export default function ProgrammeDetail() {
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
-                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Formation</span>
+                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('prog_eyebrow')}</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
                                 {programme.name.includes(' ')
                                     ? <>{programme.name.split(' ').slice(0, -1).join(' ')}<br /><span className="text-gold">{programme.name.split(' ').slice(-1)}</span></>
@@ -91,7 +93,7 @@ export default function ProgrammeDetail() {
                                 }
                             </h1>
                             <div style={{ opacity: 0, animation: 'fadeUp .7s 1s forwards' }}>
-                                <a href="#inscription" className="btn btn-gold mt-8 inline-block">S'INSCRIRE</a>
+                                <a href="#inscription" className="btn btn-gold mt-8 inline-block">{t('prog_enroll_btn')}</a>
                             </div>
                         </div>
                     </div>
@@ -124,7 +126,7 @@ export default function ProgrammeDetail() {
                             )}
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
-                            <span className="eyebrow">La formation</span>
+                            <span className="eyebrow">{t('prog_curriculum_eyebrow')}</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-[#1a1a1a] mt-4 leading-tight">
                                 {programme.name.toUpperCase()}
                             </h2>
@@ -136,40 +138,40 @@ export default function ProgrammeDetail() {
                             )}
                             {/* Infos formation */}
                             <div className="grid grid-cols-2 gap-4 mt-6">
-                                {programme.duration   && <InfoItem icon={<IcoClock />}  label="Durée"   value={programme.duration} />}
-                                {programme.price      && <InfoItem icon={<IcoPrice />}  label="Tarif"   value={programme.price} />}
-                                {programme.format     && <InfoItem icon={<IcoFormat />} label="Format"  value={programme.format} />}
-                                {programme.level      && <InfoItem icon={<IcoLevel />}  label="Niveau"  value={programme.level} />}
-                                {programme.start_date && <InfoItem icon={<IcoCal />}    label="Début"   value={programme.start_date} />}
-                                {programme.end_date   && <InfoItem icon={<IcoFlag />}   label="Fin"     value={programme.end_date} />}
+                                {programme.duration   && <InfoItem icon={<IcoClock />}  label={t('prog_duration')}   value={programme.duration} />}
+                                {programme.price      && <InfoItem icon={<IcoPrice />}  label={t('prog_price')}   value={programme.price} />}
+                                {programme.format     && <InfoItem icon={<IcoFormat />} label={t('prog_format')}  value={programme.format} />}
+                                {programme.level      && <InfoItem icon={<IcoLevel />}  label={t('prog_level')}  value={programme.level} />}
+                                {programme.start_date && <InfoItem icon={<IcoCal />}    label={t('prog_start_date')}   value={programme.start_date} />}
+                                {programme.end_date   && <InfoItem icon={<IcoFlag />}   label={t('prog_end_date')}     value={programme.end_date} />}
                                 {programme.max_places > 0 && (
-                                    <InfoItem icon={<IcoUsers />} label="Places" value={isFull ? 'Complet' : `${placesLeft} place${placesLeft > 1 ? 's' : ''} restante${placesLeft > 1 ? 's' : ''}`} />
+                                    <InfoItem icon={<IcoUsers />} label={t('prog_places')} value={isFull ? t('prog_full') : `${placesLeft} place${placesLeft > 1 ? 's' : ''} restante${placesLeft > 1 ? 's' : ''}`} />
                                 )}
                             </div>
                             <div className="mt-8">
                                 {programme.is_open && !isFull ? (
-                                    <a href="#inscription" className="btn btn-gold">S'INSCRIRE À CETTE FORMATION</a>
+                                    <a href="#inscription" className="btn btn-gold">{t('prog_enroll_cta')}</a>
                                 ) : isFull ? (
                                     <div className="border border-red-200 bg-red-50 p-4">
                                         <p className="font-glacial text-sm text-red-600 mb-2">
-                                            🔒 Places épuisées — cette session est complète.
+                                            {t('prog_sold_out')}
                                         </p>
-                                        <a href="/contact" className="font-glacial text-xs text-[#999] underline">Contactez-nous pour être sur liste d'attente</a>
+                                        <a href="/contact" className="font-glacial text-xs text-[#999] underline">{t('prog_contact')}</a>
                                     </div>
                                 ) : (
                                     <div className="border border-gold/20 bg-[#fdf9f3] p-4">
                                         <p className="font-glacial text-sm text-[#6B4F3A] font-medium mb-1">
-                                            🕐 Inscriptions bientôt disponibles
+                                            {t('prog_coming_soon')}
                                         </p>
                                         {(programme.start_date || programme.end_date) && (
                                             <p className="font-glacial text-xs text-[#999] mt-1">
-                                                Prochaine session :
+                                                {t('prog_next_session')}
                                                 {programme.start_date && <> <span className="text-[#6B4F3A] font-medium">{programme.start_date}</span></>}
                                                 {programme.start_date && programme.end_date && ' → '}
                                                 {programme.end_date && <span className="text-[#6B4F3A] font-medium">{programme.end_date}</span>}
                                             </p>
                                         )}
-                                        <a href="/contact" className="font-glacial text-xs text-gold underline mt-2 block">Être notifié à l'ouverture des inscriptions →</a>
+                                        <a href="/contact" className="font-glacial text-xs text-gold underline mt-2 block">{t('prog_notify')}</a>
                                     </div>
                                 )}
                             </div>
@@ -183,8 +185,8 @@ export default function ProgrammeDetail() {
                 <section className="bg-texture py-24 lg:py-32">
                     <div className="max-w-7xl mx-auto px-6 lg:px-10">
                         <div className="text-center mb-16 reveal">
-                            <span className="eyebrow justify-center">Curriculum</span>
-                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">LE <span className="text-gold">PROGRAMME</span></h2>
+                            <span className="eyebrow justify-center">{t('prog_curriculum_label')}</span>
+                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('prog_curriculum')}</h2>
                             <div className="gold-line-center" />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px">
@@ -210,8 +212,8 @@ export default function ProgrammeDetail() {
             <section id="inscription" className="bg-[#080808] py-24 lg:py-32 border-t border-gold/8">
                 <div className="max-w-2xl mx-auto px-6 reveal">
                     <div className="text-center mb-12">
-                        <span className="eyebrow justify-center">Rejoindre la formation</span>
-                        <h2 className="display-title text-3xl text-white mt-4 mb-4">S'INSCRIRE AU <span className="text-gold">PROGRAMME</span></h2>
+                        <span className="eyebrow justify-center">{t('prog_join_title')}</span>
+                        <h2 className="display-title text-3xl text-white mt-4 mb-4">{t('prog_form_title')}</h2>
                         {programme.max_places > 0 && !isFull && (
                             <p className="font-glacial text-sm text-gold/70">{placesLeft} place{placesLeft > 1 ? 's' : ''} restante{placesLeft > 1 ? 's' : ''}</p>
                         )}
@@ -220,62 +222,62 @@ export default function ProgrammeDetail() {
                     {!programme.is_open || isFull ? (
                         <div className="text-center border border-gold/15 p-10">
                             <p className="font-glacial text-white/60 mb-6">
-                                {isFull ? 'Toutes les places sont prises pour cette formation.' : 'Les inscriptions sont actuellement fermées.'}
+                                {isFull ? t('prog_full_msg') : t('prog_closed_msg')}
                             </p>
-                            <Link to="/contact" className="btn btn-white">NOUS CONTACTER</Link>
+                            <Link to="/contact" className="btn btn-white">{t('prog_contact')}</Link>
                         </div>
                     ) : sent ? (
                         <div className="text-center border border-gold/15 p-10">
                             <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'rgba(201,168,76,0.15)' }}>
                                 <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                             </div>
-                            <h3 className="font-glacial text-lg text-white uppercase tracking-[2px] mb-3">Inscription reçue !</h3>
+                            <h3 className="font-glacial text-lg text-white uppercase tracking-[2px] mb-3">{t('prog_success_title')}</h3>
                             <p className="font-glacial text-sm text-white/55 leading-relaxed">
-                                Merci pour votre inscription à <strong className="text-gold">{programme.name}</strong>. Nous vous contacterons sous peu pour les prochaines étapes.
+                                {t('prog_success_msg')}
                             </p>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">Nom complet *</label>
+                                    <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">{t('prog_name')}</label>
                                     <input
                                         type="text" required
                                         value={form.nom}
                                         onChange={e => setForm(f => ({ ...f, nom: e.target.value }))}
                                         className="w-full bg-transparent border border-white/10 px-4 py-3 font-glacial text-sm text-white focus:border-gold/50 outline-none transition-colors"
-                                        placeholder="Votre nom"
+                                        placeholder={t('prog_ph_name')}
                                     />
                                 </div>
                                 <div>
-                                    <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">Email *</label>
+                                    <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">{t('prog_email')}</label>
                                     <input
                                         type="email" required
                                         value={form.email}
                                         onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                                         className="w-full bg-transparent border border-white/10 px-4 py-3 font-glacial text-sm text-white focus:border-gold/50 outline-none transition-colors"
-                                        placeholder="votre@email.com"
+                                        placeholder={t('prog_ph_email')}
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">Téléphone</label>
+                                <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">{t('prog_phone')}</label>
                                 <input
                                     type="tel"
                                     value={form.telephone}
                                     onChange={e => setForm(f => ({ ...f, telephone: e.target.value }))}
                                     className="w-full bg-transparent border border-white/10 px-4 py-3 font-glacial text-sm text-white focus:border-gold/50 outline-none transition-colors"
-                                    placeholder="+221 XX XXX XX XX"
+                                    placeholder={t('prog_ph_phone')}
                                 />
                             </div>
                             <div>
-                                <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">Message / Motivation</label>
+                                <label className="font-glacial text-[10px] tracking-[2px] text-white/40 uppercase block mb-2">{t('prog_motivation')}</label>
                                 <textarea
                                     rows={4}
                                     value={form.message}
                                     onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                                     className="w-full bg-transparent border border-white/10 px-4 py-3 font-glacial text-sm text-white focus:border-gold/50 outline-none transition-colors resize-none"
-                                    placeholder="Parlez-nous de vous et de vos motivations…"
+                                    placeholder={t('prog_ph_motivation')}
                                 />
                             </div>
                             {error && <p className="font-glacial text-sm text-red-400">{error}</p>}
@@ -283,7 +285,7 @@ export default function ProgrammeDetail() {
                                 type="submit" disabled={sending}
                                 className="btn btn-gold w-full justify-center"
                             >
-                                {sending ? 'Envoi en cours…' : "S'INSCRIRE À LA FORMATION"}
+                                {sending ? t('prog_submitting') : t('prog_submit')}
                             </button>
                         </form>
                     )}

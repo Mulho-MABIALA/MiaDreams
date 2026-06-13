@@ -4,6 +4,7 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
 import { imgSrc } from '../utils/imgSrc';
+import { useLanguage } from '../context/LanguageContext';
 
 const GOLD = '#C9A84C';
 
@@ -20,17 +21,17 @@ function CinetPayLogo({ size = 36 }) {
     );
 }
 
-const PAYMENT_METHODS = [
+const PAYMENT_METHODS_KEYS = [
     {
         id: 'cinetpay',
-        label: 'Paiement en ligne',
+        labelKey: 'order_pay_online',
         desc: 'Wave CI · Orange Money · MTN · Moov · Free Money · Carte bancaire',
         logo: <CinetPayLogo size={36} />,
     },
     {
         id: 'cash',
-        label: 'Espèces à la livraison',
-        desc: 'Payez en cash à la réception de votre commande',
+        labelKey: 'order_pay_cash',
+        descKey: 'order_pay_cash_desc',
         logo: (
             <div className="w-9 h-9 border border-white/15 flex items-center justify-center">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" strokeWidth="1.5">
@@ -48,6 +49,7 @@ const label = "font-lastica text-[10px] tracking-[3px] text-white/70 uppercase b
 
 export default function Commande() {
     const { items, subtotal, clearCart } = useCart();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const shipping = 0;
     const total = subtotal;
@@ -61,14 +63,20 @@ export default function Commande() {
 
     const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+    const PAYMENT_METHODS = PAYMENT_METHODS_KEYS.map(m => ({
+        ...m,
+        label: t(m.labelKey),
+        desc: m.descKey ? t(m.descKey) : m.desc,
+    }));
+
     /* Panier vide */
     if (items.length === 0) return (
         <Layout title="Commande">
             <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center gap-5 px-6">
-                <p className="font-lastica text-[8px] tracking-[5px] text-white/50 uppercase">Panier vide</p>
+                <p className="font-lastica text-[8px] tracking-[5px] text-white/50 uppercase">{t('order_empty')}</p>
                 <Link to="/boutique" className="font-lastica text-[8px] tracking-[4px] uppercase px-7 py-3.5"
                       style={{ background: GOLD, color: '#050505' }}>
-                    RETOUR BOUTIQUE
+                    {t('order_back_shop')}
                 </Link>
             </div>
         </Layout>
@@ -114,8 +122,8 @@ export default function Commande() {
 
                     {/* En-tête */}
                     <div className="mb-12 pb-6 border-b border-white/[0.05]">
-                        <span className="font-lastica text-[10px] tracking-[5px] text-white/45 uppercase block mb-2">Boutique</span>
-                        <h1 className="font-glacial text-3xl lg:text-4xl text-white uppercase tracking-[4px]">Finaliser la commande</h1>
+                        <span className="font-lastica text-[10px] tracking-[5px] text-white/45 uppercase block mb-2">{t('order_breadcrumb')}</span>
+                        <h1 className="font-glacial text-3xl lg:text-4xl text-white uppercase tracking-[4px]">{t('order_title')}</h1>
                     </div>
 
                     <form onSubmit={handleSubmit}>
@@ -129,38 +137,38 @@ export default function Commande() {
                                     <div className="flex items-center gap-4 mb-6">
                                         <span className="font-lastica text-[10px] tracking-[5px] text-white/40 uppercase">01</span>
                                         <div className="h-px flex-1 bg-white/[0.08]" />
-                                        <span className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase">Vos informations</span>
+                                        <span className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase">{t('order_your_info')}</span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="sm:col-span-2">
-                                            <label className={label}>Nom complet *</label>
-                                            <input className={inp} required value={form.name} onChange={e => set('name', e.target.value)} placeholder="Aminata Koné" />
+                                            <label className={label}>{t('order_fullname')}</label>
+                                            <input className={inp} required value={form.name} onChange={e => set('name', e.target.value)} placeholder={t('order_ph_name')} />
                                         </div>
                                         <div>
-                                            <label className={label}>Email *</label>
-                                            <input type="email" className={inp} required value={form.email} onChange={e => set('email', e.target.value)} placeholder="aminata@email.com" />
+                                            <label className={label}>{t('order_email')}</label>
+                                            <input type="email" className={inp} required value={form.email} onChange={e => set('email', e.target.value)} placeholder={t('order_ph_email')} />
                                         </div>
                                         <div>
-                                            <label className={label}>Téléphone *</label>
-                                            <input className={inp} required value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+225 07 00 00 00 00" />
+                                            <label className={label}>{t('order_phone')}</label>
+                                            <input className={inp} required value={form.phone} onChange={e => set('phone', e.target.value)} placeholder={t('order_ph_phone')} />
                                         </div>
                                         <div className="sm:col-span-2">
-                                            <label className={label}>Adresse de livraison</label>
-                                            <input className={inp} value={form.address} onChange={e => set('address', e.target.value)} placeholder="Quartier, rue, numéro…" />
+                                            <label className={label}>{t('order_address')}</label>
+                                            <input className={inp} value={form.address} onChange={e => set('address', e.target.value)} placeholder={t('order_ph_address')} />
                                         </div>
                                         <div>
-                                            <label className={label}>Ville</label>
+                                            <label className={label}>{t('order_city')}</label>
                                             <input className={inp} value={form.city} onChange={e => set('city', e.target.value)} />
                                         </div>
                                         <div>
-                                            <label className={label}>Pays</label>
+                                            <label className={label}>{t('order_country')}</label>
                                             <input className={inp} value={form.country} onChange={e => set('country', e.target.value)} />
                                         </div>
                                         <div className="sm:col-span-2">
-                                            <label className={label}>Notes (optionnel)</label>
+                                            <label className={label}>{t('order_notes')}</label>
                                             <textarea className={inp + " resize-none"} rows={3} value={form.notes}
                                                 onChange={e => set('notes', e.target.value)}
-                                                placeholder="Instructions de livraison…" />
+                                                placeholder={t('order_ph_notes')} />
                                         </div>
                                     </div>
                                 </div>
@@ -170,7 +178,7 @@ export default function Commande() {
                                     <div className="flex items-center gap-4 mb-6">
                                         <span className="font-lastica text-[10px] tracking-[5px] text-white/40 uppercase">02</span>
                                         <div className="h-px flex-1 bg-white/[0.08]" />
-                                        <span className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase">Mode de paiement</span>
+                                        <span className="font-lastica text-[10px] tracking-[4px] text-white/40 uppercase">{t('order_payment_mode')}</span>
                                     </div>
                                     <div className="space-y-3">
                                         {PAYMENT_METHODS.map(m => (
@@ -207,7 +215,7 @@ export default function Commande() {
                             {/* ── Récapitulatif ── */}
                             <div>
                                 <div className="bg-[#0c0c0c] border border-white/[0.05] p-5 sm:p-7 lg:sticky lg:top-24">
-                                    <p className="font-lastica text-[10px] tracking-[5px] text-white/65 uppercase mb-6">Ma commande</p>
+                                    <p className="font-lastica text-[10px] tracking-[5px] text-white/65 uppercase mb-6">{t('order_summary')}</p>
 
                                     {/* Articles */}
                                     <div className="space-y-4 mb-6">
@@ -234,11 +242,11 @@ export default function Commande() {
                                     {/* Totaux */}
                                     <div className="border-t border-white/[0.05] pt-5 space-y-3 mb-7">
                                         <div className="flex justify-between">
-                                            <span className="font-glacial text-sm text-white/50">Sous-total</span>
+                                            <span className="font-glacial text-sm text-white/50">{t('order_subtotal')}</span>
                                             <span className="font-glacial text-sm text-white/70">{subtotal.toLocaleString('fr-FR')} FCFA</span>
                                         </div>
                                         <div className="flex justify-between pt-3 border-t border-white/[0.08]">
-                                            <span className="font-glacial text-sm text-white/75">Total</span>
+                                            <span className="font-glacial text-sm text-white/75">{t('order_total')}</span>
                                             <span className="font-glacial text-lg font-medium" style={{ color: GOLD }}>
                                                 {total.toLocaleString('fr-FR')} <span className="text-sm">FCFA</span>
                                             </span>
@@ -258,14 +266,14 @@ export default function Commande() {
                                                     <circle cx="12" cy="12" r="10" strokeOpacity=".2"/>
                                                     <path d="M12 2a10 10 0 0110 10"/>
                                                 </svg>
-                                                Traitement…
+                                                {t('loading')}
                                             </span>
-                                        ) : paymentMethod === 'cinetpay' ? 'PAYER EN LIGNE →' : 'CONFIRMER LA COMMANDE →'}
+                                        ) : paymentMethod === 'cinetpay' ? t('order_pay_btn') : t('order_confirm_btn')}
                                     </button>
 
                                     <Link to="/panier"
                                         className="block text-center mt-4 font-lastica text-[10px] tracking-[3px] text-white/45 hover:text-white/38 transition-colors uppercase">
-                                        ← Modifier le panier
+                                        {t('order_back_cart')}
                                     </Link>
                                 </div>
                             </div>

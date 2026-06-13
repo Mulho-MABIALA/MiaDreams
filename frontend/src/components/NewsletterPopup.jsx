@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function NewsletterPopup() {
     const [visible, setVisible] = useState(false);
@@ -34,6 +35,8 @@ export default function NewsletterPopup() {
         }
     };
 
+    const { t } = useLanguage();
+
     if (!visible) return null;
 
     return (
@@ -44,28 +47,28 @@ export default function NewsletterPopup() {
                 <button onClick={dismiss}
                         className="absolute top-4 right-4 text-white/25 hover:text-gold transition-colors text-xl leading-none">✕</button>
 
-                <p className="font-lastica text-[7px] tracking-[5px] text-gold uppercase mb-3">Rejoignez-nous</p>
+                <p className="font-lastica text-[7px] tracking-[5px] text-gold uppercase mb-3">{t('popup_label')}</p>
                 <h3 className="font-glacial text-2xl font-light text-white uppercase tracking-[4px] mb-2">
-                    NEWSLETTER<br /><span className="text-gold">MIA DREAMS</span>
+                    {t('popup_title').split(' ').slice(0,1).join(' ')}<br /><span className="text-gold">{t('popup_title').split(' ').slice(1).join(' ')}</span>
                 </h3>
                 <p className="font-glacial text-xs text-white/35 leading-relaxed mb-7">
-                    Actualités, collections, événements — directement dans votre boîte mail.
+                    {t('popup_msg')}
                 </p>
 
                 {success ? (
-                    <p className="font-glacial text-sm text-gold tracking-[2px]">✓ Inscription confirmée !</p>
+                    <p className="font-glacial text-sm text-gold tracking-[2px]">✓ {t('popup_success')}</p>
                 ) : (
                     <form onSubmit={handleSubmit}>
                         <div className="flex">
                             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                                   placeholder="VOTRE EMAIL" required
+                                   placeholder={t('popup_placeholder')} required
                                    className="flex-1 bg-transparent border border-white/10 border-r-0 text-white
                                               placeholder-white/20 px-4 py-3 font-glacial text-sm tracking-wide
                                               outline-none focus:border-gold/40 transition-colors" />
                             <button type="submit"
                                     className="bg-gold text-[#080808] px-5 py-3 font-glacial text-[9px] tracking-[3px]
                                                uppercase hover:bg-gold-light transition-colors whitespace-nowrap">
-                                OK
+                                {t('popup_btn')}
                             </button>
                         </div>
                         {error && <p className="text-red-400 text-xs mt-2 font-glacial">{error}</p>}

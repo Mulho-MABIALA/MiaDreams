@@ -3,10 +3,12 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { imgSrc as getImgSrc } from '../../utils/imgSrc';
+import { useLanguage } from '../../context/LanguageContext';
 
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 
 export default function BlogShow() {
+    const { t } = useLanguage();
     const { slug } = useParams();
     const [data, setData] = useState({ post: null, related: [] });
     const [loading, setLoading] = useState(true);
@@ -27,11 +29,11 @@ export default function BlogShow() {
     );
 
     if (!data.post) return (
-        <Layout title="Article introuvable">
+        <Layout title={t('blog_not_found')}>
             <div className="min-h-screen bg-[#080808] flex items-center justify-center text-center px-6">
                 <div>
-                    <p className="font-glacial text-gold text-sm tracking-[4px] uppercase mb-4">Article introuvable</p>
-                    <Link to="/blog" className="btn btn-gold">RETOUR AU BLOG</Link>
+                    <p className="font-glacial text-gold text-sm tracking-[4px] uppercase mb-4">{t('blog_not_found')}</p>
+                    <Link to="/blog" className="btn btn-gold">{t('blog_back')}</Link>
                 </div>
             </div>
         </Layout>
@@ -52,7 +54,7 @@ export default function BlogShow() {
                     <div className="flex items-center gap-5 text-white/55">
                         {post.author && <span className="font-glacial text-sm">{post.author}</span>}
                         {post.published_at && <span className="font-glacial text-sm">{fmtDate(post.published_at)}</span>}
-                        {post.reading_time && <span className="font-glacial text-sm">{post.reading_time} min de lecture</span>}
+                        {post.reading_time && <span className="font-glacial text-sm">{post.reading_time} {t('blog_reading_time')}</span>}
                     </div>
                 </div>
             </div>
@@ -71,7 +73,7 @@ export default function BlogShow() {
 
                     {/* Partage */}
                     <div className="mt-14 pt-8 border-t border-gold/10 flex items-center gap-6 flex-wrap">
-                        <span className="font-lastica text-[10px] tracking-[4px] text-gold/40 uppercase">Partager</span>
+                        <span className="font-lastica text-[10px] tracking-[4px] text-gold/40 uppercase">{t('blog_share')}</span>
                         {[
                             { label: 'Facebook', url: `https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}` },
                             { label: 'Twitter', url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}` },
@@ -91,7 +93,7 @@ export default function BlogShow() {
                 <section className="bg-[#0a0a0a] py-20 border-t border-gold/8">
                     <div className="max-w-7xl mx-auto px-6 lg:px-10">
                         <div className="flex items-center gap-5 mb-12">
-                            <span className="eyebrow">Continuer la lecture</span>
+                            <span className="eyebrow">{t('blog_continue')}</span>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                             {related.map((p, i) => (
@@ -111,7 +113,7 @@ export default function BlogShow() {
             )}
 
             <div className="bg-[#080808] py-10 text-center border-t border-gold/8">
-                <Link to="/blog" className="btn btn-gold">← RETOUR AU BLOG</Link>
+                <Link to="/blog" className="btn btn-gold">{t('blog_back')}</Link>
             </div>
         </Layout>
     );

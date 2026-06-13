@@ -3,8 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { imgSrc } from '../../utils/imgSrc';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Brand() {
+    const { t } = useLanguage();
     const { slug } = useParams();
     const [data, setData] = useState({ brand: null, collections: [] });
     const [loading, setLoading] = useState(true);
@@ -17,7 +19,7 @@ export default function Brand() {
     }, [slug]);
 
     if (loading) return <Layout><div className="min-h-screen bg-[#080808] flex items-center justify-center"><div className="w-8 h-px bg-gold animate-pulse" /></div></Layout>;
-    if (!data.brand) return <Layout title="Marque introuvable"><div className="min-h-screen bg-[#080808] flex items-center justify-center text-center px-6"><div><p className="font-glacial text-gold text-sm tracking-[4px] uppercase mb-4">Marque introuvable</p><Link to="/" className="btn btn-gold">RETOUR À L'ACCUEIL</Link></div></div></Layout>;
+    if (!data.brand) return <Layout title={t('brand_not_found')}><div className="min-h-screen bg-[#080808] flex items-center justify-center text-center px-6"><div><p className="font-glacial text-gold text-sm tracking-[4px] uppercase mb-4">{t('brand_not_found')}</p><Link to="/" className="btn btn-gold">{t('back_home')}</Link></div></div></Layout>;
 
     const { brand, collections } = data;
 
@@ -60,12 +62,12 @@ export default function Brand() {
                         {/* Titre section */}
                         <div className="flex items-center gap-6 mb-16 reveal">
                             <div>
-                                <span className="font-lastica text-[8px] tracking-[5px] text-gold/40 uppercase block mb-2">Nos créations</span>
-                                <h2 className="display-title text-2xl lg:text-3xl text-white">NOS <span className="text-gold">COLLECTIONS</span></h2>
+                                <span className="font-lastica text-[8px] tracking-[5px] text-gold/40 uppercase block mb-2">{t('brand_our_creations')}</span>
+                                <h2 className="display-title text-2xl lg:text-3xl text-white">{t('brand_collections')}</h2>
                             </div>
                             <div className="flex-1 h-px bg-gold/10" />
                             <span className="font-lastica text-[8px] tracking-[3px] text-white/45">
-                                {collections.length} collection{collections.length > 1 ? 's' : ''}
+                                {collections.length} {t('brand_collection')}{collections.length > 1 ? 's' : ''}
                             </span>
                         </div>
 
@@ -98,7 +100,7 @@ export default function Brand() {
 
                                         {/* Infos */}
                                         <div className="flex flex-col justify-center p-8 lg:p-12" style={{ background: '#0c0c0c' }}>
-                                            <span className="font-lastica text-[7px] tracking-[5px] text-gold/50 uppercase mb-4">Collection</span>
+                                            <span className="font-lastica text-[7px] tracking-[5px] text-gold/50 uppercase mb-4">{t('brand_collection')}</span>
                                             <h3 className="font-glacial text-2xl lg:text-3xl text-white uppercase tracking-[3px] leading-tight mb-4">
                                                 {col.name}
                                             </h3>
@@ -158,7 +160,7 @@ export default function Brand() {
                                             <svg className="w-6 h-6 text-white/35 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                                             </svg>
-                                            <p className="font-lastica text-[10px] tracking-[3px] text-white/45 uppercase">Produits à venir</p>
+                                            <p className="font-lastica text-[10px] tracking-[3px] text-white/45 uppercase">{t('brand_coming_soon')}</p>
                                         </div>
                                     )}
                                 </div>
@@ -169,7 +171,7 @@ export default function Brand() {
             )}
 
             <div className="bg-[#080808] py-12 text-center border-t border-gold/8">
-                <Link to="/reservation" className="btn btn-gold">RÉSERVER UNE CONSULTATION</Link>
+                <Link to="/reservation" className="btn btn-gold">{t('brand_consult_btn')}</Link>
             </div>
         </Layout>
     );

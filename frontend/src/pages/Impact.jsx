@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { imgSrc } from '../utils/imgSrc';
+import { useLanguage } from '../context/LanguageContext';
 
 // ── SVG icons for MVV cards (keyed by subtitle/label) ──────────────────────────
 const MVV_ICONS = {
@@ -75,6 +76,7 @@ const DEFAULT_ENGAGEMENTS = [
 ];
 
 export default function Impact() {
+    const { t } = useLanguage();
     const [initiatives, setInitiatives] = useState([]);
     const [stats, setStats]             = useState([]);
 
@@ -95,9 +97,9 @@ export default function Impact() {
                 <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/img/index/home-image6.jpg')", filter: 'brightness(.2)' }} />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom,rgba(8,8,8,.3) 0%,rgba(8,8,8,.98) 100%)' }} />
                 <div className="relative z-10 text-center px-6">
-                    <span className="eyebrow justify-center" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Ethical Fashion</span>
+                    <span className="eyebrow justify-center" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('impact_eyebrow')}</span>
                     <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.4rem,6vw,5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
-                        NOTRE <span className="text-gold">IMPACT</span>
+                        {t('impact_title').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('impact_title').split(' ').slice(1).join(' ')}</span>
                     </h1>
                 </div>
             </div>
@@ -156,8 +158,8 @@ export default function Impact() {
             <section className="bg-[#080808] py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">Ce que nous faisons concrètement</span>
-                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">NOS <span className="text-gold">ENGAGEMENTS</span></h2>
+                        <span className="eyebrow justify-center">{t('impact_engagements_eyebrow')}</span>
+                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('impact_engagements').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('impact_engagements').split(' ').slice(1).join(' ')}</span></h2>
                         <div className="gold-line-center" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-px">
@@ -194,8 +196,8 @@ export default function Impact() {
                 <section className="bg-texture py-24 lg:py-32">
                     <div className="max-w-7xl mx-auto px-6 lg:px-10">
                         <div className="text-center mb-16 reveal">
-                            <span className="eyebrow justify-center">Projets en cours</span>
-                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">NOS <span className="text-gold">INITIATIVES</span></h2>
+                            <span className="eyebrow justify-center">{t('impact_initiatives_eyebrow')}</span>
+                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('impact_initiatives').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('impact_initiatives').split(' ').slice(1).join(' ')}</span></h2>
                             <div className="gold-line-center" />
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -240,12 +242,12 @@ export default function Impact() {
             {/* CTA */}
             <section className="bg-[#080808] py-24 text-center border-t border-gold/8">
                 <div className="max-w-xl mx-auto px-6 reveal">
-                    <span className="eyebrow justify-center">Rejoignez le mouvement</span>
-                    <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-6">MODE <span className="text-gold">RESPONSABLE</span></h2>
-                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">Chaque achat, chaque collaboration est un acte pour une mode plus juste, plus belle et plus africaine.</p>
+                    <span className="eyebrow justify-center">{t('impact_join_eyebrow')}</span>
+                    <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-6">{t('impact_join_title').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('impact_join_title').split(' ').slice(1).join(' ')}</span></h2>
+                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">{t('impact_join_sub')}</p>
                     <div className="flex flex-wrap gap-4 justify-center">
-                        <a href="/contact" className="btn btn-gold">NOUS REJOINDRE</a>
-                        <a href="/reservation" className="btn btn-white">PRENDRE RDV</a>
+                        <a href="/contact" className="btn btn-gold">{t('impact_join_btn')}</a>
+                        <a href="/reservation" className="btn btn-white">{t('impact_book_btn')}</a>
                     </div>
                 </div>
             </section>

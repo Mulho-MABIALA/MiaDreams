@@ -5,8 +5,10 @@ import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function PersonalBranding() {
+    const { t } = useLanguage();
     const [brand, setBrand] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -39,7 +41,7 @@ export default function PersonalBranding() {
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
-                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Nouveau</span>
+                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('brand_eyebrow_pb')}</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
                                 {heroTitle.includes('\n')
                                     ? heroTitle.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{i === heroTitle.split('\n').length - 1 ? <span className="text-gold">{line}</span> : line}</span>)
@@ -50,7 +52,7 @@ export default function PersonalBranding() {
                                 {brand?.tagline || 'Développez votre style, affirmez votre leadership.'}
                             </p>
                             <div style={{ opacity: 0, animation: 'fadeUp .7s 1s forwards' }}>
-                                <Link to="/reservation" className="btn btn-gold">RÉSERVER UNE SESSION</Link>
+                                <Link to="/reservation" className="btn btn-gold">{t('brand_session_btn')}</Link>
                             </div>
                         </div>
                     </div>
@@ -62,18 +64,18 @@ export default function PersonalBranding() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
-                            <span className="eyebrow">L'offre</span>
+                            <span className="eyebrow">{t('brand_about_pb')}</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-[#1a1a1a] mt-4 leading-tight">
-                                VOTRE IMAGE,<br /><span className="text-gold">VOTRE POUVOIR</span>
+                                {t('brand_pb_title').split(',')[0]},<br /><span className="text-gold">{t('brand_pb_title').split(',')[1]?.trim()}</span>
                             </h2>
                             <div className="gold-line my-6" />
                             <p className="font-glacial text-sm text-[#444] leading-loose mb-6">
                                 {description}
                             </p>
                             <p className="font-glacial text-sm text-[#444] leading-loose mb-9">
-                                Que vous soyez entrepreneur, cadre dirigeant ou créatif, notre programme de Personal Branding vous aide à construire une identité visuelle forte et cohérente qui reflète vos valeurs.
+                                {t('brand_free_consult')}
                             </p>
-                            <Link to="/reservation" className="btn btn-gold">COMMENCER MON ACCOMPAGNEMENT</Link>
+                            <Link to="/reservation" className="btn btn-gold">{t('brand_pb_start')}</Link>
                         </div>
                         <div className="reveal">
                             {youtubeId ? (
@@ -105,8 +107,8 @@ export default function PersonalBranding() {
             <section className="bg-texture py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">Méthode</span>
-                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">LE <span className="text-gold">PROGRAMME</span></h2>
+                        <span className="eyebrow justify-center">{t('brand_method')}</span>
+                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('brand_program').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('brand_program').split(' ').slice(1).join(' ')}</span></h2>
                         <div className="gold-line-center" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px">
@@ -133,10 +135,10 @@ export default function PersonalBranding() {
             {/* CTA */}
             <section className="bg-[#080808] py-24 text-center border-t border-gold/8">
                 <div className="max-w-xl mx-auto px-6 reveal">
-                    <span className="eyebrow justify-center">Prêt(e) à vous transformer ?</span>
-                    <h2 className="display-title text-3xl text-white mt-4 mb-6">COMMENCEZ <span className="text-gold">AUJOURD'HUI</span></h2>
-                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">Réservez une consultation gratuite de 30 minutes pour découvrir comment nous pouvons vous aider.</p>
-                    <Link to="/reservation" className="btn btn-gold">RÉSERVER MA CONSULTATION GRATUITE</Link>
+                    <span className="eyebrow justify-center">{t('brand_cta_title')}</span>
+                    <h2 className="display-title text-3xl text-white mt-4 mb-6">{t('brand_cta_subtitle').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('brand_cta_subtitle').split(' ').slice(1).join(' ')}</span></h2>
+                    <p className="font-glacial text-sm text-white/65 leading-loose mb-10">{t('brand_free_consult')}</p>
+                    <Link to="/reservation" className="btn btn-gold">{t('brand_free_btn')}</Link>
                 </div>
             </section>
         </Layout>

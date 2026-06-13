@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { imgSrc } from '../utils/imgSrc';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Catalogues() {
+    const { t } = useLanguage();
     const [catalogues, setCatalogues]   = useState([]);
     const [gate, setGate]               = useState(null);
     const [email, setEmail]             = useState('');
@@ -70,9 +72,9 @@ export default function Catalogues() {
                 <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/img/index/home-image2.jpg')", filter: 'brightness(.18)' }} />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom,rgba(8,8,8,.4) 0%,rgba(8,8,8,.98) 100%)' }} />
                 <div className="relative z-10 text-center px-6">
-                    <span className="eyebrow justify-center" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Nos collections</span>
+                    <span className="eyebrow justify-center" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('catalogues_eyebrow')}</span>
                     <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.4rem,6vw,5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
-                        NOS <span className="text-gold">CATALOGUES</span>
+                        {t('catalogues_title').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('catalogues_title').split(' ').slice(1).join(' ')}</span>
                     </h1>
                 </div>
             </div>
@@ -108,14 +110,14 @@ export default function Catalogues() {
                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                 </svg>
-                                                TÉLÉCHARGER
+                                                {t('catalogues_download')}
                                             </button>
                                         ) : (
                                             <span className="btn btn-gold text-[9px] py-3 px-5 inline-flex items-center gap-2 opacity-40 cursor-not-allowed">
                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                 </svg>
-                                                PDF BIENTÔT DISPONIBLE
+                                                {t('catalogues_soon')}
                                             </span>
                                         )}
                                     </div>
@@ -125,7 +127,7 @@ export default function Catalogues() {
                     ) : (
                         <div className="text-center py-24">
                             <div className="w-10 h-px bg-gold/30 mx-auto mb-6" />
-                            <p className="font-glacial text-sm text-white/55 tracking-[3px] uppercase">Aucun catalogue disponible pour le moment</p>
+                            <p className="font-glacial text-sm text-white/55 tracking-[3px] uppercase">{t('catalogues_empty')}</p>
                         </div>
                     )}
                 </div>
@@ -142,7 +144,7 @@ export default function Catalogues() {
                         <div className="relative p-6 pb-4 border-b border-white/5">
                             <button onClick={closeGate}
                                     className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors text-lg leading-none">✕</button>
-                            <span className="font-lastica text-[7px] tracking-[4px] text-gold uppercase block mb-2">Catalogue</span>
+                            <span className="font-lastica text-[7px] tracking-[4px] text-gold uppercase block mb-2">{t('cat_modal_title')}</span>
                             <p className="font-glacial text-base text-white uppercase tracking-[2px]">{gate.name}</p>
                         </div>
 
@@ -155,13 +157,13 @@ export default function Catalogues() {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
                                         </svg>
                                     </div>
-                                    <p className="font-glacial text-sm text-white/70 tracking-[1px]">Téléchargement en cours…</p>
-                                    <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">Merci pour votre inscription !</p>
+                                    <p className="font-glacial text-sm text-white/70 tracking-[1px]">{t('loading')}</p>
+                                    <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">{t('cat_success')}</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit}>
                                     <p className="font-glacial text-sm text-white/65 leading-relaxed mb-5 tracking-[0.5px]">
-                                        Entrez votre adresse e-mail pour recevoir le catalogue et rester informé de nos actualités.
+                                        {t('cat_email_intro')}
                                     </p>
 
                                     <div className="mb-4">
@@ -171,7 +173,7 @@ export default function Catalogues() {
                                             required
                                             value={email}
                                             onChange={e => setEmail(e.target.value)}
-                                            placeholder="votre@email.com"
+                                            placeholder={t('cat_email_placeholder')}
                                             className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-4 py-3 outline-none placeholder:text-white/20 font-glacial tracking-[1px] transition-colors"
                                         />
                                         {errorMsg && (
@@ -187,20 +189,20 @@ export default function Catalogues() {
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                                                 </svg>
-                                                CHARGEMENT…
+                                                {t('cat_loading_btn')}
                                             </>
                                         ) : (
                                             <>
                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                 </svg>
-                                                TÉLÉCHARGER LE CATALOGUE
+                                                {t('cat_download_btn')}
                                             </>
                                         )}
                                     </button>
 
                                     <p className="mt-3 font-glacial text-[12px] text-white/45 text-center leading-relaxed">
-                                        En continuant, vous acceptez de recevoir nos communications. Désinscription possible à tout moment.
+                                        {t('cat_disclaimer')}
                                     </p>
                                 </form>
                             )}

@@ -4,8 +4,10 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
 import { imgSrc } from '../utils/imgSrc';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Search() {
+    const { t } = useLanguage();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const q = searchParams.get('q') || '';
@@ -31,17 +33,19 @@ export default function Search() {
             {/* HERO */}
             <div className="bg-[#0d0d0d] border-b border-gold/8 pt-16 pb-10">
                 <div className="max-w-2xl mx-auto px-6">
-                    <span className="eyebrow justify-center mb-4">Recherche</span>
+                    <span className="eyebrow justify-center mb-4">{t('search_eyebrow')}</span>
                     <form onSubmit={handleSearch} className="flex items-center gap-4 border-b border-white/15 pb-4 focus-within:border-gold/40 transition-colors">
                         <svg className="w-5 h-5 text-gold/40 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                         <input type="text" value={input} onChange={e => setInput(e.target.value)}
-                               placeholder="Rechercher…" autoFocus
+                               placeholder={t('search_placeholder')} autoFocus
                                className="flex-1 bg-transparent text-white font-glacial text-lg tracking-[1px] outline-none placeholder:text-white/15" />
-                        <button type="submit" className="btn btn-gold py-[.55rem] px-5 text-[9px]">GO</button>
+                        <button type="submit" className="btn btn-gold py-[.55rem] px-5 text-[9px]">{t('go')}</button>
                     </form>
                     {q && (
                         <p className="font-glacial text-xs text-white/25 mt-3 tracking-[1px]">
-                            {total > 0 ? `${total} résultat${total > 1 ? 's' : ''} pour « ${q} »` : `Aucun résultat pour « ${q} »`}
+                            {total > 0
+                                ? `${total} ${total > 1 ? t('results') : t('result')} ${t('search_for')} « ${q} »`
+                                : `${t('search_no_results_pre')} « ${q} »`}
                         </p>
                     )}
                 </div>
@@ -54,7 +58,7 @@ export default function Search() {
                     {data.posts.length > 0 && (
                         <div className="mb-16">
                             <div className="flex items-center gap-5 mb-8">
-                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">Articles</span>
+                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">{t('search_articles')}</span>
                                 <div className="flex-1 h-px bg-gold/8" />
                                 <span className="font-lastica text-[7px] tracking-[3px] text-white/20">{data.posts.length}</span>
                             </div>
@@ -77,7 +81,7 @@ export default function Search() {
                     {data.brands.length > 0 && (
                         <div className="mb-16">
                             <div className="flex items-center gap-5 mb-8">
-                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">Marques</span>
+                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">{t('search_brands')}</span>
                                 <div className="flex-1 h-px bg-gold/8" />
                                 <span className="font-lastica text-[7px] tracking-[3px] text-white/20">{data.brands.length}</span>
                             </div>
@@ -99,7 +103,7 @@ export default function Search() {
                     {data.products.length > 0 && (
                         <div className="mb-16">
                             <div className="flex items-center gap-5 mb-8">
-                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">Produits boutique</span>
+                                <span className="font-lastica text-[8px] tracking-[4px] text-gold/60 uppercase">{t('search_products')}</span>
                                 <div className="flex-1 h-px bg-gold/8" />
                                 <span className="font-lastica text-[7px] tracking-[3px] text-white/20">{data.products.length}</span>
                             </div>
@@ -115,7 +119,7 @@ export default function Search() {
                                             }
                                             {prod.stock === 0 && (
                                                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                                    <span className="font-lastica text-[7px] tracking-[2px] text-white/40">Épuisé</span>
+                                                    <span className="font-lastica text-[7px] tracking-[2px] text-white/40">{t('sold_out')}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -135,7 +139,7 @@ export default function Search() {
                                                 <button
                                                     onClick={e => { e.preventDefault(); addItem(prod, 1); }}
                                                     className="mt-3 w-full py-1.5 font-lastica text-[7px] tracking-[2px] text-center border border-white/10 text-white/30 hover:border-gold/40 hover:text-gold transition-all">
-                                                    + PANIER
+                                                    {t('search_add_cart')}
                                                 </button>
                                             )}
                                         </div>
@@ -148,8 +152,8 @@ export default function Search() {
                     {q && total === 0 && (
                         <div className="text-center py-24">
                             <div className="w-10 h-px bg-gold/30 mx-auto mb-6" />
-                            <p className="font-glacial text-sm text-white/25 tracking-[3px] uppercase">Aucun résultat pour « {q} »</p>
-                            <p className="font-glacial text-xs text-white/15 mt-3">Essayez d'autres mots-clés</p>
+                            <p className="font-glacial text-sm text-white/25 tracking-[3px] uppercase">{t('search_no_results_pre')} « {q} »</p>
+                            <p className="font-glacial text-xs text-white/15 mt-3">{t('search_try')}</p>
                         </div>
                     )}
                 </div>

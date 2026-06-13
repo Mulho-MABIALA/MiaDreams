@@ -5,8 +5,10 @@ import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Mprew() {
+    const { t } = useLanguage();
     const [brand, setBrand] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -39,7 +41,7 @@ export default function Mprew() {
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-center z-10">
                         <div className="max-w-2xl px-5 sm:px-10 lg:px-20">
-                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>Application mobile</span>
+                            <span className="eyebrow" style={{ opacity: 0, animation: 'fadeUp .8s .3s forwards' }}>{t('brand_eyebrow_mprew')}</span>
                             <h1 className="display-title text-white mt-4" style={{ fontSize: 'clamp(2.5rem,7vw,5.5rem)', opacity: 0, animation: 'fadeUp .9s .5s forwards' }}>
                                 {heroTitle.includes('\n')
                                     ? heroTitle.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{i === heroTitle.split('\n').length - 1 ? <span className="text-gold">{line}</span> : line}</span>)
@@ -81,20 +83,20 @@ export default function Mprew() {
                             )}
                         </div>
                         <div className="reveal" style={{ transitionDelay: '.15s' }}>
-                            <span className="eyebrow">L'application</span>
+                            <span className="eyebrow">{t('brand_about_mprew')}</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-[#1a1a1a] mt-4 leading-tight">
-                                MA PETITE ROBE<br /><span className="text-gold">EN WAX</span>
+                                {t('brand_about_app').split(' ').slice(0,3).join(' ')}<br /><span className="text-gold">{t('brand_about_app').split(' ').slice(3).join(' ')}</span>
                             </h2>
                             <div className="gold-line my-6" />
                             <p className="font-glacial text-sm text-[#444] leading-loose mb-6">
                                 {description}
                             </p>
                             <p className="font-glacial text-sm text-[#444] leading-loose mb-9">
-                                Une expérience shopping unique, alliant technologie moderne et artisanat africain traditionnel.
+                                {t('brand_mprew_msg')}
                             </p>
                             <div className="flex flex-wrap gap-4">
-                                <Link to="/reservation" className="btn btn-gold">EN SAVOIR PLUS</Link>
-                                <Link to="/contact" className="btn btn-dark">NOUS CONTACTER</Link>
+                                <Link to="/reservation" className="btn btn-gold">{t('brand_learn_more')}</Link>
+                                <Link to="/contact" className="btn btn-dark">{t('brand_contact')}</Link>
                             </div>
                         </div>
                     </div>
@@ -105,8 +107,8 @@ export default function Mprew() {
             <section className="bg-texture py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">Fonctionnalités</span>
-                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">L'APPLICATION <span className="text-gold">MPREW</span></h2>
+                        <span className="eyebrow justify-center">{t('brand_features')}</span>
+                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('brand_app_title').split(' ').slice(0,-1).join(' ')} <span className="text-gold">{t('brand_app_title').split(' ').slice(-1).join(' ')}</span></h2>
                         <div className="gold-line-center" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px">
@@ -132,7 +134,7 @@ export default function Mprew() {
             <BrandCollections brandSlug="mprew" />
 
             <div className="bg-[#080808] py-14 text-center border-t border-gold/8">
-                <Link to="/contact" className="btn btn-gold">REJOINDRE LA BÊTA</Link>
+                <Link to="/contact" className="btn btn-gold">{t('brand_beta')}</Link>
             </div>
         </Layout>
     );

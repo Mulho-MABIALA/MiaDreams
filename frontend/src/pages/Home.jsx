@@ -63,7 +63,7 @@ function HeroCarousel({ slides, defaultSlides }) {
                             {s.content && (
                                 <p className="font-glacial text-sm sm:text-base text-white/55 tracking-[1px] leading-relaxed mb-8 max-w-md"
                                    style={{ opacity: 0, animation: 'fadeUp .8s .7s forwards' }}>
-                                    {s.content}
+                                    <TranslatedText text={s.content} />
                                 </p>
                             )}
                             {s.cta_label && (

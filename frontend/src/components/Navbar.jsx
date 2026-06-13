@@ -3,12 +3,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useApp } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar() {
     const { navBrands, companyInfo } = useApp();
     const logoSrc      = companyInfo?.logo || '/img/logo_MIA.png';
     const logoIsCustom = !!companyInfo?.logo;
     const { count: cartCount } = useCart();
+    const { lang, toggleLang, t } = useLanguage();
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -91,14 +93,14 @@ export default function Navbar() {
                 {/* Desktop nav */}
                 <ul className="hidden lg:flex items-center">
                     <li>
-                        <Link to="/" className={`nav-link ${pathname === '/' ? 'active text-gold' : 'text-white/85'}`}>HOME</Link>
+                        <Link to="/" className={`nav-link ${pathname === '/' ? 'active text-gold' : 'text-white/85'}`}>{t('nav_home')}</Link>
                     </li>
 
                     <li className="nav-dropdown">
                         <button className={`nav-link flex items-center gap-1.5 ${
                             ['/miaDreams','/mprew','/personalBranding'].some(p => pathname.startsWith(p)) || pathname.startsWith('/marque')
                                 ? 'active text-gold' : 'text-white/85'}`}>
-                            NOS MARQUES
+                            {t('nav_brands')}
                             <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                         </button>
                         <div className="nav-dropdown-menu">
@@ -108,25 +110,25 @@ export default function Navbar() {
                         </div>
                     </li>
 
-                    <li><Link to="/programmes" className={`nav-link ${pathname.startsWith('/programmes') ? 'active text-gold' : 'text-white/85'}`}>NOS PROGRAMMES</Link></li>
+                    <li><Link to="/programmes" className={`nav-link ${pathname.startsWith('/programmes') ? 'active text-gold' : 'text-white/85'}`}>{t('nav_programmes')}</Link></li>
 
-                    <li><Link to="/catalogues" className={`nav-link ${isActive('/catalogues') ? 'active text-gold' : 'text-white/85'}`}>CATALOGUES</Link></li>
-                    <li><Link to="/galerie"    className={`nav-link ${isActive('/galerie')    ? 'active text-gold' : 'text-white/85'}`}>GALERIE</Link></li>
+                    <li><Link to="/catalogues" className={`nav-link ${isActive('/catalogues') ? 'active text-gold' : 'text-white/85'}`}>{t('nav_catalogues')}</Link></li>
+                    <li><Link to="/galerie"    className={`nav-link ${isActive('/galerie')    ? 'active text-gold' : 'text-white/85'}`}>{t('nav_gallery')}</Link></li>
 
                     <li className="nav-dropdown">
                         <button className={`nav-link flex items-center gap-1.5 ${isActive('/apropos') || isActive('/blog') ? 'active text-gold' : 'text-white/85'}`}>
-                            JOURNAL
+                            {t('nav_journal')}
                             <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                         </button>
                         <div className="nav-dropdown-menu">
-                            <Link to="/apropos">À Propos</Link>
-                            <Link to="/blog">Blog & Podcast</Link>
+                            <Link to="/apropos">{t('nav_about')}</Link>
+                            <Link to="/blog">{t('nav_blog')}</Link>
                         </div>
                     </li>
 
-                    <li><Link to="/boutique"    className={`nav-link ${isActive('/boutique')    ? 'active text-gold' : 'text-white/85'}`}>BOUTIQUE</Link></li>
-                    <li><Link to="/impact"     className={`nav-link ${isActive('/impact')     ? 'active text-gold' : 'text-white/85'}`}>IMPACT</Link></li>
-                    <li><Link to="/reservation" className={`nav-link ${isActive('/reservation') ? 'active text-gold' : 'text-white/85'}`}>RÉSERVER</Link></li>
+                    <li><Link to="/boutique"    className={`nav-link ${isActive('/boutique')    ? 'active text-gold' : 'text-white/85'}`}>{t('nav_boutique')}</Link></li>
+                    <li><Link to="/impact"     className={`nav-link ${isActive('/impact')     ? 'active text-gold' : 'text-white/85'}`}>{t('nav_impact')}</Link></li>
+                    <li><Link to="/reservation" className={`nav-link ${isActive('/reservation') ? 'active text-gold' : 'text-white/85'}`}>{t('nav_reserve')}</Link></li>
 
                     {/* Panier */}
                     <li>
@@ -155,13 +157,38 @@ export default function Navbar() {
                         </button>
                     </li>
 
+                    {/* Toggle langue FR / EN */}
+                    <li className="ml-2">
+                        <button
+                            onClick={toggleLang}
+                            title={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
+                            className="flex items-center gap-[3px] font-lastica text-[9px] tracking-[2px] px-2.5 py-1.5 rounded border transition-all duration-200"
+                            style={{
+                                borderColor: 'rgba(201,168,76,0.5)',
+                                color: '#C9A84C',
+                                background: 'rgba(201,168,76,0.07)',
+                            }}
+                        >
+                            <span style={{ opacity: lang === 'fr' ? 1 : 0.45 }}>FR</span>
+                            <span style={{ color: 'rgba(201,168,76,0.3)' }}>|</span>
+                            <span style={{ opacity: lang === 'en' ? 1 : 0.45 }}>EN</span>
+                        </button>
+                    </li>
+
                     <li className="ml-3">
-                        <Link to="/contact" className="btn btn-gold text-[10px] py-[.7rem] px-5">CONTACT</Link>
+                        <Link to="/contact" className="btn btn-gold text-[10px] py-[.7rem] px-5">{t('nav_contact')}</Link>
                     </li>
                 </ul>
 
                 {/* Mobile icons */}
                 <div className="lg:hidden flex items-center gap-1">
+                    <button
+                        onClick={toggleLang}
+                        className="font-lastica text-[8px] tracking-[2px] px-2 py-1 rounded border mr-1"
+                        style={{ borderColor: 'rgba(201,168,76,0.4)', color: '#C9A84C', background: 'rgba(201,168,76,0.07)' }}
+                    >
+                        {lang === 'fr' ? 'EN' : 'FR'}
+                    </button>
                     <Link to="/panier" className="relative p-2.5 text-white/80 hover:text-gold transition-colors">
                         <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -176,6 +203,9 @@ export default function Navbar() {
                     <button onClick={() => setSearchOpen(o => !o)} className="text-white/50 hover:text-gold p-2.5 transition-colors">
                         <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                     </button>
+                </div>
+                {/* Mobile menu button (separate so we can close the div above) */}
+                <div className="lg:hidden flex items-center">
                     <button className="flex flex-col justify-center items-center w-10 h-10 gap-[5px] ml-1"
                             aria-label="Menu" onClick={() => setOpen(o => !o)}>
                         <span className="block w-5 h-px bg-white/70 transition-all duration-300 origin-center"
@@ -198,7 +228,7 @@ export default function Navbar() {
                         </svg>
                         <input ref={searchRef} type="text" value={searchQuery}
                                onChange={e => setSearchQuery(e.target.value)}
-                               placeholder="Rechercher articles, marques, produits…"
+                               placeholder={t('nav_search_placeholder')}
                                className="flex-1 bg-transparent text-white font-glacial text-sm tracking-[1px] outline-none placeholder:text-white/20 border-b border-white/10 pb-1.5 focus:border-gold/40 transition-colors" />
                         {searchQuery && (
                             <button type="button" onClick={() => setSearchQuery('')}
@@ -213,12 +243,12 @@ export default function Navbar() {
             <div id="mobile-menu" className={`absolute top-full inset-x-0 lg:hidden ${open ? 'open' : ''}`}>
                 <ul className="py-5 px-6 flex flex-col">
                     {[
-                        { to: '/', label: 'HOME' },
-                        { to: '/boutique', label: 'BOUTIQUE' },
-                        { to: '/catalogues', label: 'CATALOGUES' },
-                        { to: '/galerie', label: 'GALERIE' },
-                        { to: '/impact', label: 'IMPACT' },
-                        { to: '/reservation', label: 'RÉSERVER' },
+                        { to: '/', label: t('nav_home') },
+                        { to: '/boutique', label: t('nav_boutique') },
+                        { to: '/catalogues', label: t('nav_catalogues') },
+                        { to: '/galerie', label: t('nav_gallery') },
+                        { to: '/impact', label: t('nav_impact') },
+                        { to: '/reservation', label: t('nav_reserve') },
                     ].map(item => (
                         <li key={item.to}>
                             <Link to={item.to}
@@ -230,7 +260,7 @@ export default function Navbar() {
                         </li>
                     ))}
                     <li className="py-3 border-b border-white/[0.05]">
-                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">NOS MARQUES</span>
+                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">{t('nav_brands')}</span>
                         <div className="flex flex-col gap-1 pl-2">
                             {brands.map(b => (
                                 <Link key={b.slug || b.name} to={b.href}
@@ -242,18 +272,18 @@ export default function Navbar() {
                     </li>
                     <li className="py-3 border-b border-white/[0.05]">
                         <Link to="/programmes" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold transition-colors">
-                            NOS PROGRAMMES
+                            {t('nav_programmes')}
                         </Link>
                     </li>
                     <li className="py-3 border-b border-white/[0.05]">
-                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">JOURNAL</span>
+                        <span className="font-lastica text-[8px] tracking-[4px] uppercase text-gold/80 block mb-3">{t('nav_journal')}</span>
                         <div className="flex flex-col gap-1 pl-2">
-                            <Link to="/apropos" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">À Propos</Link>
-                            <Link to="/blog" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">Blog & Podcast</Link>
+                            <Link to="/apropos" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">{t('nav_about')}</Link>
+                            <Link to="/blog" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">{t('nav_blog')}</Link>
                         </div>
                     </li>
                     <li className="pt-5">
-                        <Link to="/contact" className="btn btn-gold w-full justify-center">CONTACT</Link>
+                        <Link to="/contact" className="btn btn-gold w-full justify-center">{t('nav_contact')}</Link>
                     </li>
                 </ul>
             </div>

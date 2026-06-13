@@ -5,6 +5,7 @@ import axios from 'axios';
 import App from './App';
 import { AppProvider } from './context/AppContext';
 import { CartProvider } from './context/CartContext';
+import { LanguageProvider } from './context/LanguageContext';
 import './index.css';
 
 // ─── Intercepteur global JWT ──────────────────────────────────────────────────
@@ -26,11 +27,13 @@ axios.interceptors.request.use(config => {
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <BrowserRouter>
-            <AppProvider>
-                <CartProvider>
-                    <App />
-                </CartProvider>
-            </AppProvider>
+            <LanguageProvider>
+                <AppProvider>
+                    <CartProvider>
+                        <App />
+                    </CartProvider>
+                </AppProvider>
+            </LanguageProvider>
         </BrowserRouter>
     </React.StrictMode>
 );

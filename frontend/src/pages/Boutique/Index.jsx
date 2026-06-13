@@ -5,15 +5,23 @@ import Layout from '../../components/Layout';
 import { useCart } from '../../context/CartContext';
 import { useApp } from '../../context/AppContext';
 import { imgSrc } from '../../utils/imgSrc';
+import { useLanguage } from '../../context/LanguageContext';
 
 const GOLD = '#C9A84C';
 
-const SORT_OPTIONS = [
+const SORT_OPTIONS_FR = [
     { value: 'default',    label: 'Par défaut' },
     { value: 'new',        label: 'Nouveautés' },
     { value: 'price_asc',  label: 'Prix croissant' },
     { value: 'price_desc', label: 'Prix décroissant' },
     { value: 'promo',      label: 'Promotions' },
+];
+const SORT_OPTIONS_EN = [
+    { value: 'default',    label: 'Default' },
+    { value: 'new',        label: 'Newest' },
+    { value: 'price_asc',  label: 'Price: Low to High' },
+    { value: 'price_desc', label: 'Price: High to Low' },
+    { value: 'promo',      label: 'On sale' },
 ];
 
 /* ── Carte produit ── */
@@ -114,6 +122,8 @@ function CollectionHeader({ name }) {
 
 /* ── Page ── */
 export default function BoutiqueIndex() {
+    const { lang, t } = useLanguage();
+    const SORT_OPTIONS = lang === 'fr' ? SORT_OPTIONS_FR : SORT_OPTIONS_EN;
     const [products, setProducts] = useState([]);
     const [brands,   setBrands]   = useState([]);
     const [loading,  setLoading]  = useState(true);
@@ -237,7 +247,7 @@ export default function BoutiqueIndex() {
                         {/* Marques desktop */}
                         {brands.length > 0 && (
                             <div className="hidden sm:flex items-center gap-0.5 overflow-x-auto">
-                                {[{ _id: '', name: 'Tout' }, ...brands].map(b => (
+                                {[{ _id: '', name: t('boutique_all') }, ...brands].map(b => (
                                     <button key={b._id} onClick={() => setBrand(b._id)}
                                         className="font-lastica text-[10px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 transition-all duration-200 rounded-sm"
                                         style={activeBrand === b._id
@@ -295,7 +305,7 @@ export default function BoutiqueIndex() {
             {brands.length > 0 && (
                 <div className="bg-[#080808] sm:hidden border-b border-white/[0.05] overflow-x-auto">
                     <div className="flex gap-1 px-6 py-3 w-max">
-                        {[{ _id: '', name: 'Tout' }, ...brands].map(b => (
+                        {[{ _id: '', name: t('boutique_all') }, ...brands].map(b => (
                             <button key={b._id} onClick={() => setBrand(b._id)}
                                 className="font-lastica text-[10px] tracking-[2px] uppercase whitespace-nowrap px-3.5 py-1.5 rounded-sm transition-all"
                                 style={activeBrand === b._id

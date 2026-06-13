@@ -4,29 +4,22 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
 import { imgSrc } from '../utils/imgSrc';
+import { useLanguage } from '../context/LanguageContext';
+import TranslatedText from '../components/TranslatedText';
 
 const GOLD = '#C9A84C';
 
-// ─── Données par défaut ────────────────────────────────────────────────────────
-const DEFAULT_SLIDES = [
-    { image: '/img/index/home-image1.jpg', subtitle: 'Maison de mode africaine', title: 'RÉVOLUTION', content: "L'artisanat est au cœur de notre métier.", cta_label: 'DÉCOUVRIR', cta_href: '/miaDreams' },
-    { image: '/img/index/home-image2.jpg', subtitle: 'Nos collections', title: 'MIA DREAMS', content: 'Notre ligne de vêtements — élégance africaine contemporaine.', cta_label: 'EXPLORER', cta_href: '/miaDreams' },
-    { image: '/img/index/home-image5.jpg', subtitle: 'Nouveau', title: 'PERSONAL BRANDING', content: 'Développez votre style, affirmez votre leadership.', cta_label: "DÉCOUVRIR L'OFFRE", cta_href: '/personalBranding' },
-];
+// DEFAULT_SLIDES est construit dynamiquement dans le composant pour accéder aux traductions
 
-const DEFAULT_UNIVERS = [
-    { image: '/img/index/home-image2.jpg', subtitle: '01', title: 'Mia Dreams Brand',       content: 'Notre ligne de vêtements', cta_href: '/miaDreams' },
-    { image: '/img/index/home-image3.jpg', subtitle: '02', title: 'Ma Petite Robe En Wax',  content: 'Notre application mobile',  cta_href: '/mprew' },
-    { image: '/img/index/home-image4.jpg', subtitle: '03', title: 'Fashion Program',         content: 'Notre programme de formation à la mode africaine', cta_href: '/programmes/fashion-program' },
-];
+// DEFAULT_UNIVERS est construit dynamiquement dans Home() pour accéder aux traductions
 
 // ─── Hero Carousel ─────────────────────────────────────────────────────────────
-function HeroCarousel({ slides }) {
+function HeroCarousel({ slides, defaultSlides }) {
     // slides === null  → API pas encore répondue → skeleton (pas de flash des DEFAULT_SLIDES)
-    // slides === []    → API a répondu, aucune slide en base → DEFAULT_SLIDES
+    // slides === []    → API a répondu, aucune slide en base → defaultSlides
     // slides = [...]   → slides du dashboard
     const isLoading = slides === null;
-    const list = (slides === null || slides.length === 0) ? DEFAULT_SLIDES : slides;
+    const list = (slides === null || slides.length === 0) ? defaultSlides : slides;
 
     const [current, setCurrent] = useState(0);
     const timerRef = useRef(null);
@@ -109,6 +102,7 @@ function HeroCarousel({ slides }) {
 
 // ─── Témoignages ───────────────────────────────────────────────────────────────
 function TestimonialsSection({ testimonials }) {
+    const { t } = useLanguage();
     const [current, setCurrent] = useState(0);
     const [animating, setAnimating] = useState(false);
     const timerRef = useRef(null);
@@ -130,14 +124,16 @@ function TestimonialsSection({ testimonials }) {
     useEffect(() => { startAuto(); return () => clearInterval(timerRef.current); }, [n]);
     if (!testimonials || n === 0) return null;
 
-    const t = testimonials[current];
+    const item = testimonials[current];
     return (
         <section className="bg-[#060606] py-28 lg:py-36 overflow-hidden">
             <div className="max-w-4xl mx-auto px-6 lg:px-10">
                 <div className="text-center mb-16 reveal">
-                    <span className="eyebrow justify-center">Ils nous font confiance</span>
+                    <span className="eyebrow justify-center">{t('home_testimonials_trust')}</span>
                     <h2 className="display-title text-3xl lg:text-4xl text-white mb-5">
-                        TÉMOIGNAGES <span className="text-gold">CLIENTS</span>
+                        {t('home_testimonials_title').split(' ').map((w, i, arr) =>
+                            i === arr.length - 1 ? <span key={i} className="text-gold">{w}</span> : <span key={i}>{w} </span>
+                        )}
                     </h2>
                     <div className="gold-line-center" />
                 </div>
@@ -156,13 +152,13 @@ function TestimonialsSection({ testimonials }) {
                         <div style={{ opacity: animating ? 0 : 1, transform: animating ? 'translateY(12px)' : 'translateY(0)', transition: 'opacity 0.3s ease, transform 0.3s ease' }}>
                             <div className="flex justify-center gap-1.5 mb-8">
                                 {[1,2,3,4,5].map(i => (
-                                    <svg key={i} className={`w-4 h-4 ${i <= (t?.rating || 5) ? 'text-gold fill-current' : 'text-white/35 fill-current'}`} viewBox="0 0 20 20">
+                                    <svg key={i} className={`w-4 h-4 ${i <= (item?.rating || 5) ? 'text-gold fill-current' : 'text-white/35 fill-current'}`} viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                     </svg>
                                 ))}
                             </div>
                             <blockquote className="font-glacial text-lg lg:text-xl font-light text-white/65 leading-relaxed italic mb-10 max-w-2xl mx-auto">
-                                "{t?.content}"
+                                "<TranslatedText text={item?.content} />"
                             </blockquote>
                             <div className="flex items-center justify-center gap-3 mb-8">
                                 <div className="w-10 h-px bg-gold/25" />
@@ -170,16 +166,16 @@ function TestimonialsSection({ testimonials }) {
                                 <div className="w-10 h-px bg-gold/25" />
                             </div>
                             <div className="flex items-center justify-center gap-4">
-                                {t?.photo
-                                    ? <img src={imgSrc(t.photo)} className="w-11 h-11 rounded-full object-cover border border-gold/25" alt={t?.name} />
+                                {item?.photo
+                                    ? <img src={imgSrc(item.photo)} className="w-11 h-11 rounded-full object-cover border border-gold/25" alt={item?.name} />
                                     : <div className="w-11 h-11 rounded-full flex items-center justify-center border border-gold/20" style={{ background: 'rgba(196,162,103,0.08)' }}>
-                                          <span className="font-glacial text-gold text-base">{t?.name?.[0]?.toUpperCase()}</span>
+                                          <span className="font-glacial text-gold text-base">{item?.name?.[0]?.toUpperCase()}</span>
                                       </div>
                                 }
                                 <div className="text-left">
-                                    <p className="font-glacial text-sm text-white uppercase tracking-[3px] leading-tight">{t?.name}</p>
-                                    {(t?.role || t?.company) && (
-                                        <p className="font-glacial text-sm text-white/55 mt-1">{[t?.role, t?.company].filter(Boolean).join(' · ')}</p>
+                                    <p className="font-glacial text-sm text-white uppercase tracking-[3px] leading-tight">{item?.name}</p>
+                                    {(item?.role || item?.company) && (
+                                        <p className="font-glacial text-sm text-white/55 mt-1">{[item?.role, item?.company].filter(Boolean).join(' · ')}</p>
                                     )}
                                 </div>
                             </div>
@@ -209,6 +205,7 @@ function TestimonialsSection({ testimonials }) {
 
 // ─── Formulaire témoignage ──────────────────────────────────────────────────────
 function TestimonialForm() {
+    const { t } = useLanguage();
     const [hoveredStar, setHoveredStar] = useState(0);
     const [form, setForm] = useState({ name: '', role: '', company: '', rating: 0, content: '' });
     const [processing, setProcessing] = useState(false);
@@ -233,15 +230,15 @@ function TestimonialForm() {
             <div className="w-16 h-16 rounded-full bg-gold/15 border border-gold/30 flex items-center justify-center mx-auto mb-6">
                 <svg className="w-7 h-7 text-gold" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <h3 className="font-glacial text-xl text-white uppercase tracking-[3px] mb-3">Merci pour votre <span className="text-gold">témoignage</span></h3>
-            <p className="font-glacial text-sm text-white/70 max-w-sm mx-auto leading-relaxed">Votre avis a été transmis à notre équipe. Il sera publié après validation sous 24–48h.</p>
+            <h3 className="font-glacial text-xl text-white uppercase tracking-[3px] mb-3">{t('home_thanks_title')}</h3>
+            <p className="font-glacial text-sm text-white/70 max-w-sm mx-auto leading-relaxed">{t('home_thanks_sub')}</p>
         </div>
     );
 
     return (
         <form onSubmit={handleSubmit} className="reveal" style={{ transitionDelay: '.15s' }}>
             <div className="mb-8">
-                <label className="input-label mb-4 block">Votre note *</label>
+                <label className="input-label mb-4 block">{t('home_rating')}</label>
                 <div className="flex gap-2">
                     {[1,2,3,4,5].map(star => (
                         <button key={star} type="button"
@@ -258,27 +255,27 @@ function TestimonialForm() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div>
-                    <label className="input-label">Votre nom *</label>
+                    <label className="input-label">{t('home_your_name')}</label>
                     <input type="text" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Aminata Diallo" className="input-mia" required />
                 </div>
                 <div>
-                    <label className="input-label">Fonction / Rôle</label>
+                    <label className="input-label">{t('home_role')}</label>
                     <input type="text" value={form.role} onChange={e => set('role', e.target.value)} placeholder="Directrice artistique" className="input-mia" />
                 </div>
             </div>
             <div className="mb-6">
-                <label className="input-label">Entreprise / Organisation</label>
+                <label className="input-label">{t('home_company')}</label>
                 <input type="text" value={form.company} onChange={e => set('company', e.target.value)} placeholder="Studio Créatif" className="input-mia" />
             </div>
             <div className="mb-8">
-                <label className="input-label">Votre témoignage *</label>
+                <label className="input-label">{t('home_testimonial')}</label>
                 <textarea value={form.content} onChange={e => set('content', e.target.value)} rows={5} placeholder="Partagez votre expérience avec MIA DREAMS & CO…" className="input-mia resize-none" required />
                 <span className="font-glacial text-[11px] text-white/50 block text-right mt-1">{form.content.length}/1000</span>
             </div>
             <div className="flex items-center justify-between gap-6 flex-wrap">
-                <p className="font-glacial text-sm text-white/60 leading-relaxed max-w-xs">Votre avis sera publié après validation par notre équipe.</p>
+                <p className="font-glacial text-sm text-white/60 leading-relaxed max-w-xs">{t('home_review_policy')}</p>
                 <button type="submit" disabled={processing || !form.rating} className="btn btn-gold disabled:opacity-40 disabled:cursor-not-allowed">
-                    {processing ? 'ENVOI…' : 'ENVOYER MON AVIS'}
+                    {processing ? '…' : t('home_send_review')}
                 </button>
             </div>
         </form>
@@ -287,6 +284,7 @@ function TestimonialForm() {
 
 // ─── Produits vedettes ─────────────────────────────────────────────────────────
 function FeaturedProducts({ products }) {
+    const { t } = useLanguage();
     const { addItem } = useCart();
     const [added, setAdded] = useState({});
     const handleAdd = (e, product) => {
@@ -301,12 +299,12 @@ function FeaturedProducts({ products }) {
             <div className="max-w-7xl mx-auto px-6 lg:px-10">
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-14 reveal">
                     <div>
-                        <span className="eyebrow" style={{ color: 'rgba(196,162,103,0.6)' }}>Sélection</span>
+                        <span className="eyebrow" style={{ color: 'rgba(196,162,103,0.6)' }}>{t('home_selection')}</span>
                         <h2 className="display-title text-3xl lg:text-4xl text-white mt-3">
-                            NOS <span className="text-gold">COUPS DE CŒUR</span>
+                            {t('home_favourites')}
                         </h2>
                     </div>
-                    <Link to="/boutique" className="btn btn-gold mt-6 sm:mt-0 self-start sm:self-auto">VOIR LA BOUTIQUE</Link>
+                    <Link to="/boutique" className="btn btn-gold mt-6 sm:mt-0 self-start sm:self-auto">{t('home_see_shop')}</Link>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                     {products.map((product, i) => (
@@ -340,6 +338,19 @@ function FeaturedProducts({ products }) {
 // PAGE PRINCIPALE
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function Home() {
+    const { t } = useLanguage();
+
+    const defaultSlides = [
+        { image: '/img/index/home-image1.jpg', subtitle: t('home_slide1_sub'), title: t('home_slide1_title'), content: t('home_slide1_content'), cta_label: t('home_slide1_cta'), cta_href: '/miaDreams' },
+        { image: '/img/index/home-image2.jpg', subtitle: t('home_slide2_sub'), title: t('home_slide2_title'), content: t('home_slide2_content'), cta_label: t('home_slide2_cta'), cta_href: '/miaDreams' },
+        { image: '/img/index/home-image5.jpg', subtitle: t('home_slide3_sub'), title: t('home_slide3_title'), content: t('home_slide3_content'), cta_label: t('home_slide3_cta'), cta_href: '/personalBranding' },
+    ];
+    const defaultUnivers = [
+        { image: '/img/index/home-image2.jpg', subtitle: '01', title: 'Mia Dreams Brand',      content: t('home_slide2_content'), cta_href: '/miaDreams' },
+        { image: '/img/index/home-image3.jpg', subtitle: '02', title: 'Ma Petite Robe En Wax', content: t('nav_boutique'),         cta_href: '/mprew' },
+        { image: '/img/index/home-image4.jpg', subtitle: '03', title: 'Fashion Program',        content: t('programmes_title'),     cta_href: '/programmes/fashion-program' },
+    ];
+
     const [data, setData]                         = useState({ services: [], testimonials: [] });
     const [featured, setFeatured]                 = useState([]);
     const [heroSlides, setHeroSlides]             = useState(null); // null = chargement en cours
@@ -367,13 +378,13 @@ export default function Home() {
         axios.get('/api/shop', { params: { featured: '1', limit: 8 } }).then(r => setFeatured(r.data)).catch(() => {});
     }, []);
 
-    const activeUnivers = univers.length > 0 ? univers : DEFAULT_UNIVERS;
+    const activeUnivers = univers.length > 0 ? univers : defaultUnivers;
 
     return (
         <Layout title="Maison de Mode Africaine">
 
             {/* ══ HERO ══════════════════════════════════════════════════════ */}
-            <HeroCarousel slides={heroSlides} />
+            <HeroCarousel slides={heroSlides} defaultSlides={defaultSlides} />
 
             {/* ══ MANIFESTE ════════════════════════════════════════════════ */}
             {(() => {
@@ -445,7 +456,7 @@ export default function Home() {
                                 <div className="flex flex-col gap-7 reveal" style={{ transitionDelay: '.12s' }}>
                                     <span className="font-lastica text-[10px] tracking-[6px] uppercase"
                                           style={{ color: 'rgba(196,162,103,.7)' }}>
-                                        Notre vision
+                                        {t('home_our_vision')}
                                     </span>
 
                                     {/* Citation */}
@@ -465,9 +476,9 @@ export default function Home() {
                                     {/* Chiffres clés */}
                                     <div className="flex gap-8 sm:gap-10 py-6 border-t border-b border-[#ede9e3]">
                                         {[
-                                            { n: '2018', l: 'Fondée à Dakar' },
-                                            { n: '4',    l: 'Univers créatifs' },
-                                            { n: '100+', l: 'Clients satisfaits' },
+                                            { n: '2018', l: t('home_founded') },
+                                            { n: '4',    l: t('home_creative') },
+                                            { n: '100+', l: t('home_clients') },
                                         ].map((s, i) => (
                                             <div key={i}>
                                                 <p className="font-glacial text-2xl font-light" style={{ color: GOLD }}>{s.n}</p>
@@ -477,7 +488,7 @@ export default function Home() {
                                     </div>
 
                                     <Link to={introSection?.cta_href || '/apropos'} className="btn btn-gold self-start">
-                                        {introSection?.cta_label || 'NOTRE HISTOIRE'}
+                                        {introSection?.cta_label || t('home_our_history')}
                                     </Link>
                                 </div>
                             </div>
@@ -489,7 +500,7 @@ export default function Home() {
             {/* ══ TAGLINE ══════════════════════════════════════════════════ */}
             <div className="gold-strip py-8 text-center">
                 <p className="relative z-10 font-lastica text-[10px] sm:text-[10px] tracking-[5px] sm:tracking-[7px] text-[#080808] uppercase">
-                    {tagline || "Plus qu'une entreprise, un univers authentique aux inspirations africaines et contemporaines."}
+                    {tagline ? <TranslatedText text={tagline} /> : t('home_tagline')}
                 </p>
             </div>
 
@@ -501,10 +512,10 @@ export default function Home() {
                         <div>
                             <span className="font-lastica text-[10px] tracking-[5px] uppercase block mb-3"
                                   style={{ color: 'rgba(196,162,103,.5)' }}>
-                                Explorer
+                                {t('home_explore')}
                             </span>
                             <h2 className="display-title text-3xl sm:text-4xl text-white">
-                                NOS <span className="text-gold">UNIVERS</span>
+                                {t('home_universes')}
                             </h2>
                         </div>
                         <Link to="/miaDreams"
@@ -512,7 +523,7 @@ export default function Home() {
                               style={{ color: 'rgba(255,255,255,.25)' }}
                               onMouseEnter={e => e.currentTarget.style.color = GOLD}
                               onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.25)'}>
-                            Tout explorer <span>→</span>
+                            {t('home_explore_all')} <span>→</span>
                         </Link>
                     </div>
                 </div>
@@ -544,7 +555,7 @@ export default function Home() {
                                 <p className="font-glacial text-sm text-white/65 mb-5">{u.content || u.sub}</p>
                                 <span className="flex items-center gap-2 font-lastica text-[10px] tracking-[3px] uppercase transition-all duration-300"
                                       style={{ color: 'rgba(196,162,103,.6)' }}>
-                                    Découvrir
+                                    {t('home_discover')}
                                     <span className="transition-transform duration-300 group-hover:translate-x-1.5">→</span>
                                 </span>
                             </div>
@@ -561,10 +572,9 @@ export default function Home() {
 
                         {/* Texte gauche */}
                         <div className="reveal">
-                            <span className="eyebrow">Formations</span>
+                            <span className="eyebrow">{t('home_trainings')}</span>
                             <h2 className="display-title text-3xl lg:text-5xl text-[#1a1a1a] mt-4 leading-tight">
-                                NOS PROGRAMMES<br />
-                                <span className="text-gold">DE FORMATION</span>
+                                {t('home_programmes_title')}
                             </h2>
                             <div className="gold-line my-6" />
                             <p className="font-glacial text-sm text-[#555] leading-loose mb-4">
@@ -574,7 +584,7 @@ export default function Home() {
                                 Des formations concrètes, animées par des professionnels du secteur, pour vous permettre de transformer votre passion en carrière.
                             </p>
                             <Link to="/programmes" className="btn btn-gold">
-                                DÉCOUVRIR NOS PROGRAMMES
+                                {t('home_see_programmes')}
                             </Link>
                         </div>
 
@@ -618,7 +628,7 @@ export default function Home() {
                                 style={{ textDecoration: 'none' }}
                             >
                                 <span className="font-glacial text-[11px] tracking-[3px] uppercase text-gold/60 group-hover:text-gold transition-colors">
-                                    Voir tous les programmes
+                                    {t('home_see_all_programmes')}
                                 </span>
                                 <svg className="text-gold/40 group-hover:text-gold transition-colors" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             </Link>
@@ -633,9 +643,9 @@ export default function Home() {
 
                     {/* En-tête */}
                     <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">Ce que nous faisons</span>
+                        <span className="eyebrow justify-center">{t('home_what_we_do')}</span>
                         <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">
-                            NOS PILIERS <span className="text-gold">D'ACTION</span>
+                            {t('home_pillars')}
                         </h2>
                         <div className="gold-line-center" />
                         <p className="font-glacial text-sm text-white/60 mt-6 max-w-xl mx-auto leading-relaxed">
@@ -725,7 +735,7 @@ export default function Home() {
 
                     {/* CTA */}
                     <div className="text-center mt-12 reveal">
-                        <Link to="/reservation" className="btn btn-gold">RÉSERVER UNE CONSULTATION</Link>
+                        <Link to="/reservation" className="btn btn-gold">{t('home_consult_cta')}</Link>
                     </div>
                 </div>
             </section>
@@ -856,19 +866,19 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
                         <div className="reveal">
-                            <span className="eyebrow">Votre expérience compte</span>
+                            <span className="eyebrow">{t('home_leave_review')}</span>
                             <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 leading-tight">
-                                LAISSEZ VOTRE<br /><span className="text-gold">TÉMOIGNAGE</span>
+                                {t('home_leave_title')}
                             </h2>
                             <div className="gold-line my-6" />
                             <p className="font-glacial text-[15px] text-white/70 leading-[1.9] mb-8">
-                                Vous avez travaillé avec nous ou porté une de nos créations ? Partagez votre expérience — votre avis inspire d'autres femmes à embrasser la mode africaine d'excellence.
+                                {t('home_leave_sub')}
                             </p>
                             <div className="space-y-4">
                                 {[
-                                    { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',   text: 'Votre avis est relu avant publication' },
-                                    { icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', text: 'Seuls votre prénom et rôle seront affichés' },
-                                    { icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', text: "Chaque témoignage est une fierté pour notre équipe" },
+                                    { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',   text: t('home_review_checked') },
+                                    { icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', text: t('home_review_name') },
+                                    { icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', text: t('home_review_pride') },
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-start gap-4">
                                         <div className="w-8 h-8 border border-gold/40 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -894,11 +904,11 @@ export default function Home() {
                     <div className="flex flex-col justify-center px-8 py-16 lg:px-14 xl:px-20 reveal">
                         <span className="font-lastica text-[10px] tracking-[5px] uppercase block mb-6"
                               style={{ color: 'rgba(196,162,103,.55)' }}>
-                            Nous trouver
+                            {t('home_find_us')}
                         </span>
                         <h2 className="display-title text-white leading-[1.1] mb-6"
                             style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}>
-                            NOTRE <span className="text-gold">ATELIER</span>
+                            {t('home_our_atelier')}
                         </h2>
                         <div className="w-10 h-px mb-8" style={{ background: GOLD }} />
 
@@ -912,7 +922,7 @@ export default function Home() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">Adresse</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">{t('home_address')}</p>
                                     <p className="font-glacial text-sm text-white/60 leading-relaxed">Abidjan, Côte d'Ivoire</p>
                                 </div>
                             </div>
@@ -926,8 +936,8 @@ export default function Home() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">Horaires</p>
-                                    <p className="font-glacial text-sm text-white/60">Lun – Sam : 09h00 – 18h00</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">{t('home_hours')}</p>
+                                    <p className="font-glacial text-sm text-white/60">{t('home_hours_val')}</p>
                                 </div>
                             </div>
 
@@ -939,15 +949,15 @@ export default function Home() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">Sur rendez-vous</p>
-                                    <p className="font-glacial text-sm text-white/60">Consultations sur réservation</p>
+                                    <p className="font-lastica text-[9px] tracking-[3px] text-white/55 uppercase mb-1">{t('home_by_appt')}</p>
+                                    <p className="font-glacial text-sm text-white/60">{t('home_appt_sub')}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="mt-10">
                             <Link to="/reservation" className="btn btn-gold self-start">
-                                PRENDRE RDV
+                                {t('home_book_cta')}
                             </Link>
                         </div>
                     </div>
@@ -988,7 +998,7 @@ export default function Home() {
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                                 <circle cx="12" cy="10" r="3"/>
                             </svg>
-                            Voir sur Google Maps
+                            {t('home_see_maps')}
                         </a>
                     </div>
                 </div>

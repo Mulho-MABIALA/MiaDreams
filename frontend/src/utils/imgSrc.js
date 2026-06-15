@@ -7,6 +7,9 @@
  */
 export const imgSrc = (val, fallback = '') => {
     if (!val) return fallback;
+    if (val.includes('res.cloudinary.com') && val.includes('/upload/')) {
+        return val.replace('/upload/', '/upload/f_auto,q_auto/');
+    }
     if (val.startsWith('http') || val.startsWith('/')) return val;
     return `/uploads/${val}`;
 };

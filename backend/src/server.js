@@ -79,10 +79,17 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Servir les fichiers uploadés
-app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+// Servir les fichiers uploadés (cache 1 an — les noms incluent un timestamp)
+app.use('/uploads', express.static(path.join(__dirname, '../../uploads'), {
+    maxAge: '1y',
+    setHeaders: (res) => {
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+    },
+}));
 // Servir les assets publics (images, polices, etc.)
-app.use(express.static(path.join(__dirname, '../../public')));
+app.use(express.static(path.join(__dirname, '../../public'), {
+    maxAge: '1y',
+}));
 
 // Routes API — chaque require est blindé pour ne pas crasher le serveur
 const routes = [

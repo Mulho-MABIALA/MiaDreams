@@ -46,7 +46,7 @@ function HeroCarousel({ slides, defaultSlides }) {
         <div className="hero-carousel">
             {list.map((s, i) => (
                 <div key={i} className={`hero-slide ${i === current ? 'active' : ''}`}>
-                    <img src={imgSrc(s.image)} alt="MIA DREAMS" loading={i === 0 ? 'eager' : 'lazy'} />
+                    <img src={imgSrc(s.image)} alt="MIA DREAMS" loading={i === 0 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : 'auto'} decoding={i === 0 ? 'sync' : 'async'} />
                     <div className="overlay" />
                     <div className="absolute inset-0 flex items-end z-10 pb-16 sm:pb-20 lg:pb-24">
                         <div className="max-w-7xl w-full mx-auto px-5 sm:px-10 lg:px-20">

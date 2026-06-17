@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { useLanguage } from '../context/LanguageContext';
+import { useFCM } from '../hooks/useFCM';
 
 const GOLD = '#C9A84C';
 
@@ -11,6 +12,16 @@ export default function CommandeSucces() {
     const { t } = useLanguage();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { permission, requestPermission } = useFCM();
+    const [notifDone, setNotifDone] = useState(false);
+
+    const enableNotifications = async () => {
+        const token = await requestPermission();
+        if (token && id) {
+            await axios.post('/api/fcm/token', { orderId: id, token }).catch(() => {});
+        }
+        setNotifDone(true);
+    };
 
     const STATUS_LABELS = {
         pending:    { label: t('status_pending'), color: '#C9A84C' },
@@ -74,6 +85,30 @@ export default function CommandeSucces() {
                         <h1 className="font-glacial text-3xl text-white uppercase tracking-[4px] mb-2">{t('success_title')}</h1>
                         <p className="font-glacial text-sm text-white/65">{t('success_msg')}</p>
                     </div>
+
+                    {/* Bannière notifications push */}
+                    {permission !== 'granted' && !notifDone && (
+                        <div className="mb-8 border px-5 py-4 flex items-center gap-4"
+                             style={{ borderColor: `${GOLD}30`, background: `${GOLD}08` }}>
+                            <span className="text-xl flex-shrink-0">🔔</span>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-lastica text-[9px] tracking-[3px] text-white/80 uppercase mb-0.5">Suivre ma commande</p>
+                                <p className="font-glacial text-xs text-white/50">Recevez une notification à chaque étape de votre livraison</p>
+                            </div>
+                            <button onClick={enableNotifications}
+                                    className="flex-shrink-0 font-lastica text-[8px] tracking-[3px] uppercase px-4 py-2.5 transition-all hover:brightness-110"
+                                    style={{ background: GOLD, color: '#050505' }}>
+                                Activer
+                            </button>
+                        </div>
+                    )}
+                    {notifDone && permission === 'granted' && (
+                        <div className="mb-8 border px-5 py-3 flex items-center gap-3"
+                             style={{ borderColor: 'rgba(124,154,132,0.3)', background: 'rgba(124,154,132,0.06)' }}>
+                            <span className="text-base">✅</span>
+                            <p className="font-glacial text-xs text-white/60">Notifications activées — vous serez alerté à chaque mise à jour</p>
+                        </div>
+                    )}
 
                     {/* Détails */}
                     <div className="border border-white/[0.05] p-6 mb-6" style={{ background: '#0c0c0c' }}>

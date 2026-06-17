@@ -87,7 +87,7 @@ export default function Navbar() {
                 {/* Logo */}
                 <Link to="/" className="flex-shrink-0 group">
                     <img src={logoSrc} alt={companyInfo?.name || 'MIA DREAMS'}
-                         className={`h-10 sm:h-12 w-auto transition-opacity duration-300 group-hover:opacity-100 ${logoIsCustom ? 'opacity-100 object-contain' : 'brightness-0 invert opacity-85'}`} />
+                         className={`h-12 sm:h-14 w-auto transition-all duration-300 ${logoIsCustom ? 'opacity-100 object-contain' : 'brightness-0 invert opacity-100 drop-shadow-[0_0_10px_rgba(201,168,76,0.5)] group-hover:drop-shadow-[0_0_16px_rgba(201,168,76,0.8)]'}`} />
                 </Link>
 
                 {/* Desktop nav */}

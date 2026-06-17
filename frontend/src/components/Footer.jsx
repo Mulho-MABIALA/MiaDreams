@@ -142,7 +142,7 @@ export default function Footer() {
                         {/* Identité */}
                         <div className="lg:col-span-4">
                             <img src={logoSrc} alt={companyInfo?.name || 'MIA DREAMS'}
-                                 className={`h-11 w-auto mb-5 ${logoIsCustom ? 'opacity-90 object-contain' : 'brightness-0 invert opacity-70'}`} />
+                                 className={`h-14 w-auto mb-5 ${logoIsCustom ? 'opacity-100 object-contain' : 'brightness-0 invert opacity-100 drop-shadow-[0_0_8px_rgba(201,168,76,0.4)]'}`} />
                             <p className="font-glacial text-[14px] text-white/65 leading-relaxed mb-8 max-w-[240px]">
                                 {t('footer_about')}
                             </p>

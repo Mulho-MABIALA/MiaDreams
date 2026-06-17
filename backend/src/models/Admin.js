@@ -16,6 +16,7 @@ const adminSchema = new mongoose.Schema({
     role:        { type: String, enum: ['super_admin', 'admin'], default: 'admin' },
     permissions: { type: [String], default: [] }, // modules accessibles
     is_active:   { type: Boolean, default: true },
+    fcm_tokens:  { type: [String], default: [] }, // tokens push notifications
 }, { timestamps: true });
 
 adminSchema.statics.ALL_MODULES = ALL_MODULES;

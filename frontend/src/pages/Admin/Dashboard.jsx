@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import AdminCard from '../../components/AdminCard';
+import { useFCM } from '../../hooks/useFCM';
 
 const GOLD = '#C9A84C';
 
@@ -248,6 +249,25 @@ function RevenueChart({ data }) {
 export default function Dashboard() {
     const [stats,   setStats]   = useState({});
     const [recent,  setRecent]  = useState({ reservations: [], contacts: [], posts: [], testimonials: [], newsletters: [], orders: [] });
+    const { permission, requestPermission } = useFCM();
+    const [notifBanner, setNotifBanner] = useState(false);
+
+    // Enregistre le token FCM admin dès que la permission est accordée
+    useEffect(() => {
+        const registerAdminToken = async () => {
+            const token = await requestPermission();
+            if (token) {
+                await axios.post('/api/fcm/admin-token', { token }).catch(() => {});
+            }
+        };
+        if (permission === 'granted') {
+            requestPermission().then(token => {
+                if (token) axios.post('/api/fcm/admin-token', { token }).catch(() => {});
+            });
+        } else if (permission === 'default') {
+            setNotifBanner(true);
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
     const [chartData, setChartData] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -328,6 +348,27 @@ export default function Dashboard() {
 
     return (
         <div>
+            {/* ─── Bannière notifications push admin ─── */}
+            {notifBanner && (
+                <div style={{ background: '#FDF8F2', border: '1px solid #E8D8C4', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '20px' }}>🔔</span>
+                    <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: '13px', fontWeight: 600, color: '#2D1B0E', marginBottom: '2px' }}>Activer les notifications admin</p>
+                        <p style={{ fontSize: '12px', color: '#9E8272' }}>Recevez une alerte instantanée à chaque nouvelle commande</p>
+                    </div>
+                    <button
+                        onClick={async () => {
+                            const token = await requestPermission();
+                            if (token) await axios.post('/api/fcm/admin-token', { token }).catch(() => {});
+                            setNotifBanner(false);
+                        }}
+                        style={{ background: '#C9A84C', color: '#1E110A', fontWeight: 700, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', padding: '9px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}>
+                        Activer
+                    </button>
+                    <button onClick={() => setNotifBanner(false)} style={{ background: 'none', border: 'none', color: '#9E8272', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
+                </div>
+            )}
+
             {/* ─── HEADER ─── */}
             <div
                 className="flex items-end justify-between"

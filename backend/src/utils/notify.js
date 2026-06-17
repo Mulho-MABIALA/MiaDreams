@@ -5,7 +5,7 @@
  */
 
 const nodemailer = require('nodemailer');
-const { sendPush } = require('./fcm');
+const { sendPush, sendMulticastPush } = require('./fcm');
 
 // ── Transporter email ─────────────────────────────────────────────────────────
 let _transporter = null;
@@ -228,6 +228,20 @@ async function pushNewOrder(order) {
     });
 }
 
+// ── PUSH NOTIFICATION NOUVELLE COMMANDE (→ tous les admins) ──────────────────
+async function pushAdminNewOrder(order) {
+    const Admin = require('../models/Admin');
+    const admins = await Admin.find({ is_active: true, fcm_tokens: { $exists: true, $not: { $size: 0 } } })
+        .select('fcm_tokens');
+    const tokens = admins.flatMap(a => a.fcm_tokens).filter(Boolean);
+    if (!tokens.length) return;
+    await sendMulticastPush(tokens, {
+        title: `🛍️ Nouvelle commande — ${order.total.toLocaleString('fr-FR')} FCFA`,
+        body:  `${order.customer.name} · ${order.order_number}`,
+        data:  { url: '/admin/commandes', orderId: String(order._id) },
+    });
+}
+
 // ── PUSH NOTIFICATION STATUT (→ client) ──────────────────────────────────────
 async function pushStatusUpdate(order) {
     if (!order.fcm_token) return;
@@ -362,4 +376,4 @@ async function notifyStatusUpdate(order) {
     });
 }
 
-module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, pushNewOrder, pushStatusUpdate, sendEmail, getTransporter };
+module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, pushNewOrder, pushAdminNewOrder, pushStatusUpdate, sendEmail, getTransporter };

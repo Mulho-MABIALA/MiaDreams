@@ -5,6 +5,7 @@ import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
 import { imgSrc } from '../utils/imgSrc';
 import { useLanguage } from '../context/LanguageContext';
+import { useFCM } from '../hooks/useFCM';
 
 const GOLD = '#C9A84C';
 
@@ -51,6 +52,7 @@ export default function Commande() {
     const { items, subtotal, clearCart } = useCart();
     const { t } = useLanguage();
     const navigate = useNavigate();
+    const { requestPermission } = useFCM();
     const shipping = 0;
     const total = subtotal;
 
@@ -99,6 +101,13 @@ export default function Commande() {
 
             // Stocker le numéro de commande pour la page de succès (anti-IDOR)
             sessionStorage.setItem(`order_num_${order._id}`, order.order_number);
+
+            // Demander permission push et enregistrer le token FCM
+            requestPermission().then(fcmToken => {
+                if (fcmToken) {
+                    axios.post('/api/fcm/token', { orderId: order._id, token: fcmToken }).catch(() => {});
+                }
+            });
 
             if (paymentMethod === 'cash') {
                 clearCart(); navigate(`/commande/succes/${order._id}`); return;

@@ -24,7 +24,7 @@ const Newsletter = require('../models/Newsletter');
 const Order = require('../models/Order');
 const CaisseTransaction = require('../models/CaisseTransaction');
 const AdminUser = require('../models/Admin');
-const { notifyStatusUpdate } = require('../utils/notify');
+const { notifyStatusUpdate, pushStatusUpdate } = require('../utils/notify');
 const CatalogueDownload = require('../models/CatalogueDownload');
 
 // Middleware : réservé au super_admin uniquement
@@ -534,6 +534,7 @@ router.patch('/orders/:id', async (req, res) => {
         const statusChanged = order_status && order_status !== before.order_status;
         if (statusChanged) {
             notifyStatusUpdate(order).catch(e => console.error('Status email error:', e.message));
+            pushStatusUpdate(order).catch(e => console.error('Status push error:', e.message));
         }
 
         res.json(order);

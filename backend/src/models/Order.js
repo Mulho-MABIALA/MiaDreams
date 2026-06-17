@@ -29,6 +29,7 @@ const orderSchema = new mongoose.Schema({
     payment_ref:    String,
     order_status:   { type: String, enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
     notes:          String,
+    fcm_token:      String,   // token push notifications (optionnel)
 }, { timestamps: true });
 
 orderSchema.pre('validate', function(next) {

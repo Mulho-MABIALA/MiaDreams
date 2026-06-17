@@ -116,6 +116,7 @@ const routes = [
     ['/api/caisse',       './routes/caisse'],
     ['/api/invoices',    './routes/invoices'],
     ['/api/programmes',  './routes/programmes'],
+    ['/api/fcm',         './routes/fcm'],
 ];
 
 routes.forEach(([path, file]) => {

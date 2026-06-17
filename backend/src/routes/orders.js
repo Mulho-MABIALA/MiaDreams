@@ -2,7 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const Order   = require('../models/Order');
 const Product = require('../models/Product');
-const { notifyNewOrder, notifyOrderConfirmation } = require('../utils/notify');
+const { notifyNewOrder, notifyOrderConfirmation, pushNewOrder } = require('../utils/notify');
 const authMiddleware = require('../middleware/auth');
 
 /** Sanitise un string — enlève les caractères dangereux */
@@ -110,6 +110,7 @@ router.post('/', async (req, res) => {
 
         notifyNewOrder(order).catch(e => console.error('Notify admin error:', e.message));
         notifyOrderConfirmation(order).catch(e => console.error('Notify client error:', e.message));
+        pushNewOrder(order).catch(e => console.error('Push FCM error:', e.message));
         res.status(201).json(order);
     } catch (e) { res.status(400).json({ message: e.message }); }
 });

@@ -5,6 +5,7 @@
  */
 
 const nodemailer = require('nodemailer');
+const { sendPush } = require('./fcm');
 
 // ── Transporter email ─────────────────────────────────────────────────────────
 let _transporter = null;
@@ -217,6 +218,28 @@ async function notifyNewOrder(order) {
     ]);
 }
 
+// ── PUSH NOTIFICATION NOUVELLE COMMANDE (→ client) ───────────────────────────
+async function pushNewOrder(order) {
+    if (!order.fcm_token) return;
+    await sendPush(order.fcm_token, {
+        title: '✅ Commande confirmée !',
+        body:  `Votre commande ${order.order_number} a bien été reçue. Merci !`,
+        data:  { url: `/commande/succes/${order._id}`, orderId: String(order._id) },
+    });
+}
+
+// ── PUSH NOTIFICATION STATUT (→ client) ──────────────────────────────────────
+async function pushStatusUpdate(order) {
+    if (!order.fcm_token) return;
+    const info = ORDER_STATUS_INFO[order.order_status];
+    if (!info || order.order_status === 'pending') return;
+    await sendPush(order.fcm_token, {
+        title: `${info.emoji} Commande ${info.label}`,
+        body:  info.msg,
+        data:  { url: `/commande/suivi/${order.order_number}`, orderId: String(order._id) },
+    });
+}
+
 // ── EMAIL CONFIRMATION COMMANDE (→ client) ────────────────────────────────────
 async function notifyOrderConfirmation(order) {
     if (!order.customer?.email) return;
@@ -339,4 +362,4 @@ async function notifyStatusUpdate(order) {
     });
 }
 
-module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, sendEmail, getTransporter };
+module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, pushNewOrder, pushStatusUpdate, sendEmail, getTransporter };

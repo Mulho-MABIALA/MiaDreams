@@ -23,6 +23,13 @@ export default function CommandeSucces() {
         setNotifDone(true);
     };
 
+    // Si permission déjà accordée → récupère et enregistre le token automatiquement
+    useEffect(() => {
+        if (permission === 'granted' && id && !notifDone) {
+            enableNotifications();
+        }
+    }, [permission, id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const STATUS_LABELS = {
         pending:    { label: t('status_pending'), color: '#C9A84C' },
         confirmed:  { label: t('status_confirmed'), color: '#7C9A84' },

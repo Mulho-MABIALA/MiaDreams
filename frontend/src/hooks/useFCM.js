@@ -55,17 +55,18 @@ export function useFCM() {
     // Écoute les messages reçus quand l'app est au premier plan
     useEffect(() => {
         if (!messaging) return;
-        const unsubscribe = onMessage(messaging, async (payload) => {
+        const unsubscribe = onMessage(messaging, (payload) => {
             const title = payload.notification?.title || payload.data?.title;
             const body  = payload.notification?.body  || payload.data?.body  || '';
+            console.log('FCM onMessage reçu:', title, body);
             if (!title) return;
-            // Utiliser le SW pour afficher la notification (plus fiable que new Notification())
-            const reg = await navigator.serviceWorker.getRegistration('/');
-            if (reg?.active) {
-                reg.showNotification(title, { body, icon: '/logo192.png', badge: '/logo192.png' });
-            } else if (Notification.permission === 'granted') {
-                new Notification(title, { body, icon: '/logo192.png' });
-            }
+            navigator.serviceWorker.getRegistration('/').then(reg => {
+                if (reg?.active) {
+                    reg.showNotification(title, { body, icon: '/logo192.png', badge: '/logo192.png' });
+                } else if (Notification.permission === 'granted') {
+                    new Notification(title, { body, icon: '/logo192.png' });
+                }
+            });
         });
         return unsubscribe;
     }, []);

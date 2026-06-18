@@ -73,12 +73,10 @@ router.get('/status', async (req, res) => {
     };
 
     try {
-        const admin = require('firebase-admin');
-        info.firebaseInitialized = admin.apps.length > 0;
-        if (!info.firebaseInitialized) {
-            require('../utils/fcm');
-            info.firebaseInitialized = require('firebase-admin').apps.length > 0;
-        }
+        // Forcer l'initialisation Firebase
+        const { sendPush } = require('../utils/fcm');
+        await sendPush('__test__', { title: 'test', body: 'test' }).catch(() => {});
+        info.firebaseInitialized = require('firebase-admin').apps.length > 0;
     } catch(e) {
         info.error = e.message;
     }

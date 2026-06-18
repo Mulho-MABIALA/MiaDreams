@@ -52,8 +52,6 @@ async function sendPush(token, { title, body, data = {} }) {
     try {
         await _admin.messaging().send({
             token,
-            // Message data-only sans webpush.notification
-            // → Firebase route vers onMessage (foreground) ou onBackgroundMessage (background)
             data: {
                 title,
                 body,
@@ -62,7 +60,7 @@ async function sendPush(token, { title, body, data = {} }) {
                 ),
             },
             webpush: {
-                headers: { Urgency: 'high' },
+                notification: { title, body, icon: '/logo192.png', badge: '/logo192.png' },
                 fcmOptions: { link: data.url || '/' },
             },
         });

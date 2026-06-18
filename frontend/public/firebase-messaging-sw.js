@@ -1,10 +1,8 @@
-// firebase-messaging-sw.js — Service Worker pour les notifications push en arrière-plan
+// firebase-messaging-sw.js — Service Worker pour les notifications push
 
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-// Ces valeurs sont remplacées au build par les variables d'environnement
-// Elles doivent correspondre exactement aux VITE_FIREBASE_* de ton .env
 firebase.initializeApp({
     apiKey:            self.FIREBASE_API_KEY            || '__FIREBASE_API_KEY__',
     authDomain:        self.FIREBASE_AUTH_DOMAIN        || '__FIREBASE_AUTH_DOMAIN__',
@@ -14,27 +12,38 @@ firebase.initializeApp({
     appId:             self.FIREBASE_APP_ID             || '__FIREBASE_APP_ID__',
 });
 
-const messaging = firebase.messaging();
+// Gestion directe du push event — bypasse le routing foreground/background de Firebase
+self.addEventListener('push', (event) => {
+    let title = 'MIA DREAMS';
+    let body  = '';
+    let url   = '/admin';
 
-// Notification reçue en arrière-plan
-messaging.onBackgroundMessage((payload) => {
-    const title = payload.notification?.title || payload.data?.title || 'MIA DREAMS';
-    const body  = payload.notification?.body  || payload.data?.body  || '';
-    const data = payload.data || {};
+    try {
+        const payload = event.data ? event.data.json() : {};
+        title = (payload.notification && payload.notification.title)
+               || (payload.data && payload.data.title)
+               || title;
+        body  = (payload.notification && payload.notification.body)
+               || (payload.data && payload.data.body)
+               || body;
+        url   = (payload.data && payload.data.url) || url;
+    } catch (_) {}
 
-    self.registration.showNotification(title, {
-        body:    body || '',
-        icon:    '/logo192.png',
-        badge:   '/logo192.png',
-        vibrate: [200, 100, 200],
-        data:    { url: data.url || '/' },
-    });
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body,
+            icon:    '/logo192.png',
+            badge:   '/logo192.png',
+            vibrate: [200, 100, 200],
+            data:    { url },
+        })
+    );
 });
 
 // Clic sur la notification → ouvre l'URL associée
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const url = event.notification.data?.url || '/';
+    const url = (event.notification.data && event.notification.data.url) || '/';
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
             const existing = list.find(c => c.url.includes(url));

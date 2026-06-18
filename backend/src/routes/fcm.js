@@ -73,10 +73,11 @@ router.get('/status', async (req, res) => {
     };
 
     try {
-        // Forcer l'initialisation Firebase
-        const { sendPush } = require('../utils/fcm');
-        await sendPush('__test__', { title: 'test', body: 'test' }).catch(() => {});
-        info.firebaseInitialized = require('firebase-admin').apps.length > 0;
+        const { getInitStatus } = require('../utils/fcm');
+        const status = getInitStatus();
+        info.firebaseInitialized = status.initialized;
+        info.firebaseAppsCount   = status.appsCount;
+        info.firebaseInitError   = status.error;
     } catch(e) {
         info.error = e.message;
     }

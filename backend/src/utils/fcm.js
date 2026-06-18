@@ -1,60 +1,56 @@
 /**
  * fcm.js — Firebase Cloud Messaging (Admin SDK)
- * Envoie des notifications push aux appareils enregistrés.
  */
 
-let _app = null;
+const fs   = require('fs');
+const path = require('path');
 
-function getAdmin() {
-    if (_app) return _app;
+let _admin = null;
+let _initError = null;
 
+function initFirebase() {
     try {
         const admin = require('firebase-admin');
-        if (admin.apps.length) { _app = admin; return admin; }
+        if (admin.apps.length) { _admin = admin; return; }
+
+        const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+            || path.join(__dirname, '../../firebase-adminsdk.json');
 
         let credential;
-
-        const fs = require('fs');
-        const path = require('path');
-
-        // Priorité 1 : variable d'env avec chemin explicite
-        // Priorité 2 : chemin par défaut sur le serveur Jokko/Plesk
-        // Priorité 3 : JSON inline dans variable d'env (dev local)
-        const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
-            || path.join(__dirname, '../../firebase-adminsdk.json')
-            || '/var/www/vhosts/mia-dreams.com/httpdocs/backend/firebase-adminsdk.json';
-
         if (fs.existsSync(filePath)) {
-            const serviceAccount = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-            credential = admin.credential.cert(serviceAccount);
+            const sa = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            credential = admin.credential.cert(sa);
+            console.log('✅ Firebase Admin: service account chargé depuis', filePath);
         } else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
             credential = admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT));
+            console.log('✅ Firebase Admin: service account chargé depuis env');
         } else {
-            console.warn('⚠️  Firebase: aucun service account trouvé');
-            return null;
+            _initError = 'Aucun service account trouvé (ni fichier ni env var)';
+            console.warn('⚠️ Firebase Admin:', _initError);
+            return;
         }
 
         admin.initializeApp({ credential });
-        _app = admin;
-        return admin;
+        _admin = admin;
+        console.log('✅ Firebase Admin initialisé');
     } catch (e) {
+        _initError = e.message;
         console.error('❌ Firebase Admin init error:', e.message);
-        return null;
     }
 }
 
-/**
- * Envoie une notification push à un token FCM.
- * @param {string} token  - FCM device token
- * @param {object} payload - { title, body, data? }
- */
+// Initialisation immédiate au chargement du module
+initFirebase();
+
 async function sendPush(token, { title, body, data = {} }) {
-    if (!token) return;
-    const admin = getAdmin();
-    if (!admin) return;
+    if (!token || token === '__test__') return;
+    if (!_admin) {
+        console.warn('⚠️ Firebase non initialisé, push ignoré. Erreur:', _initError);
+        return;
+    }
 
     try {
-        await admin.messaging().send({
+        await _admin.messaging().send({
             token,
             notification: { title, body },
             data: Object.fromEntries(
@@ -68,30 +64,30 @@ async function sendPush(token, { title, body, data = {} }) {
                     badge: '/logo192.png',
                     vibrate: [200, 100, 200],
                 },
-                fcmOptions: {
-                    link: data.url || '/',
-                },
+                fcmOptions: { link: data.url || '/' },
             },
         });
         console.log('✅ Push FCM envoyé');
     } catch (e) {
-        // Token invalide / révoqué — pas bloquant
         if (e.code === 'messaging/registration-token-not-registered') {
-            console.warn('⚠️  Token FCM invalide (révoqué)');
+            console.warn('⚠️ Token FCM révoqué');
         } else {
             console.error('❌ Erreur push FCM:', e.message);
         }
     }
 }
 
-/**
- * Envoie une notification à plusieurs tokens (multicast).
- * @param {string[]} tokens
- * @param {object}   payload - { title, body, data? }
- */
 async function sendMulticastPush(tokens, payload) {
     if (!tokens?.length) return;
     await Promise.allSettled(tokens.map(t => sendPush(t, payload)));
 }
 
-module.exports = { sendPush, sendMulticastPush };
+function getInitStatus() {
+    return {
+        initialized: !!_admin,
+        error: _initError,
+        appsCount: (() => { try { return require('firebase-admin').apps.length; } catch(e) { return -1; } })(),
+    };
+}
+
+module.exports = { sendPush, sendMulticastPush, getInitStatus };

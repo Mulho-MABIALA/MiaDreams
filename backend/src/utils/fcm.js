@@ -52,7 +52,8 @@ async function sendPush(token, { title, body, data = {} }) {
     try {
         await _admin.messaging().send({
             token,
-            // Pas de top-level notification — sinon Chrome bypasse onMessage
+            // Message data-only sans webpush.notification
+            // → Firebase route vers onMessage (foreground) ou onBackgroundMessage (background)
             data: {
                 title,
                 body,
@@ -61,12 +62,7 @@ async function sendPush(token, { title, body, data = {} }) {
                 ),
             },
             webpush: {
-                notification: {
-                    title,
-                    body,
-                    icon: '/logo192.png',
-                    badge: '/logo192.png',
-                },
+                headers: { Urgency: 'high' },
                 fcmOptions: { link: data.url || '/' },
             },
         });

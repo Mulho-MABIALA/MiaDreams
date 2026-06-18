@@ -56,7 +56,8 @@ export function useFCM() {
     useEffect(() => {
         if (!messaging) return;
         const unsubscribe = onMessage(messaging, async (payload) => {
-            const { title, body } = payload.notification || {};
+            const title = payload.notification?.title || payload.data?.title;
+            const body  = payload.notification?.body  || payload.data?.body  || '';
             if (!title) return;
             // Utiliser le SW pour afficher la notification (plus fiable que new Notification())
             const reg = await navigator.serviceWorker.getRegistration('/');

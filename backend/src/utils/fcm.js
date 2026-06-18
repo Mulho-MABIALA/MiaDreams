@@ -52,17 +52,20 @@ async function sendPush(token, { title, body, data = {} }) {
     try {
         await _admin.messaging().send({
             token,
-            notification: { title, body },
-            data: Object.fromEntries(
-                Object.entries(data).map(([k, v]) => [k, String(v)])
-            ),
+            // Pas de top-level notification — sinon Chrome bypasse onMessage
+            data: {
+                title,
+                body,
+                ...Object.fromEntries(
+                    Object.entries(data).map(([k, v]) => [k, String(v)])
+                ),
+            },
             webpush: {
                 notification: {
                     title,
                     body,
                     icon: '/logo192.png',
                     badge: '/logo192.png',
-                    vibrate: [200, 100, 200],
                 },
                 fcmOptions: { link: data.url || '/' },
             },

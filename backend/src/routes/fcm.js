@@ -43,14 +43,31 @@ router.post('/admin-token', authMiddleware, async (req, res) => {
 
 // GET /api/fcm/status — diagnostic Firebase (temporaire)
 router.get('/status', async (req, res) => {
-    const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+    const fs   = require('fs');
+    const path = require('path');
+
+    const envPath    = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
     const inlineJson = process.env.FIREBASE_SERVICE_ACCOUNT;
-    const fs = require('fs');
+
+    // Tous les chemins à tester
+    const candidatePaths = [
+        envPath,
+        path.join(__dirname, '../../../firebase-adminsdk.json'),   // httpdocs/
+        path.join(__dirname, '../../firebase-adminsdk.json'),       // backend/
+        '/var/www/vhosts/mia-dreams.com/httpdocs/backend/firebase-adminsdk.json',
+        '/var/www/vhosts/mia-dreams.com/httpdocs/firebase-adminsdk.json',
+        '/httpdocs/backend/firebase-adminsdk.json',
+        '/httpdocs/firebase-adminsdk.json',
+    ].filter(Boolean);
+
+    const pathResults = candidatePaths.map(p => ({ path: p, exists: fs.existsSync(p) }));
+    const foundPath   = pathResults.find(r => r.exists);
 
     const info = {
-        FIREBASE_SERVICE_ACCOUNT_PATH: filePath || null,
+        FIREBASE_SERVICE_ACCOUNT_PATH: envPath || null,
         FIREBASE_SERVICE_ACCOUNT: inlineJson ? '(présent, ' + inlineJson.length + ' chars)' : null,
-        fileExists: filePath ? fs.existsSync(filePath) : false,
+        pathsTested: pathResults,
+        foundAt: foundPath ? foundPath.path : null,
         firebaseInitialized: false,
         error: null,
     };
@@ -59,17 +76,13 @@ router.get('/status', async (req, res) => {
         const admin = require('firebase-admin');
         info.firebaseInitialized = admin.apps.length > 0;
         if (!info.firebaseInitialized) {
-            // Tenter l'init
-            const { sendPush } = require('../utils/fcm');
-            // sendPush avec token vide pour forcer l'init
-            const a = require('../utils/fcm');
+            require('../utils/fcm');
             info.firebaseInitialized = require('firebase-admin').apps.length > 0;
         }
     } catch(e) {
         info.error = e.message;
     }
 
-    // Compter les admins avec tokens FCM
     const admins = await Admin.find({ is_active: true }).select('name email fcm_tokens');
     info.admins = admins.map(a => ({
         name: a.name,

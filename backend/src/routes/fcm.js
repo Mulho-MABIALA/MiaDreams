@@ -94,4 +94,22 @@ router.get('/status', async (req, res) => {
     res.json(info);
 });
 
+// POST /api/fcm/test-push — envoie un push test à tous les admins
+router.post('/test-push', async (req, res) => {
+    try {
+        const { sendMulticastPush } = require('../utils/fcm');
+        const admins = await Admin.find({ is_active: true }).select('fcm_tokens');
+        const tokens = admins.flatMap(a => a.fcm_tokens || []);
+        if (!tokens.length) return res.json({ ok: false, message: 'Aucun token admin enregistré' });
+        await sendMulticastPush(tokens, {
+            title: '🔔 Test notification MIA DREAMS',
+            body: 'Si vous voyez ceci, les notifications fonctionnent !',
+            data: { url: '/admin' },
+        });
+        res.json({ ok: true, tokensSent: tokens.length });
+    } catch (e) {
+        res.status(500).json({ ok: false, error: e.message });
+    }
+});
+
 module.exports = router;

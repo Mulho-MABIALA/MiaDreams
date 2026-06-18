@@ -252,14 +252,9 @@ export default function Dashboard() {
     const { permission, requestPermission } = useFCM();
     const [notifBanner, setNotifBanner] = useState(false);
 
-    // Enregistre le token FCM admin dès que la permission est accordée
+    // Enregistre le token FCM admin dès que la permission est connue
     useEffect(() => {
-        const registerAdminToken = async () => {
-            const token = await requestPermission();
-            if (token) {
-                await axios.post('/api/fcm/admin-token', { token }).catch(() => {});
-            }
-        };
+        if (!permission) return;
         if (permission === 'granted') {
             requestPermission().then(token => {
                 if (token) axios.post('/api/fcm/admin-token', { token }).catch(() => {});
@@ -267,7 +262,7 @@ export default function Dashboard() {
         } else if (permission === 'default') {
             setNotifBanner(true);
         }
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [permission]); // eslint-disable-line react-hooks/exhaustive-deps
     const [chartData, setChartData] = useState([]);
     const [loading, setLoading] = useState(true);
 

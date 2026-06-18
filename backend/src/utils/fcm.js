@@ -14,18 +14,23 @@ function getAdmin() {
 
         let credential;
 
-        // Priorité 1 : fichier JSON sur le serveur (contourne la limite 255 chars de Plesk)
-        const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
-        if (filePath) {
-            const fs = require('fs');
+        const fs = require('fs');
+        const path = require('path');
+
+        // Priorité 1 : variable d'env avec chemin explicite
+        // Priorité 2 : chemin par défaut sur le serveur Jokko/Plesk
+        // Priorité 3 : JSON inline dans variable d'env (dev local)
+        const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+            || path.join(__dirname, '../../firebase-adminsdk.json')
+            || '/var/www/vhosts/mia-dreams.com/httpdocs/backend/firebase-adminsdk.json';
+
+        if (fs.existsSync(filePath)) {
             const serviceAccount = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             credential = admin.credential.cert(serviceAccount);
-        }
-        // Priorité 2 : JSON inline dans la variable d'env (dev local)
-        else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        } else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
             credential = admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT));
-        }
-        else {
+        } else {
+            console.warn('⚠️  Firebase: aucun service account trouvé');
             return null;
         }
 

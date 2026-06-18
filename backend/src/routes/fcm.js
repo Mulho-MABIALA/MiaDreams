@@ -41,8 +41,8 @@ router.post('/admin-token', authMiddleware, async (req, res) => {
     }
 });
 
-// GET /api/fcm/status — diagnostic Firebase (admin seulement)
-router.get('/status', authMiddleware, async (req, res) => {
+// GET /api/fcm/status — diagnostic Firebase (temporaire)
+router.get('/status', async (req, res) => {
     const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
     const inlineJson = process.env.FIREBASE_SERVICE_ACCOUNT;
     const fs = require('fs');

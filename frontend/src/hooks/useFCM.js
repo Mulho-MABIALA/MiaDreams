@@ -37,15 +37,17 @@ export function useFCM() {
                 swReg = await navigator.serviceWorker.getRegistration('/');
             }
 
+            console.log('FCM: appel getToken, VAPID_KEY présent:', !!VAPID_KEY, 'SW scope:', swReg?.scope);
             const fcmToken = await getToken(messaging, {
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: swReg,
             });
 
+            console.log('FCM token obtenu:', fcmToken ? fcmToken.substring(0, 20) + '...' : 'NULL');
             setToken(fcmToken);
             return fcmToken;
         } catch (e) {
-            console.warn('FCM permission error:', e.message, e.code);
+            console.error('FCM permission error:', e.message, e.code, e);
             return null;
         }
     }, []);

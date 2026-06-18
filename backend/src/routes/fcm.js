@@ -45,6 +45,7 @@ router.post('/admin-token', authMiddleware, async (req, res) => {
 router.get('/status', async (req, res) => {
     const fs   = require('fs');
     const path = require('path');
+    const BUILD_VERSION = 'v20260618-0300';
 
     const envPath    = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
     const inlineJson = process.env.FIREBASE_SERVICE_ACCOUNT;
@@ -64,6 +65,7 @@ router.get('/status', async (req, res) => {
     const foundPath   = pathResults.find(r => r.exists);
 
     const info = {
+        BUILD_VERSION,
         FIREBASE_SERVICE_ACCOUNT_PATH: envPath || null,
         FIREBASE_SERVICE_ACCOUNT: inlineJson ? '(présent, ' + inlineJson.length + ' chars)' : null,
         pathsTested: pathResults,

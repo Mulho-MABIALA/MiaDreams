@@ -3,11 +3,6 @@ import { messaging, getToken, onMessage } from '../firebase';
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
-/**
- * Hook pour gérer les notifications push Firebase.
- *
- * @returns {{ token: string|null, permission: string, requestPermission: function }}
- */
 export function useFCM() {
     const [token, setToken]           = useState(null);
     const [permission, setPermission] = useState(
@@ -15,24 +10,42 @@ export function useFCM() {
     );
 
     const requestPermission = useCallback(async () => {
-        if (!messaging || !VAPID_KEY) return null;
+        if (!messaging || !VAPID_KEY) {
+            console.warn('FCM: messaging ou VAPID_KEY manquant', { messaging: !!messaging, VAPID_KEY: !!VAPID_KEY });
+            return null;
+        }
 
         try {
             const result = await Notification.requestPermission();
             setPermission(result);
             if (result !== 'granted') return null;
 
+            // Enregistrer le SW et attendre qu'il soit actif
+            let swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+            // Attendre que le SW soit actif (pas juste installé)
+            if (swReg.installing) {
+                await new Promise(resolve => {
+                    swReg.installing.addEventListener('statechange', function handler(e) {
+                        if (e.target.state === 'activated') {
+                            this.removeEventListener('statechange', handler);
+                            resolve();
+                        }
+                    });
+                });
+                // Recharger la registration après activation
+                swReg = await navigator.serviceWorker.getRegistration('/');
+            }
+
             const fcmToken = await getToken(messaging, {
-                vapidKey:           VAPID_KEY,
-                serviceWorkerRegistration: await navigator.serviceWorker.register(
-                    '/firebase-messaging-sw.js'
-                ),
+                vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: swReg,
             });
 
             setToken(fcmToken);
             return fcmToken;
         } catch (e) {
-            console.warn('FCM permission error:', e.message);
+            console.warn('FCM permission error:', e.message, e.code);
             return null;
         }
     }, []);

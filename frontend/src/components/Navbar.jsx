@@ -10,7 +10,7 @@ export default function Navbar() {
     const logoSrc      = companyInfo?.logo || '/img/logo_MIA.png';
     const logoIsCustom = !!companyInfo?.logo;
     const { count: cartCount } = useCart();
-    const { lang, toggleLang, t } = useLanguage();
+    const { t } = useLanguage();
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -157,23 +157,6 @@ export default function Navbar() {
                         </button>
                     </li>
 
-                    {/* Toggle langue — drapeaux */}
-                    <li className="ml-2">
-                        <button
-                            onClick={toggleLang}
-                            title={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
-                            className="flex items-center gap-1.5 px-2 py-1 rounded transition-all duration-200 hover:opacity-90"
-                            style={{
-                                border: '1px solid rgba(201,168,76,0.35)',
-                                background: 'rgba(201,168,76,0.06)',
-                            }}
-                        >
-                            <span style={{ fontSize: '16px', lineHeight: 1, opacity: lang === 'fr' ? 1 : 0.4, transition: 'opacity .2s' }}>🇫🇷</span>
-                            <span style={{ color: 'rgba(201,168,76,0.3)', fontSize: '10px' }}>|</span>
-                            <span style={{ fontSize: '16px', lineHeight: 1, opacity: lang === 'en' ? 1 : 0.4, transition: 'opacity .2s' }}>🇬🇧</span>
-                        </button>
-                    </li>
-
                     <li className="ml-3">
                         <Link to="/contact" className="btn btn-gold text-[10px] py-[.7rem] px-5">{t('nav_contact')}</Link>
                     </li>
@@ -181,15 +164,6 @@ export default function Navbar() {
 
                 {/* Mobile icons */}
                 <div className="lg:hidden flex items-center gap-1">
-                    <button
-                        onClick={toggleLang}
-                        className="flex items-center gap-1 px-1.5 py-1 rounded mr-1"
-                        style={{ border: '1px solid rgba(201,168,76,0.35)', background: 'rgba(201,168,76,0.06)' }}
-                    >
-                        <span style={{ fontSize: '14px', lineHeight: 1, opacity: lang === 'fr' ? 1 : 0.4 }}>🇫🇷</span>
-                        <span style={{ color: 'rgba(201,168,76,0.3)', fontSize: '9px' }}>|</span>
-                        <span style={{ fontSize: '14px', lineHeight: 1, opacity: lang === 'en' ? 1 : 0.4 }}>🇬🇧</span>
-                    </button>
                     <Link to="/panier" className="relative p-2.5 text-white/80 hover:text-gold transition-colors">
                         <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>

@@ -1028,19 +1028,19 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Carte OpenStreetMap — gratuit, sans clé API */}
+                    {/* Vraie carte Google Maps — embed gratuit, sans clé API */}
                     <div className="relative h-[320px] lg:h-auto overflow-hidden reveal" style={{ transitionDelay: '.1s', minHeight: '320px' }}>
                         <iframe
                             title="MIA DREAMS & CO — Notre emplacement"
-                            src="https://www.openstreetmap.org/export/embed.html?bbox=-3.9160769%2C5.3708284%2C-3.8960769%2C5.3908284&layer=mapnik&marker=5.3808284%2C-3.9060769"
+                            src="https://maps.google.com/maps?q=5.3808284,-3.9060769&hl=fr&z=15&output=embed"
                             className="absolute inset-0 w-full h-full border-0"
                             loading="lazy"
-                            style={{ filter: 'grayscale(30%) contrast(1.05) sepia(10%)' }}
+                            referrerPolicy="no-referrer-when-downgrade"
+                            allowFullScreen
+                            style={{ filter: 'grayscale(20%) contrast(1.05)' }}
                         />
                         {/* Trait doré en haut */}
-                        <div className="absolute top-0 inset-x-0 h-px z-10" style={{ background: 'rgba(196,162,103,.3)' }} />
-                        {/* Masque le footer OSM */}
-                        <div className="absolute bottom-0 inset-x-0 h-7 z-10" style={{ background: '#080808' }} />
+                        <div className="absolute top-0 inset-x-0 h-px z-10 pointer-events-none" style={{ background: 'rgba(196,162,103,.3)' }} />
                         {/* Bouton voir sur Google Maps */}
                         <a
                             href="https://www.google.com/maps?q=5.3808284,-3.9060769"

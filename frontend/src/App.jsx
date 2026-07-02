@@ -50,6 +50,7 @@ import ProgrammesIndex from './pages/Programmes/Index';
 import ProgrammeDetail from './pages/Programmes/Detail';
 import NotFound from './pages/NotFound';
 import Temoignages from './pages/Temoignages';
+import RapportActivite from './pages/RapportActivite';
 
 function ScrollToTop() {
     const { pathname } = useLocation();
@@ -65,6 +66,7 @@ export default function App() {
             <Routes>
                 <Route path="/"                 element={<Home />} />
                 <Route path="/apropos"          element={<APropos />} />
+                <Route path="/rapport-activite" element={<RapportActivite />} />
                 <Route path="/impact"           element={<Impact />} />
                 <Route path="/contact"          element={<Contact />} />
                 <Route path="/reservation"      element={<Reservation />} />

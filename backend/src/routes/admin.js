@@ -13,6 +13,8 @@ const Podcast = require('../models/Podcast');
 const Testimonial = require('../models/Testimonial');
 const Gallery = require('../models/Gallery');
 const Catalogue = require('../models/Catalogue');
+const Rapport = require('../models/Rapport');
+const Partner = require('../models/Partner');
 const CompanyInfo = require('../models/CompanyInfo');
 const SocialMedia = require('../models/SocialMedia');
 const Section = require('../models/Section');
@@ -26,6 +28,7 @@ const CaisseTransaction = require('../models/CaisseTransaction');
 const AdminUser = require('../models/Admin');
 const { notifyStatusUpdate, pushStatusUpdate } = require('../utils/notify');
 const CatalogueDownload = require('../models/CatalogueDownload');
+const RapportDownload = require('../models/RapportDownload');
 
 // Middleware : réservé au super_admin uniquement
 function superAdminOnly(req, res, next) {
@@ -323,6 +326,8 @@ router.use('/podcasts',     crudRouter(Podcast, ['thumbnail']));
 router.use('/testimonials', crudRouter(Testimonial, ['photo']));
 router.use('/gallery',      crudRouter(Gallery, ['image']));
 router.use('/catalogues',   crudRouter(Catalogue, ['cover_image', 'pdf_path']));
+router.use('/rapports',     crudRouter(Rapport, ['cover_image', 'pdf_path']));
+router.use('/partners',     crudRouter(Partner, ['logo']));
 router.use('/social-media', crudRouter(SocialMedia));
 router.use('/sections',     crudRouter(Section, ['image']));
 
@@ -458,6 +463,17 @@ router.get('/catalogues-downloads', async (req, res) => {
             .limit(500);
         const catalogues = await Catalogue.find({}).select('name downloads_count cover_image');
         res.json({ downloads, catalogues });
+    } catch (e) { res.status(500).json({ message: e.message }); }
+});
+
+// ─── Statistiques téléchargements rapports d'activité ─────────────────────────
+router.get('/rapports-downloads', async (req, res) => {
+    try {
+        const downloads = await RapportDownload.find({})
+            .sort({ downloaded_at: -1 })
+            .limit(500);
+        const rapports = await Rapport.find({}).select('name downloads_count cover_image');
+        res.json({ downloads, rapports });
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
 

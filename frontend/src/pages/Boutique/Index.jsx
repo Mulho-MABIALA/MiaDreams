@@ -9,19 +9,12 @@ import { useLanguage } from '../../context/LanguageContext';
 
 const GOLD = '#C9A84C';
 
-const SORT_OPTIONS_FR = [
+const SORT_OPTIONS = [
     { value: 'default',    label: 'Par défaut' },
     { value: 'new',        label: 'Nouveautés' },
     { value: 'price_asc',  label: 'Prix croissant' },
     { value: 'price_desc', label: 'Prix décroissant' },
     { value: 'promo',      label: 'Promotions' },
-];
-const SORT_OPTIONS_EN = [
-    { value: 'default',    label: 'Default' },
-    { value: 'new',        label: 'Newest' },
-    { value: 'price_asc',  label: 'Price: Low to High' },
-    { value: 'price_desc', label: 'Price: High to Low' },
-    { value: 'promo',      label: 'On sale' },
 ];
 
 /* ── Carte produit ── */
@@ -122,8 +115,7 @@ function CollectionHeader({ name }) {
 
 /* ── Page ── */
 export default function BoutiqueIndex() {
-    const { lang, t } = useLanguage();
-    const SORT_OPTIONS = lang === 'fr' ? SORT_OPTIONS_FR : SORT_OPTIONS_EN;
+    const { t } = useLanguage();
     const [products, setProducts] = useState([]);
     const [brands,   setBrands]   = useState([]);
     const [loading,  setLoading]  = useState(true);

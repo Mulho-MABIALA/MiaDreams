@@ -9,6 +9,7 @@ export default {
     nav_journal: 'JOURNAL',
     nav_about: 'À Propos',
     nav_blog: 'Blog & Podcast',
+    nav_rapport: "Rapport d'activité",
     nav_boutique: 'BOUTIQUE',
     nav_impact: 'IMPACT',
     nav_reserve: 'RÉSERVER',
@@ -395,6 +396,21 @@ export default {
     catalogues_view: 'Voir le catalogue',
     catalogues_soon: 'PDF BIENTÔT DISPONIBLE',
     catalogues_empty: 'Aucun catalogue disponible pour le moment.',
+
+    // Rapport d'activité
+    rapport_title: "RAPPORT D'ACTIVITÉ",
+    rapport_eyebrow: 'Transparence & engagement',
+    rapport_download: 'TÉLÉCHARGER',
+    rapport_soon: 'PDF BIENTÔT DISPONIBLE',
+    rapport_empty: 'Aucun rapport disponible pour le moment.',
+    rapport_modal_title: "Rapport d'activité",
+    rapport_email_intro: 'Ce document est réservé aux professionnels. Renseignez votre e-mail professionnel pour le télécharger.',
+    rapport_email_placeholder: 'prenom.nom@entreprise.com',
+    rapport_download_btn: 'TÉLÉCHARGER LE RAPPORT',
+    rapport_loading_btn: 'VÉRIFICATION…',
+    rapport_success: 'Merci ! Votre téléchargement démarre.',
+    rapport_pro_error: 'Veuillez utiliser une adresse e-mail professionnelle. Les adresses personnelles (Gmail, Yahoo, Hotmail, Outlook…) ne sont pas acceptées.',
+    rapport_disclaimer: "En téléchargeant ce rapport, vous acceptez de recevoir nos communications. Désinscription possible à tout moment.",
 
     // Impact
     impact_title: 'NOTRE IMPACT',

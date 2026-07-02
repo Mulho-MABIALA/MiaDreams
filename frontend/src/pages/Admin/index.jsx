@@ -8,6 +8,8 @@ import AdminBrands from './AdminBrands';
 import AdminBlogPodcast from './AdminBlogPodcast';
 import AdminGallery from './AdminGallery';
 import AdminCatalogues from './AdminCatalogues';
+import AdminRapports from './AdminRapports';
+import AdminPartners from './AdminPartners';
 import AdminReservations from './AdminReservations';
 import AdminContacts from './AdminContacts';
 import AdminNewsletter from './AdminNewsletter';
@@ -43,6 +45,8 @@ const ALL_NAV_GROUPS = [
             { to: '/admin/blog',         label: 'Blog & Podcast', icon: <IconBlogPod />,     module: 'blog' },
             { to: '/admin/galerie',      label: 'Galerie',        icon: <IconGallery />,     module: 'galerie' },
             { to: '/admin/catalogues',   label: 'Catalogues',     icon: <IconCatalogues />,  module: 'catalogues' },
+            { to: '/admin/rapports',     label: "Rapports d'activité", icon: <IconRapports />, module: 'rapports' },
+            { to: '/admin/partenaires',  label: 'Ils nous font confiance', icon: <IconPartners />, module: 'partners' },
             { to: '/admin/temoignages',  label: 'Témoignages',    icon: <IconTestimonials />,module: 'temoignages' },
             { to: '/admin/equipe',       label: 'Équipe',         icon: <IconTeam />,        module: 'equipe' },
             { to: '/admin/initiatives',  label: 'Initiatives',    icon: <IconInitiatives />, module: 'initiatives' },
@@ -534,6 +538,8 @@ export default function Admin() {
                             <Route path="podcasts/*" element={<Navigate to="/admin/blog" replace />} />
                             <Route path="galerie/*" element={<AdminGallery />} />
                             <Route path="catalogues/*" element={<AdminCatalogues />} />
+                            <Route path="rapports/*" element={<AdminRapports />} />
+                            <Route path="partenaires/*" element={<AdminPartners />} />
                             <Route path="temoignages/*" element={<AdminTestimonials />} />
                             <Route path="equipe/*" element={<AdminTeam />} />
                             <Route path="initiatives/*" element={<AdminInitiatives />} />
@@ -589,6 +595,8 @@ function IconBlogPod() { return <svg width="15" height="15" viewBox="0 0 24 24" 
 function IconGallery() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> }
 function IconCatalogues() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> }
 function IconPodcasts() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg> }
+function IconRapports() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="17" x2="9" y2="13"/><line x1="12" y1="17" x2="12" y2="11"/><line x1="15" y1="17" x2="15" y2="15"/></svg> }
+function IconPartners() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> }
 function IconTestimonials() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> }
 function IconTeam() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> }
 function IconServices() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> }

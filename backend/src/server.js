@@ -102,6 +102,8 @@ const routes = [
     ['/api/podcasts',     './routes/podcasts'],
     ['/api/gallery',      './routes/gallery'],
     ['/api/catalogues',   './routes/catalogues'],
+    ['/api/rapports',     './routes/rapports'],
+    ['/api/partners',     './routes/partners'],
     ['/api/search',       './routes/search'],
     ['/api/contact',      './routes/contact'],
     ['/api/reservation',  './routes/reservation'],

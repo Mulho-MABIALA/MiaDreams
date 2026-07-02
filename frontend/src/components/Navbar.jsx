@@ -116,13 +116,14 @@ export default function Navbar() {
                     <li><Link to="/galerie"    className={`nav-link ${isActive('/galerie')    ? 'active text-gold' : 'text-white/85'}`}>{t('nav_gallery')}</Link></li>
 
                     <li className="nav-dropdown">
-                        <button className={`nav-link flex items-center gap-1.5 ${isActive('/apropos') || isActive('/blog') ? 'active text-gold' : 'text-white/85'}`}>
+                        <button className={`nav-link flex items-center gap-1.5 ${isActive('/apropos') || isActive('/blog') || isActive('/rapport-activite') ? 'active text-gold' : 'text-white/85'}`}>
                             {t('nav_journal')}
                             <svg className="w-2 h-2 opacity-40" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                         </button>
                         <div className="nav-dropdown-menu">
                             <Link to="/apropos">{t('nav_about')}</Link>
                             <Link to="/blog">{t('nav_blog')}</Link>
+                            <Link to="/rapport-activite">{t('nav_rapport')}</Link>
                         </div>
                     </li>
 
@@ -255,6 +256,7 @@ export default function Navbar() {
                         <div className="flex flex-col gap-1 pl-2">
                             <Link to="/apropos" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">{t('nav_about')}</Link>
                             <Link to="/blog" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">{t('nav_blog')}</Link>
+                            <Link to="/rapport-activite" className="font-glacial text-[11px] tracking-[2px] uppercase text-white/70 hover:text-gold py-1.5 transition-colors">{t('nav_rapport')}</Link>
                         </div>
                     </li>
                     <li className="pt-5">

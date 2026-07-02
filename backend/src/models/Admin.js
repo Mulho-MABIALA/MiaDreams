@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 // Modules disponibles dans le dashboard
 const ALL_MODULES = [
     'pages', 'marques', 'collections', 'blog', 'galerie',
-    'catalogues', 'temoignages', 'equipe', 'initiatives',
+    'catalogues', 'rapports', 'partners', 'temoignages', 'equipe', 'initiatives',
     'programmes', 'inscriptions', 'produits', 'commandes',
     'reservations', 'contacts', 'newsletter', 'pos', 'caisse', 'parametres',
 ];

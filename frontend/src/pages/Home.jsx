@@ -360,6 +360,7 @@ export default function Home() {
     const [personalBranding, setPersonalBranding] = useState(null);
     const [ethicalFashion, setEthicalFashion]     = useState(null);
     const [blogBanner, setBlogBanner]             = useState(null);
+    const [partners, setPartners]                 = useState([]);
 
     useEffect(() => {
         // 1 seul appel API au lieu de 8 séparés → chargement ~4x plus rapide
@@ -376,6 +377,8 @@ export default function Home() {
         }).catch(() => {});
         // Produits mis en avant — appel séparé car peut changer fréquemment
         axios.get('/api/shop', { params: { featured: '1', limit: 8 } }).then(r => setFeatured(r.data)).catch(() => {});
+        // Partenaires « Ils nous font confiance »
+        axios.get('/api/partners', { params: { _t: Date.now() } }).then(r => setPartners(r.data)).catch(() => {});
     }, []);
 
     const activeUnivers = univers.length > 0 ? univers : defaultUnivers;
@@ -857,6 +860,69 @@ export default function Home() {
                     </section>
                 );
             })()}
+
+            {/* ══ ILS NOUS FONT CONFIANCE — bandeau de logos défilant ═════════ */}
+            {partners.length > 0 && (
+                <section className="bg-[#0a0a0a] py-16 lg:py-20 border-t border-gold/8 overflow-hidden">
+                    <div className="text-center mb-12 px-6">
+                        <span className="eyebrow justify-center">Nos partenaires</span>
+                        <h2 className="display-title text-2xl lg:text-3xl text-white mt-3">
+                            ILS NOUS FONT <span className="text-gold">CONFIANCE</span>
+                        </h2>
+                        <div className="gold-line-center mt-5" />
+                    </div>
+
+                    <div className="marquee-mask group">
+                        <div className="marquee-track-ltr">
+                            {[...partners, ...partners].map((p, i) => {
+                                const inner = (
+                                    <>
+                                        {p.logo
+                                            ? <img src={imgSrc(p.logo)} alt={p.name}
+                                                   className="h-12 lg:h-14 w-auto object-contain opacity-60 group-hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0" />
+                                            : <div className="h-12 lg:h-14 w-14 flex items-center justify-center border border-gold/15 text-gold/40 font-lastica text-lg">
+                                                {p.name?.charAt(0)?.toUpperCase() || '•'}
+                                              </div>
+                                        }
+                                        <span className="font-glacial text-xs tracking-[2px] uppercase text-white/60 whitespace-nowrap">{p.name}</span>
+                                    </>
+                                );
+                                return p.website ? (
+                                    <a key={`${p._id}-${i}`} href={p.website} target="_blank" rel="noopener noreferrer"
+                                       className="flex items-center gap-4 flex-shrink-0 px-8 lg:px-12 hover:text-gold transition-colors">
+                                        {inner}
+                                    </a>
+                                ) : (
+                                    <div key={`${p._id}-${i}`} className="flex items-center gap-4 flex-shrink-0 px-8 lg:px-12">
+                                        {inner}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <style>{`
+                        .marquee-mask {
+                            width: 100%;
+                            overflow: hidden;
+                            -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+                                    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+                        }
+                        .marquee-track-ltr {
+                            display: flex;
+                            align-items: center;
+                            width: max-content;
+                            animation: marqueeLtr 40s linear infinite;
+                        }
+                        .marquee-mask:hover .marquee-track-ltr { animation-play-state: paused; }
+                        /* Défilement de la gauche vers la droite */
+                        @keyframes marqueeLtr {
+                            from { transform: translateX(-50%); }
+                            to   { transform: translateX(0); }
+                        }
+                    `}</style>
+                </section>
+            )}
 
             {/* ══ TÉMOIGNAGES ══════════════════════════════════════════════ */}
             <TestimonialsSection testimonials={data.testimonials} />

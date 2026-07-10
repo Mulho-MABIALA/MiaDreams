@@ -1,9 +1,17 @@
 const mongoose = require('mongoose');
 
 const catalogueDownloadSchema = new mongoose.Schema({
-    catalogue:     { type: mongoose.Schema.Types.ObjectId, ref: 'Catalogue', required: true },
+    catalogue:      { type: mongoose.Schema.Types.ObjectId, ref: 'Catalogue', required: true },
     catalogue_name: String,
-    email:         { type: String, required: true },
+    // Informations qualifiées
+    nom:        { type: String, required: true },
+    prenom:     { type: String, required: true },
+    email:      { type: String, required: true },
+    whatsapp:   { type: String },
+    ville:      { type: String },
+    pays:       { type: String },
+    profession: { type: String },
+    raisons:    { type: [String], default: [] }, // cases cochées
     downloaded_at: { type: Date, default: Date.now },
 });
 

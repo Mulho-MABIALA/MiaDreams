@@ -103,17 +103,46 @@ function StatsPanel() {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-[#F9FAFB] border-b border-[#F3F4F6]">
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Email</th>
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Catalogue</th>
-                                    <th className="text-left px-6 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Date</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider whitespace-nowrap">Nom complet</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Email</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">WhatsApp</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Ville</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Pays</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Profession</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Raisons</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider whitespace-nowrap">Catalogue</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Date</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#F3F4F6]">
                                 {downloads.map(d => (
                                     <tr key={d._id} className="hover:bg-[#FAFAFA] transition-colors">
-                                        <td className="px-6 py-3 text-[#374151] font-medium">{d.email}</td>
-                                        <td className="px-6 py-3 text-[#6B7280]">{d.catalogue_name}</td>
-                                        <td className="px-6 py-3 text-[#9CA3AF] text-xs">
+                                        <td className="px-4 py-3 text-[#374151] font-medium whitespace-nowrap">
+                                            {[d.prenom, d.nom].filter(Boolean).join(' ') || '—'}
+                                        </td>
+                                        <td className="px-4 py-3 text-[#374151]">
+                                            <a href={`mailto:${d.email}`} className="hover:text-[#C9A84C] transition-colors">{d.email}</a>
+                                        </td>
+                                        <td className="px-4 py-3 text-[#6B7280] whitespace-nowrap">
+                                            {d.whatsapp
+                                                ? <a href={`https://wa.me/${d.whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noreferrer" className="hover:text-[#25D366] transition-colors">{d.whatsapp}</a>
+                                                : '—'}
+                                        </td>
+                                        <td className="px-4 py-3 text-[#6B7280]">{d.ville || '—'}</td>
+                                        <td className="px-4 py-3 text-[#6B7280] whitespace-nowrap">{d.pays || '—'}</td>
+                                        <td className="px-4 py-3 text-[#6B7280]">{d.profession || '—'}</td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex flex-wrap gap-1 max-w-[220px]">
+                                                {(d.raisons || []).length > 0
+                                                    ? d.raisons.map(r => (
+                                                        <span key={r} className="inline-block bg-[#C9A84C]/10 text-[#C9A84C] text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap">{r}</span>
+                                                    ))
+                                                    : <span className="text-[#D1D5DB]">—</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-[#6B7280] whitespace-nowrap">{d.catalogue_name}</td>
+                                        <td className="px-4 py-3 text-[#9CA3AF] text-xs whitespace-nowrap">
                                             {new Date(d.downloaded_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                         </td>
                                     </tr>

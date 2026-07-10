@@ -4,65 +4,85 @@ import Layout from '../components/Layout';
 import { imgSrc } from '../utils/imgSrc';
 import { useLanguage } from '../context/LanguageContext';
 
+const RAISONS = [
+    'Découvrir les collections',
+    'Mieux m\'habiller',
+    'Personal branding',
+    'Entrepreneuriat',
+    'Mode africaine',
+    'Spiritualité',
+    'Autre',
+];
+
+const PAYS_AFRIQUE = [
+    'Côte d\'Ivoire', 'Sénégal', 'Mali', 'Burkina Faso', 'Guinée', 'Togo', 'Bénin',
+    'Cameroun', 'Congo', 'RD Congo', 'Gabon', 'Niger', 'Ghana', 'Nigeria', 'Maroc',
+    'Tunisie', 'Algérie', 'France', 'Belgique', 'Canada', 'Autre',
+];
+
+const EMPTY_FORM = {
+    nom: '', prenom: '', email: '', whatsapp: '',
+    ville: '', pays: '', profession: '', raisons: [],
+};
+
 export default function Catalogues() {
     const { t } = useLanguage();
-    const [catalogues, setCatalogues]   = useState([]);
-    const [gate, setGate]               = useState(null);
-    const [email, setEmail]             = useState('');
-    const [status, setStatus]           = useState('idle'); // idle | loading | done | error
-    const [errorMsg, setErrorMsg]       = useState('');
-    const inputRef                      = useRef(null);
+    const [catalogues, setCatalogues] = useState([]);
+    const [gate, setGate]             = useState(null);
+    const [form, setForm]             = useState(EMPTY_FORM);
+    const [status, setStatus]         = useState('idle'); // idle | loading | done | error
+    const [errorMsg, setErrorMsg]     = useState('');
+    const firstRef                    = useRef(null);
 
     useEffect(() => {
-        axios.get('/api/catalogues', { params: { _t: Date.now() } }).then(res => setCatalogues(res.data)).catch(() => {});
+        axios.get('/api/catalogues', { params: { _t: Date.now() } })
+            .then(res => setCatalogues(res.data)).catch(() => {});
     }, []);
 
     const openGate = (cat) => {
         setGate(cat);
-        setEmail('');
+        setForm(EMPTY_FORM);
         setStatus('idle');
         setErrorMsg('');
-        setTimeout(() => inputRef.current?.focus(), 80);
+        setTimeout(() => firstRef.current?.focus(), 80);
     };
 
     const closeGate = () => { setGate(null); setStatus('idle'); };
 
+    const toggleRaison = (r) => {
+        setForm(f => ({
+            ...f,
+            raisons: f.raisons.includes(r) ? f.raisons.filter(x => x !== r) : [...f.raisons, r],
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!email.trim()) return;
+        if (!form.nom || !form.prenom || !form.email) return;
         setStatus('loading');
         setErrorMsg('');
 
-        // Inscription newsletter — on tolère l'erreur "déjà inscrit"
         try {
-            await axios.post('/api/newsletter', { email: email.trim() });
+            // Enregistre le téléchargement avec le profil qualifié
+            await axios.post(`/api/catalogues/${gate._id}/record`, form);
+
+            // Inscription newsletter en parallèle (tolérant aux erreurs)
+            axios.post('/api/newsletter', { email: form.email }).catch(() => {});
+
+            // Déclenche le téléchargement
+            const a = document.createElement('a');
+            a.href = `/api/catalogues/${gate._id}/download`;
+            a.download = `${gate.name}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            setStatus('done');
+            setTimeout(closeGate, 2200);
         } catch (err) {
-            const msg = (
-                err.response?.data?.message ||
-                err.response?.data?.errors?.email ||
-                ''
-            ).toLowerCase();
-            const isAlreadySubscribed = msg.includes('déjà') || msg.includes('exist') || msg.includes('inscrit');
-            if (!isAlreadySubscribed) {
-                setErrorMsg(err.response?.data?.message || err.response?.data?.errors?.email || 'Une erreur est survenue.');
-                setStatus('error');
-                return;
-            }
+            setErrorMsg(err.response?.data?.message || 'Une erreur est survenue.');
+            setStatus('error');
         }
-
-        // Enregistre le téléchargement (sans email)
-        axios.post(`/api/catalogues/${gate._id}/record`, { email: email.trim() }).catch(() => {});
-
-        // Déclenche le téléchargement
-        const a = document.createElement('a');
-        a.href = `/api/catalogues/${gate._id}/download`;
-        a.download = `${gate.name}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        setStatus('done');
-        setTimeout(closeGate, 1800);
     };
 
     return (
@@ -85,7 +105,6 @@ export default function Catalogues() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                             {catalogues.map((cat, i) => (
                                 <div key={cat._id} className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/25 transition-all duration-400" style={{ transitionDelay: `${i * 0.08}s` }}>
-                                    {/* Cover */}
                                     <div className="relative overflow-hidden bg-[#141414]">
                                         {cat.cover_image
                                             ? <img src={imgSrc(cat.cover_image)} className="w-full h-auto block min-h-[180px] object-contain transition-transform duration-700 group-hover:scale-105" alt={cat.name} loading="lazy" />
@@ -97,8 +116,6 @@ export default function Catalogues() {
                                         }
                                         <div className="absolute top-0 inset-x-0 h-px bg-gold/0 group-hover:bg-gold/40 transition-colors" />
                                     </div>
-
-                                    {/* Info */}
                                     <div className="p-6">
                                         <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] mb-2 group-hover:text-gold transition-colors">{cat.name}</h3>
                                         {cat.description && (
@@ -133,76 +150,174 @@ export default function Catalogues() {
                 </div>
             </section>
 
-            {/* MODALE E-MAIL */}
+            {/* MODALE — FORMULAIRE QUALIFIÉ */}
             {gate && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 bg-[#080808]/90 backdrop-blur-sm"
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 py-6 bg-[#080808]/92 backdrop-blur-sm"
                      onClick={closeGate}>
-                    <div className="w-full max-w-sm bg-[#0f0f0f] border border-gold/20 shadow-2xl"
+                    <div className="w-full max-w-lg bg-[#0f0f0f] border border-gold/20 shadow-2xl max-h-[90vh] overflow-y-auto"
                          onClick={e => e.stopPropagation()}>
 
                         {/* Header */}
-                        <div className="relative p-6 pb-4 border-b border-white/5">
+                        <div className="sticky top-0 bg-[#0f0f0f] z-10 px-6 pt-6 pb-4 border-b border-white/5">
                             <button onClick={closeGate}
                                     className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors text-lg leading-none">✕</button>
-                            <span className="font-lastica text-[7px] tracking-[4px] text-gold uppercase block mb-2">{t('cat_modal_title')}</span>
+                            <span className="font-lastica text-[7px] tracking-[4px] text-gold uppercase block mb-1">Accès au magazine</span>
                             <p className="font-glacial text-base text-white uppercase tracking-[2px]">{gate.name}</p>
                         </div>
 
-                        {/* Corps */}
                         <div className="p-6">
                             {status === 'done' ? (
-                                <div className="text-center py-4">
-                                    <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-3">
-                                        <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <div className="text-center py-8">
+                                    <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
                                         </svg>
                                     </div>
-                                    <p className="font-glacial text-sm text-white/70 tracking-[1px]">{t('loading')}</p>
-                                    <p className="font-glacial text-xs text-gold/60 mt-1 tracking-[1px]">{t('cat_success')}</p>
+                                    <p className="font-glacial text-sm text-white/80 tracking-[1px]">Téléchargement en cours…</p>
+                                    <p className="font-glacial text-xs text-gold/60 mt-2 tracking-[1px]">Merci ! Votre magazine est en cours de téléchargement.</p>
                                 </div>
                             ) : (
-                                <form onSubmit={handleSubmit}>
-                                    <p className="font-glacial text-sm text-white/65 leading-relaxed mb-5 tracking-[0.5px]">
-                                        {t('cat_email_intro')}
+                                <form onSubmit={handleSubmit} noValidate>
+                                    <p className="font-glacial text-xs text-white/45 leading-relaxed mb-6 tracking-[0.5px]">
+                                        Remplissez ce formulaire pour accéder au magazine. Vos informations nous permettent de mieux vous accompagner.
                                     </p>
 
-                                    <div className="mb-4">
-                                        <input
-                                            ref={inputRef}
-                                            type="email"
-                                            required
-                                            value={email}
-                                            onChange={e => setEmail(e.target.value)}
-                                            placeholder={t('cat_email_placeholder')}
-                                            className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-4 py-3 outline-none placeholder:text-white/20 font-glacial tracking-[1px] transition-colors"
-                                        />
-                                        {errorMsg && (
-                                            <p className="mt-2 font-glacial text-xs text-red-400/80">{errorMsg}</p>
-                                        )}
+                                    {/* Nom / Prénom */}
+                                    <div className="grid grid-cols-2 gap-3 mb-3">
+                                        <div>
+                                            <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-1.5">Prénom *</label>
+                                            <input
+                                                ref={firstRef}
+                                                type="text" required
+                                                value={form.prenom}
+                                                onChange={e => setForm(f => ({ ...f, prenom: e.target.value }))}
+                                                placeholder="Awa"
+                                                className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none placeholder:text-white/15 font-glacial tracking-[0.5px] transition-colors"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-1.5">Nom *</label>
+                                            <input
+                                                type="text" required
+                                                value={form.nom}
+                                                onChange={e => setForm(f => ({ ...f, nom: e.target.value }))}
+                                                placeholder="Konaté"
+                                                className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none placeholder:text-white/15 font-glacial tracking-[0.5px] transition-colors"
+                                            />
+                                        </div>
                                     </div>
 
+                                    {/* Email */}
+                                    <div className="mb-3">
+                                        <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-1.5">Email *</label>
+                                        <input
+                                            type="email" required
+                                            value={form.email}
+                                            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                                            placeholder="awa@example.com"
+                                            className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none placeholder:text-white/15 font-glacial tracking-[0.5px] transition-colors"
+                                        />
+                                    </div>
+
+                                    {/* WhatsApp */}
+                                    <div className="mb-3">
+                                        <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-1.5">WhatsApp</label>
+                                        <input
+                                            type="tel"
+                                            value={form.whatsapp}
+                                            onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
+                                            placeholder="+225 07 00 00 00 00"
+                                            className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none placeholder:text-white/15 font-glacial tracking-[0.5px] transition-colors"
+                                        />
+                                    </div>
+
+                                    {/* Ville / Pays */}
+                                    <div className="grid grid-cols-2 gap-3 mb-3">
+                                        <div>
+                                            <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-1.5">Ville</label>
+                                            <input
+                                                type="text"
+                                                value={form.ville}
+                                                onChange={e => setForm(f => ({ ...f, ville: e.target.value }))}
+                                                placeholder="Abidjan"
+                                                className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none placeholder:text-white/15 font-glacial tracking-[0.5px] transition-colors"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-1.5">Pays</label>
+                                            <select
+                                                value={form.pays}
+                                                onChange={e => setForm(f => ({ ...f, pays: e.target.value }))}
+                                                className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none font-glacial tracking-[0.5px] transition-colors appearance-none"
+                                            >
+                                                <option value="">— Pays</option>
+                                                {PAYS_AFRIQUE.map(p => <option key={p} value={p}>{p}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* Profession */}
+                                    <div className="mb-5">
+                                        <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-1.5">Profession</label>
+                                        <input
+                                            type="text"
+                                            value={form.profession}
+                                            onChange={e => setForm(f => ({ ...f, profession: e.target.value }))}
+                                            placeholder="Ex : Entrepreneur, Styliste, Étudiant…"
+                                            className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none placeholder:text-white/15 font-glacial tracking-[0.5px] transition-colors"
+                                        />
+                                    </div>
+
+                                    {/* Raisons */}
+                                    <div className="mb-6">
+                                        <label className="font-glacial text-[10px] text-white/40 uppercase tracking-[2px] block mb-3">Pourquoi souhaitez-vous recevoir le magazine ?</label>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {RAISONS.map(r => {
+                                                const checked = form.raisons.includes(r);
+                                                return (
+                                                    <label key={r}
+                                                           onClick={() => toggleRaison(r)}
+                                                           className={`flex items-center gap-3 px-3 py-2.5 border cursor-pointer transition-all ${checked ? 'border-gold/50 bg-gold/5' : 'border-white/8 hover:border-white/20'}`}>
+                                                        <span className={`w-4 h-4 flex-shrink-0 border flex items-center justify-center transition-colors ${checked ? 'border-gold bg-gold' : 'border-white/20 bg-transparent'}`}>
+                                                            {checked && (
+                                                                <svg className="w-2.5 h-2.5 text-black" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                        <span className={`font-glacial text-xs tracking-[0.5px] ${checked ? 'text-white' : 'text-white/55'}`}>{r}</span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {errorMsg && (
+                                        <p className="mb-4 font-glacial text-xs text-red-400/80">{errorMsg}</p>
+                                    )}
+
                                     <button type="submit" disabled={status === 'loading'}
-                                            className="w-full btn btn-gold text-[9px] py-3.5 flex items-center justify-center gap-2 disabled:opacity-50">
+                                            className="w-full btn btn-gold text-[9px] py-4 flex items-center justify-center gap-2 disabled:opacity-50">
                                         {status === 'loading' ? (
                                             <>
                                                 <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                                                 </svg>
-                                                {t('cat_loading_btn')}
+                                                Envoi en cours…
                                             </>
                                         ) : (
                                             <>
                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                 </svg>
-                                                {t('cat_download_btn')}
+                                                Télécharger le magazine
                                             </>
                                         )}
                                     </button>
 
-                                    <p className="mt-3 font-glacial text-[12px] text-white/45 text-center leading-relaxed">
-                                        {t('cat_disclaimer')}
+                                    <p className="mt-3 font-glacial text-[11px] text-white/30 text-center leading-relaxed">
+                                        Vos données sont confidentielles et ne seront jamais partagées.
                                     </p>
                                 </form>
                             )}

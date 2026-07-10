@@ -44,17 +44,24 @@ router.get('/:id/download', async (req, res) => {
     }
 });
 
-// POST /api/catalogues/:id/record — enregistre le téléchargement pour les stats
+// POST /api/catalogues/:id/record — enregistre le téléchargement avec le profil qualifié
 router.post('/:id/record', async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) return res.status(422).json({ message: 'Email requis' });
+        const { nom, prenom, email, whatsapp, ville, pays, profession, raisons } = req.body;
+        if (!nom || !prenom || !email) {
+            return res.status(422).json({ message: 'Nom, prénom et email sont requis' });
+        }
 
         const catalogue = await Catalogue.findById(req.params.id);
         if (!catalogue) return res.status(404).json({ message: 'Catalogue introuvable' });
 
         await Promise.all([
-            CatalogueDownload.create({ catalogue: catalogue._id, catalogue_name: catalogue.name, email }),
+            CatalogueDownload.create({
+                catalogue: catalogue._id,
+                catalogue_name: catalogue.name,
+                nom, prenom, email, whatsapp, ville, pays, profession,
+                raisons: Array.isArray(raisons) ? raisons : [],
+            }),
             Catalogue.findByIdAndUpdate(catalogue._id, { $inc: { downloads_count: 1 } }),
         ]);
 

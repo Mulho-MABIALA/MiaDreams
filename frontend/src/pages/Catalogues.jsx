@@ -14,10 +14,79 @@ const RAISONS = [
     'Autre',
 ];
 
-const PAYS_AFRIQUE = [
-    'Côte d\'Ivoire', 'Sénégal', 'Mali', 'Burkina Faso', 'Guinée', 'Togo', 'Bénin',
-    'Cameroun', 'Congo', 'RD Congo', 'Gabon', 'Niger', 'Ghana', 'Nigeria', 'Maroc',
-    'Tunisie', 'Algérie', 'France', 'Belgique', 'Canada', 'Autre',
+const PAYS = [
+    // Afrique de l'Ouest
+    { label: '🇨🇮 Côte d\'Ivoire',     value: 'Côte d\'Ivoire' },
+    { label: '🇸🇳 Sénégal',            value: 'Sénégal' },
+    { label: '🇲🇱 Mali',               value: 'Mali' },
+    { label: '🇧🇫 Burkina Faso',       value: 'Burkina Faso' },
+    { label: '🇬🇳 Guinée',             value: 'Guinée' },
+    { label: '🇬🇼 Guinée-Bissau',      value: 'Guinée-Bissau' },
+    { label: '🇬🇲 Gambie',             value: 'Gambie' },
+    { label: '🇸🇱 Sierra Leone',       value: 'Sierra Leone' },
+    { label: '🇱🇷 Liberia',            value: 'Liberia' },
+    { label: '🇹🇬 Togo',               value: 'Togo' },
+    { label: '🇧🇯 Bénin',              value: 'Bénin' },
+    { label: '🇳🇪 Niger',              value: 'Niger' },
+    { label: '🇳🇬 Nigeria',            value: 'Nigeria' },
+    { label: '🇬🇭 Ghana',              value: 'Ghana' },
+    { label: '🇲🇷 Mauritanie',         value: 'Mauritanie' },
+    { label: '🇨🇻 Cap-Vert',           value: 'Cap-Vert' },
+    // Afrique Centrale
+    { label: '🇨🇲 Cameroun',           value: 'Cameroun' },
+    { label: '🇨🇬 Congo',              value: 'Congo' },
+    { label: '🇨🇩 RD Congo',           value: 'RD Congo' },
+    { label: '🇬🇦 Gabon',              value: 'Gabon' },
+    { label: '🇹🇩 Tchad',              value: 'Tchad' },
+    { label: '🇨🇫 Centrafrique',       value: 'Centrafrique' },
+    { label: '🇬🇶 Guinée équatoriale', value: 'Guinée équatoriale' },
+    { label: '🇸🇹 São Tomé-et-Príncipe', value: 'São Tomé-et-Príncipe' },
+    // Afrique de l'Est
+    { label: '🇪🇹 Éthiopie',           value: 'Éthiopie' },
+    { label: '🇰🇪 Kenya',              value: 'Kenya' },
+    { label: '🇹🇿 Tanzanie',           value: 'Tanzanie' },
+    { label: '🇺🇬 Ouganda',            value: 'Ouganda' },
+    { label: '🇷🇼 Rwanda',             value: 'Rwanda' },
+    { label: '🇧🇮 Burundi',            value: 'Burundi' },
+    { label: '🇩🇯 Djibouti',           value: 'Djibouti' },
+    { label: '🇸🇴 Somalie',            value: 'Somalie' },
+    // Afrique Australe
+    { label: '🇿🇦 Afrique du Sud',     value: 'Afrique du Sud' },
+    { label: '🇦🇴 Angola',             value: 'Angola' },
+    { label: '🇿🇲 Zambie',             value: 'Zambie' },
+    { label: '🇿🇼 Zimbabwe',           value: 'Zimbabwe' },
+    { label: '🇲🇿 Mozambique',         value: 'Mozambique' },
+    { label: '🇲🇼 Malawi',             value: 'Malawi' },
+    { label: '🇧🇼 Botswana',           value: 'Botswana' },
+    { label: '🇳🇦 Namibie',            value: 'Namibie' },
+    { label: '🇲🇬 Madagascar',         value: 'Madagascar' },
+    { label: '🇸🇨 Seychelles',         value: 'Seychelles' },
+    { label: '🇲🇺 Maurice',            value: 'Maurice' },
+    { label: '🇰🇲 Comores',            value: 'Comores' },
+    // Afrique du Nord
+    { label: '🇲🇦 Maroc',              value: 'Maroc' },
+    { label: '🇩🇿 Algérie',            value: 'Algérie' },
+    { label: '🇹🇳 Tunisie',            value: 'Tunisie' },
+    { label: '🇱🇾 Libye',              value: 'Libye' },
+    { label: '🇪🇬 Égypte',             value: 'Égypte' },
+    { label: '🇸🇩 Soudan',             value: 'Soudan' },
+    // Europe / Diaspora
+    { label: '🇫🇷 France',             value: 'France' },
+    { label: '🇧🇪 Belgique',           value: 'Belgique' },
+    { label: '🇨🇭 Suisse',             value: 'Suisse' },
+    { label: '🇱🇺 Luxembourg',         value: 'Luxembourg' },
+    { label: '🇬🇧 Royaume-Uni',        value: 'Royaume-Uni' },
+    { label: '🇩🇪 Allemagne',          value: 'Allemagne' },
+    { label: '🇮🇹 Italie',             value: 'Italie' },
+    { label: '🇪🇸 Espagne',            value: 'Espagne' },
+    { label: '🇵🇹 Portugal',           value: 'Portugal' },
+    { label: '🇳🇱 Pays-Bas',           value: 'Pays-Bas' },
+    // Amérique
+    { label: '🇨🇦 Canada',             value: 'Canada' },
+    { label: '🇺🇸 États-Unis',         value: 'États-Unis' },
+    { label: '🇧🇷 Brésil',             value: 'Brésil' },
+    // Autre
+    { label: '🌍 Autre',               value: 'Autre' },
 ];
 
 const EMPTY_FORM = {
@@ -251,7 +320,7 @@ export default function Catalogues() {
                                                 className="w-full bg-[#080808] border border-white/10 focus:border-gold/50 text-white text-sm px-3 py-2.5 outline-none font-glacial tracking-[0.5px] transition-colors appearance-none"
                                             >
                                                 <option value="">— Pays</option>
-                                                {PAYS_AFRIQUE.map(p => <option key={p} value={p}>{p}</option>)}
+                                                {PAYS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                                             </select>
                                         </div>
                                     </div>

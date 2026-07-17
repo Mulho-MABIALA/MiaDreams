@@ -1,22 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-
-const firebaseConfig = {
-    apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId:             import.meta.env.VITE_FIREBASE_APP_ID,
-};
-
-const app = initializeApp(firebaseConfig);
-
-let messaging = null;
-try {
-    messaging = getMessaging(app);
-} catch (_) {
-    // Service workers non supportés (SSR, vieux navigateurs)
-}
-
-export { messaging, getToken, onMessage };
+// firebase.js — DÉPRÉCIÉ
+// Les notifications push utilisent désormais l'API Web Push native (VAPID),
+// voir src/hooks/usePush.js et public/push-sw.js. Ce fichier n'est plus importé
+// nulle part. À supprimer manuellement (ainsi que la dépendance "firebase" du
+// package.json, déjà retirée).
+export {};

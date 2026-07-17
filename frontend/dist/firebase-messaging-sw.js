@@ -6,12 +6,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-com
 // Ces valeurs sont remplacées au build par les variables d'environnement
 // Elles doivent correspondre exactement aux VITE_FIREBASE_* de ton .env
 firebase.initializeApp({
-    apiKey:            self.FIREBASE_API_KEY            || 'AIzaSyCfXRtEJsxBvT86wjKzhfx1q8YVt5EI2Ao',
-    authDomain:        self.FIREBASE_AUTH_DOMAIN        || 'mia-dreams-c9391.firebaseapp.com',
-    projectId:         self.FIREBASE_PROJECT_ID         || 'mia-dreams-c9391',
-    storageBucket:     self.FIREBASE_STORAGE_BUCKET     || 'mia-dreams-c9391.firebasestorage.app',
-    messagingSenderId: self.FIREBASE_MESSAGING_SENDER_ID|| '362490521978',
-    appId:             self.FIREBASE_APP_ID             || '1:362490521978:web:88a829a83819ca167f0ec3',
+    apiKey:            self.FIREBASE_API_KEY            || '__FIREBASE_API_KEY__',
+    authDomain:        self.FIREBASE_AUTH_DOMAIN        || '__FIREBASE_AUTH_DOMAIN__',
+    projectId:         self.FIREBASE_PROJECT_ID         || '__FIREBASE_PROJECT_ID__',
+    storageBucket:     self.FIREBASE_STORAGE_BUCKET     || '__FIREBASE_STORAGE_BUCKET__',
+    messagingSenderId: self.FIREBASE_MESSAGING_SENDER_ID|| '__FIREBASE_MESSAGING_SENDER_ID__',
+    appId:             self.FIREBASE_APP_ID             || '__FIREBASE_APP_ID__',
 });
 
 const messaging = firebase.messaging();

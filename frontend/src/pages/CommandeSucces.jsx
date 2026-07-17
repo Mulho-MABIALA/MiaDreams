@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { useLanguage } from '../context/LanguageContext';
-import { useFCM } from '../hooks/useFCM';
+import { usePush } from '../hooks/usePush';
 
 const GOLD = '#C9A84C';
 
@@ -12,13 +12,13 @@ export default function CommandeSucces() {
     const { t } = useLanguage();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { permission, requestPermission } = useFCM();
+    const { permission, requestPermission } = usePush();
     const [notifDone, setNotifDone] = useState(false);
 
     const enableNotifications = async () => {
-        const token = await requestPermission();
-        if (token && id) {
-            await axios.post('/api/fcm/token', { orderId: id, token }).catch(() => {});
+        const subscription = await requestPermission();
+        if (subscription && id) {
+            await axios.post('/api/push/subscribe', { orderId: id, subscription }).catch(() => {});
         }
         setNotifDone(true);
     };

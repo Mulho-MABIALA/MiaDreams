@@ -5,7 +5,7 @@
  */
 
 const nodemailer = require('nodemailer');
-const { sendPush, sendMulticastPush } = require('./fcm');
+const { sendPush, sendMulticastPush } = require('./webpush');
 
 // ── Transporter email ─────────────────────────────────────────────────────────
 let _transporter = null;
@@ -220,8 +220,8 @@ async function notifyNewOrder(order) {
 
 // ── PUSH NOTIFICATION NOUVELLE COMMANDE (→ client) ───────────────────────────
 async function pushNewOrder(order) {
-    if (!order.fcm_token) return;
-    await sendPush(order.fcm_token, {
+    if (!order.push_subscription?.endpoint) return;
+    await sendPush(order.push_subscription, {
         title: '✅ Commande confirmée !',
         body:  `Votre commande ${order.order_number} a bien été reçue. Merci !`,
         data:  { url: `/commande/succes/${order._id}`, orderId: String(order._id) },
@@ -231,23 +231,26 @@ async function pushNewOrder(order) {
 // ── PUSH NOTIFICATION NOUVELLE COMMANDE (→ tous les admins) ──────────────────
 async function pushAdminNewOrder(order) {
     const Admin = require('../models/Admin');
-    const admins = await Admin.find({ is_active: true, fcm_tokens: { $exists: true, $not: { $size: 0 } } })
-        .select('fcm_tokens');
-    const tokens = admins.flatMap(a => a.fcm_tokens).filter(Boolean);
-    if (!tokens.length) return;
-    await sendMulticastPush(tokens, {
+    const admins = await Admin.find({ is_active: true, push_subscriptions: { $exists: true, $not: { $size: 0 } } })
+        .select('push_subscriptions');
+    const subs = admins.flatMap(a => a.push_subscriptions || []);
+    if (!subs.length) return;
+    const goneEndpoints = await sendMulticastPush(subs, {
         title: `🛍️ Nouvelle commande — ${order.total.toLocaleString('fr-FR')} FCFA`,
         body:  `${order.customer.name} · ${order.order_number}`,
         data:  { url: '/admin/commandes', orderId: String(order._id) },
     });
+    if (goneEndpoints.length) {
+        await Admin.updateMany({}, { $pull: { push_subscriptions: { endpoint: { $in: goneEndpoints } } } });
+    }
 }
 
 // ── PUSH NOTIFICATION STATUT (→ client) ──────────────────────────────────────
 async function pushStatusUpdate(order) {
-    if (!order.fcm_token) return;
+    if (!order.push_subscription?.endpoint) return;
     const info = ORDER_STATUS_INFO[order.order_status];
     if (!info || order.order_status === 'pending') return;
-    await sendPush(order.fcm_token, {
+    await sendPush(order.push_subscription, {
         title: `${info.emoji} Commande ${info.label}`,
         body:  info.msg,
         data:  { url: `/commande/suivi/${order.order_number}`, orderId: String(order._id) },

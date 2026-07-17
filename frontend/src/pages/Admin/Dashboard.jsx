@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import AdminCard from '../../components/AdminCard';
-import { useFCM } from '../../hooks/useFCM';
+import { usePush } from '../../hooks/usePush';
 
 const GOLD = '#C9A84C';
 
@@ -249,15 +249,15 @@ function RevenueChart({ data }) {
 export default function Dashboard() {
     const [stats,   setStats]   = useState({});
     const [recent,  setRecent]  = useState({ reservations: [], contacts: [], posts: [], testimonials: [], newsletters: [], orders: [] });
-    const { permission, requestPermission } = useFCM();
+    const { permission, requestPermission } = usePush();
     const [notifBanner, setNotifBanner] = useState(false);
 
-    // Enregistre le token FCM admin dès que la permission est connue
+    // Enregistre l'abonnement push admin dès que la permission est connue
     useEffect(() => {
         if (!permission) return;
         if (permission === 'granted') {
-            requestPermission().then(token => {
-                if (token) axios.post('/api/fcm/admin-token', { token }).catch(() => {});
+            requestPermission().then(subscription => {
+                if (subscription) axios.post('/api/push/admin-subscribe', { subscription }).catch(() => {});
             });
         } else if (permission === 'default') {
             setNotifBanner(true);
@@ -353,8 +353,8 @@ export default function Dashboard() {
                     </div>
                     <button
                         onClick={async () => {
-                            const token = await requestPermission();
-                            if (token) await axios.post('/api/fcm/admin-token', { token }).catch(() => {});
+                            const subscription = await requestPermission();
+                            if (subscription) await axios.post('/api/push/admin-subscribe', { subscription }).catch(() => {});
                             setNotifBanner(false);
                         }}
                         style={{ background: '#C9A84C', color: '#1E110A', fontWeight: 700, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', padding: '9px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}>

@@ -16,7 +16,17 @@ const adminSchema = new mongoose.Schema({
     role:        { type: String, enum: ['super_admin', 'admin'], default: 'admin' },
     permissions: { type: [String], default: [] }, // modules accessibles
     is_active:   { type: Boolean, default: true },
-    fcm_tokens:  { type: [String], default: [] }, // tokens push notifications
+    push_subscriptions: {
+        type: [{
+            endpoint:       { type: String, required: true },
+            keys: {
+                p256dh: { type: String, required: true },
+                auth:   { type: String, required: true },
+            },
+            expirationTime: { type: Number, default: null },
+        }],
+        default: [],
+    }, // abonnements Web Push (VAPID) pour les notifications
 }, { timestamps: true });
 
 adminSchema.statics.ALL_MODULES = ALL_MODULES;

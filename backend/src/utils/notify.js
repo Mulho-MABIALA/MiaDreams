@@ -257,6 +257,21 @@ async function pushStatusUpdate(order) {
     });
 }
 
+// ── PUSH NOTIFICATION GÉNÉRIQUE (→ tous les admins) ───────────────────────────
+// Utilisée pour tout événement admin qui n'a pas besoin d'un traitement dédié
+// (nouveau contact, nouvelle réservation, nouvel inscrit newsletter, etc.)
+async function pushAdminNotify({ title, body, url }) {
+    const Admin = require('../models/Admin');
+    const admins = await Admin.find({ is_active: true, push_subscriptions: { $exists: true, $not: { $size: 0 } } })
+        .select('push_subscriptions');
+    const subs = admins.flatMap(a => a.push_subscriptions || []);
+    if (!subs.length) return;
+    const goneEndpoints = await sendMulticastPush(subs, { title, body, data: { url } });
+    if (goneEndpoints.length) {
+        await Admin.updateMany({}, { $pull: { push_subscriptions: { endpoint: { $in: goneEndpoints } } } });
+    }
+}
+
 // ── EMAIL CONFIRMATION COMMANDE (→ client) ────────────────────────────────────
 async function notifyOrderConfirmation(order) {
     if (!order.customer?.email) return;
@@ -379,4 +394,4 @@ async function notifyStatusUpdate(order) {
     });
 }
 
-module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, pushNewOrder, pushAdminNewOrder, pushStatusUpdate, sendEmail, getTransporter };
+module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, pushNewOrder, pushAdminNewOrder, pushStatusUpdate, pushAdminNotify, sendEmail, getTransporter };

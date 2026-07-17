@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Testimonial = require('../models/Testimonial');
+const { pushAdminNotify } = require('../utils/notify');
 
 // GET /api/testimonials
 router.get('/', async (req, res) => {
@@ -21,6 +22,13 @@ router.post('/', async (req, res) => {
         }
 
         await Testimonial.create({ name, role, company, rating: parseInt(rating), content, is_active: false });
+
+        pushAdminNotify({
+            title: '⭐ Nouveau témoignage à valider',
+            body:  `${name} — ${parseInt(rating)}/5`,
+            url:   '/admin/temoignages',
+        }).catch(e => console.error('Push admin témoignage error:', e.message));
+
         res.status(201).json({ success: 'Merci ! Votre témoignage a été soumis. Il sera publié après validation.' });
     } catch (err) {
         res.status(500).json({ message: err.message });

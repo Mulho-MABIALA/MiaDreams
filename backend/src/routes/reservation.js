@@ -3,6 +3,7 @@ const router       = express.Router();
 const Reservation  = require('../models/Reservation');
 const Service      = require('../models/Service');
 const { formLimiter } = require('../middleware/rateLimiter');
+const { pushAdminNotify } = require('../utils/notify');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const clean = (str, max = 500) =>
@@ -57,6 +58,12 @@ router.post('/', formLimiter, async (req, res) => {
             preferred_time,
             message,
         });
+
+        pushAdminNotify({
+            title: '📅 Nouvelle réservation',
+            body:  `${name} — ${service}`,
+            url:   '/admin/reservations',
+        }).catch(e => console.error('Push admin réservation error:', e.message));
 
         res.status(201).json({
             success: 'Votre demande a bien été enregistrée. Nous vous contacterons pour confirmer.',

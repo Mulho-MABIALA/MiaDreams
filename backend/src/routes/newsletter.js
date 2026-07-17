@@ -2,6 +2,7 @@ const express  = require('express');
 const router   = express.Router();
 const Newsletter = require('../models/Newsletter');
 const { newsletterLimiter } = require('../middleware/rateLimiter');
+const { pushAdminNotify } = require('../utils/notify');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -22,6 +23,13 @@ router.post('/', newsletterLimiter, async (req, res) => {
             return res.status(422).json({ errors: { email: 'Cet email est déjà inscrit.' } });
 
         await Newsletter.create({ email });
+
+        pushAdminNotify({
+            title: '📰 Nouvel inscrit newsletter',
+            body:  email,
+            url:   '/admin/newsletter',
+        }).catch(e => console.error('Push admin newsletter error:', e.message));
+
         res.status(201).json({ success: 'Merci ! Vous êtes bien inscrit à notre newsletter.' });
     } catch (err) {
         if (err.code === 11000)

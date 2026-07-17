@@ -12,6 +12,17 @@ const router  = express.Router();
 const Order   = require('../models/Order');
 const authMiddleware = require('../middleware/auth');
 const { paymentLimiter } = require('../middleware/rateLimiter');
+const { pushStatusUpdate, notifyStatusUpdate, pushAdminNotify } = require('../utils/notify');
+
+// Notifie l'admin en cas d'échec/annulation de paiement, pour relancer le client
+function alertAdminPaymentFailed(order, provider) {
+    if (!order) return;
+    pushAdminNotify({
+        title: '⚠️ Paiement échoué',
+        body:  `${order.order_number} — ${provider} — ${order.customer?.name || ''}`,
+        url:   '/admin/commandes',
+    }).catch(e => console.error(`Push admin (${provider} échec) error:`, e.message));
+}
 
 const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
 const BACKEND  = process.env.BACKEND_URL  || 'http://localhost:5000';
@@ -128,10 +139,13 @@ router.post('/wave/webhook', async (req, res) => {
             );
             if (order) {
                 console.log(`✅ Wave — Paiement confirmé : ${order.order_number}`);
+                pushStatusUpdate(order).catch(e => console.error('Push client (Wave) error:', e.message));
+                notifyStatusUpdate(order).catch(e => console.error('Email client (Wave) error:', e.message));
             }
         } else if (payment_status === 'failed' || payment_status === 'cancelled') {
-            await Order.findByIdAndUpdate(client_reference, { payment_status: 'failed' });
+            const order = await Order.findByIdAndUpdate(client_reference, { payment_status: 'failed' }, { new: true });
             console.log(`❌ Wave — Paiement ${payment_status} : ${client_reference}`);
+            alertAdminPaymentFailed(order, 'Wave');
         }
 
         res.json({ received: true });
@@ -243,10 +257,13 @@ router.post('/orange-money/webhook', async (req, res) => {
             );
             if (order) {
                 console.log(`✅ Orange Money — Paiement confirmé : ${order.order_number}`);
+                pushStatusUpdate(order).catch(e => console.error('Push client (Orange Money) error:', e.message));
+                notifyStatusUpdate(order).catch(e => console.error('Email client (Orange Money) error:', e.message));
             }
         } else if (status === 'FAILED' || status === 'CANCELLED') {
-            await Order.findByIdAndUpdate(reference, { payment_status: 'failed' });
+            const order = await Order.findByIdAndUpdate(reference, { payment_status: 'failed' }, { new: true });
             console.log(`❌ Orange Money — Paiement ${status} : ${reference}`);
+            alertAdminPaymentFailed(order, 'Orange Money');
         }
 
         res.json({ received: true });
@@ -292,10 +309,17 @@ router.post('/free-money/webhook', async (req, res) => {
 
         const { reference, status } = req.body;
         if (status === 'SUCCESS') {
-            await Order.findByIdAndUpdate(reference, {
+            const order = await Order.findByIdAndUpdate(reference, {
                 payment_status: 'paid',
                 order_status:   'confirmed',
-            });
+            }, { new: true });
+            if (order) {
+                pushStatusUpdate(order).catch(e => console.error('Push client (Free Money) error:', e.message));
+                notifyStatusUpdate(order).catch(e => console.error('Email client (Free Money) error:', e.message));
+            }
+        } else if (status === 'FAILED' || status === 'CANCELLED') {
+            const order = await Order.findByIdAndUpdate(reference, { payment_status: 'failed' }, { new: true });
+            alertAdminPaymentFailed(order, 'Free Money');
         }
         res.json({ received: true });
     } catch (e) { res.status(500).json({ message: e.message }); }
@@ -431,10 +455,15 @@ router.post('/cinetpay/webhook', async (req, res) => {
                 { payment_status: 'paid', order_status: 'confirmed' },
                 { new: true }
             );
-            if (order) console.log(`✅ CinetPay — Paiement confirmé : ${order.order_number}`);
+            if (order) {
+                console.log(`✅ CinetPay — Paiement confirmé : ${order.order_number}`);
+                pushStatusUpdate(order).catch(e => console.error('Push client (CinetPay) error:', e.message));
+                notifyStatusUpdate(order).catch(e => console.error('Email client (CinetPay) error:', e.message));
+            }
         } else if (['REFUSED', 'CANCELLED'].includes(status)) {
-            await Order.findByIdAndUpdate(orderId, { payment_status: 'failed' });
+            const order = await Order.findByIdAndUpdate(orderId, { payment_status: 'failed' }, { new: true });
             console.log(`❌ CinetPay — Paiement ${status} : ${cpm_trans_id}`);
+            alertAdminPaymentFailed(order, 'CinetPay');
         }
     } catch (e) {
         console.error('Erreur IPN CinetPay:', e.message);
@@ -453,6 +482,8 @@ router.patch('/confirm/:orderId', authMiddleware, async (req, res) => {
             { new: true }
         );
         if (!order) return res.status(404).json({ message: 'Commande introuvable' });
+        pushStatusUpdate(order).catch(e => console.error('Push client (confirm manuel) error:', e.message));
+        notifyStatusUpdate(order).catch(e => console.error('Email client (confirm manuel) error:', e.message));
         res.json(order);
     } catch (e) { res.status(500).json({ message: e.message }); }
 });

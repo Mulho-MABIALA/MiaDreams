@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Programme = require('../models/Programme');
 const Inscription = require('../models/Inscription');
+const { pushAdminNotify } = require('../utils/notify');
 
 // GET /api/programmes — liste des programmes actifs
 router.get('/', async (req, res) => {
@@ -43,6 +44,13 @@ router.post('/:slug/inscriptions', async (req, res) => {
         }
 
         const inscription = await Inscription.create({ programme: programme._id, nom, email, telephone, message });
+
+        pushAdminNotify({
+            title: '🎓 Nouvelle inscription programme',
+            body:  `${nom} — ${programme.title || programme.name || 'Programme'}`,
+            url:   '/admin/inscriptions',
+        }).catch(e => console.error('Push admin inscription error:', e.message));
+
         res.status(201).json({ message: 'Inscription enregistrée avec succès.', inscription });
     } catch (e) {
         res.status(500).json({ message: e.message });

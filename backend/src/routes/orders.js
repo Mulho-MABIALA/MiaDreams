@@ -2,7 +2,10 @@ const express = require('express');
 const router  = express.Router();
 const Order   = require('../models/Order');
 const Product = require('../models/Product');
-const { notifyNewOrder, notifyOrderConfirmation, pushNewOrder, pushAdminNewOrder } = require('../utils/notify');
+const { notifyNewOrder, notifyOrderConfirmation, pushNewOrder, pushAdminNewOrder, pushAdminNotify } = require('../utils/notify');
+
+// Seuil sous lequel on alerte l'admin pour réapprovisionner
+const LOW_STOCK_THRESHOLD = 3;
 const authMiddleware = require('../middleware/auth');
 
 /** Sanitise un string — enlève les caractères dangereux */
@@ -95,6 +98,15 @@ router.post('/', async (req, res) => {
             );
             if (!updated) {
                 return res.status(400).json({ message: `"${item.name}" : stock insuffisant (mise à jour simultanée)` });
+            }
+
+            // ── Alerte stock bas / rupture (asynchrone, ne bloque pas la commande) ──
+            if (updated.stock <= LOW_STOCK_THRESHOLD) {
+                pushAdminNotify({
+                    title: updated.stock <= 0 ? '🚫 Rupture de stock' : '⚠️ Stock bas',
+                    body:  `${updated.name} — ${updated.stock} restant${updated.stock > 1 ? 's' : ''}`,
+                    url:   '/admin/produits',
+                }).catch(e => console.error('Push admin stock error:', e.message));
             }
         }
 

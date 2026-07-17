@@ -2,6 +2,7 @@ const express  = require('express');
 const router   = express.Router();
 const Contact  = require('../models/Contact');
 const { formLimiter } = require('../middleware/rateLimiter');
+const { pushAdminNotify } = require('../utils/notify');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -27,6 +28,13 @@ router.post('/', formLimiter, async (req, res) => {
             return res.status(422).json({ errors: { email: 'Adresse email invalide.' } });
 
         const contact = await Contact.create({ name, email, phone, subject, message });
+
+        pushAdminNotify({
+            title: '📩 Nouveau message de contact',
+            body:  `${name} — ${subject}`,
+            url:   '/admin/contacts',
+        }).catch(e => console.error('Push admin contact error:', e.message));
+
         res.status(201).json({
             success: 'Votre message a bien été envoyé. Nous vous répondrons sous 24–48h.',
             contact,

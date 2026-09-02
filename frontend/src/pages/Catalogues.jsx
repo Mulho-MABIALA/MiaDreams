@@ -101,6 +101,7 @@ export default function Catalogues() {
     const [form, setForm]             = useState(EMPTY_FORM);
     const [status, setStatus]         = useState('idle'); // idle | loading | done | error
     const [errorMsg, setErrorMsg]     = useState('');
+    const [fallbackUrl, setFallbackUrl] = useState('');
     const firstRef                    = useRef(null);
 
     useEffect(() => {
@@ -113,6 +114,7 @@ export default function Catalogues() {
         setForm(EMPTY_FORM);
         setStatus('idle');
         setErrorMsg('');
+        setFallbackUrl('');
         setTimeout(() => firstRef.current?.focus(), 80);
     };
 
@@ -130,6 +132,9 @@ export default function Catalogues() {
         if (!form.nom || !form.prenom || !form.email) return;
         setStatus('loading');
         setErrorMsg('');
+        setFallbackUrl('');
+
+        const downloadUrl = `/api/catalogues/${gate._id}/download`;
 
         try {
             // Enregistre le téléchargement avec le profil qualifié
@@ -138,18 +143,46 @@ export default function Catalogues() {
             // Inscription newsletter en parallèle (tolérant aux erreurs)
             axios.post('/api/newsletter', { email: form.email }).catch(() => {});
 
-            // Déclenche le téléchargement
+            // Récupère réellement le fichier — un simple <a download> ne dit jamais
+            // si le téléchargement a fonctionné (silencieux notamment dans les
+            // navigateurs intégrés Instagram / Facebook / WhatsApp), donc on
+            // vérifie nous-mêmes la réponse avant d'annoncer un succès.
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 30000);
+            let blob;
+            try {
+                const fileResp = await fetch(downloadUrl, { signal: controller.signal });
+                if (!fileResp.ok) throw new Error('bad-status');
+                blob = await fileResp.blob();
+            } finally {
+                clearTimeout(timeout);
+            }
+            if (!blob || blob.size === 0) throw new Error('empty-file');
+
+            const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = `/api/catalogues/${gate._id}/download`;
+            a.href = blobUrl;
             a.download = `${gate.name}.pdf`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
 
             setStatus('done');
             setTimeout(closeGate, 2200);
         } catch (err) {
-            setErrorMsg(err.response?.data?.message || 'Une erreur est survenue.');
+            // Le téléchargement automatique a échoué (connexion lente, navigateur
+            // intégré qui ignore l'attribut download, timeout…) : on le dit
+            // clairement et on propose un lien de secours à ouvrir manuellement,
+            // plutôt que d'afficher un faux message de succès.
+            if (err?.name === 'AbortError') {
+                setErrorMsg("Le téléchargement met trop de temps (connexion lente). Réessayez, ou ouvrez le lien ci-dessous.");
+            } else if (err?.response) {
+                setErrorMsg(err.response?.data?.message || 'Une erreur est survenue lors de l\'enregistrement.');
+            } else {
+                setErrorMsg("Le téléchargement automatique a échoué sur cet appareil/navigateur. Ouvrez le lien ci-dessous pour récupérer le magazine.");
+            }
+            setFallbackUrl(downloadUrl);
             setStatus('error');
         }
     };
@@ -362,7 +395,20 @@ export default function Catalogues() {
                                     </div>
 
                                     {errorMsg && (
-                                        <p className="mb-4 font-glacial text-xs text-red-400/80">{errorMsg}</p>
+                                        <div className="mb-4">
+                                            <p className="font-glacial text-xs text-red-400/80">{errorMsg}</p>
+                                            {fallbackUrl && (
+                                                <a
+                                                    href={fallbackUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download={`${gate.name}.pdf`}
+                                                    className="mt-2 inline-block font-glacial text-xs text-gold underline underline-offset-2"
+                                                >
+                                                    Ouvrir / télécharger le magazine manuellement
+                                                </a>
+                                            )}
+                                        </div>
                                     )}
 
                                     <button type="submit" disabled={status === 'loading'}

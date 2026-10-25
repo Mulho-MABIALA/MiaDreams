@@ -13,7 +13,9 @@ export default function BrandCatalogues({ brandSlug }) {
     useEffect(() => {
         if (!brandSlug) return;
         axios.get('/api/catalogues', { params: { brand: brandSlug, _t: Date.now() } })
-            .then(res => setCatalogues(Array.isArray(res.data) ? res.data : []))
+            // Double contrôle côté client : on ne garde que les catalogues dont la marque
+            // correspond vraiment (si l'API ignore le filtre, on n'affiche pas tout).
+            .then(res => setCatalogues((Array.isArray(res.data) ? res.data : []).filter(c => c.brand?.slug === brandSlug)))
             .catch(() => {});
     }, [brandSlug]);
 

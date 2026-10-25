@@ -613,7 +613,12 @@ router.post('/cinetpay/init', paymentLimiter, async (req, res) => {
         res.json({ payment_url: tx.payment_url, reference: mtid });
     } catch (e) {
         console.error('CinetPay init (commande) error:', e.message, e.cinetpay ? JSON.stringify(e.cinetpay) : '');
-        res.status(502).json({ message: 'Impossible de démarrer le paiement. Réessayez dans un instant.' });
+        // detail = message renvoyé par CinetPay (aucun secret) — utile pour le diagnostic.
+        res.status(502).json({
+            message: 'Impossible de démarrer le paiement. Réessayez dans un instant.',
+            detail:  e.cinetpay?.description || e.cinetpay?.message || e.message,
+            code:    e.cinetpay?.code,
+        });
     }
 });
 

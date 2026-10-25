@@ -23,6 +23,8 @@
  * ⚠️ L'IP du serveur qui appelle l'API doit être dans la liste blanche IP du panel.
  */
 
+const https = require('https');
+
 const API_URL = (process.env.CINETPAY_API_URL || process.env.CINETPAY_BASE_URL || 'https://api.cinetpay.net').replace(/\/+$/, '');
 
 const TYPE_PREFIX = { order: 'O', inscription: 'I' };
@@ -33,6 +35,64 @@ function isCinetpayConfigured() {
     return !!(process.env.CINETPAY_API_KEY && process.env.CINETPAY_API_PASSWORD);
 }
 
+/**
+ * Requête HTTPS JSON forcée en IPv4.
+ * api.cinetpay.net répond aussi en IPv6 : si le serveur sort en IPv6, CinetPay voit
+ * une adresse absente de la liste blanche (erreur 2011 « This Ip is not withlisted »).
+ * On force donc IPv4, l'adresse déclarée dans le panel CinetPay.
+ */
+function httpsJson(method, url, { headers = {}, body } = {}) {
+    return new Promise((resolve, reject) => {
+        const payload = body ? JSON.stringify(body) : undefined;
+        const req = https.request(url, {
+            method,
+            family: 4,
+            timeout: 20000,
+            headers: {
+                Accept: 'application/json',
+                ...(payload ? { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) } : {}),
+                ...headers,
+            },
+        }, (res) => {
+            let raw = '';
+            res.setEncoding('utf8');
+            res.on('data', (c) => { raw += c; });
+            res.on('end', () => {
+                let data = {};
+                try { data = raw ? JSON.parse(raw) : {}; } catch { /* réponse non JSON */ }
+                resolve({ status: res.statusCode, ok: res.statusCode >= 200 && res.statusCode < 300, data });
+            });
+        });
+        req.on('timeout', () => req.destroy(new Error('Délai dépassé en contactant CinetPay')));
+        req.on('error', reject);
+        if (payload) req.write(payload);
+        req.end();
+    });
+}
+
+/** IP publique IPv4 de sortie du serveur (diagnostic de l'erreur 2011). */
+async function outboundIpv4() {
+    try {
+        const r = await new Promise((resolve, reject) => {
+            https.get('https://api.ipify.org', { family: 4, timeout: 5000 }, (res) => {
+                let raw = ''; res.on('data', c => { raw += c; }); res.on('end', () => resolve(raw.trim()));
+            }).on('error', reject);
+        });
+        return r || null;
+    } catch { return null; }
+}
+
+/** Erreur enrichie ; pour 2011 (IP non autorisée) on ajoute l'IP de sortie réelle. */
+async function cinetpayError(fallback, data) {
+    const err = new Error(data.description || data.message || fallback);
+    err.cinetpay = data;
+    if (data.code === 2011) {
+        const ip = await outboundIpv4();
+        if (ip) err.cinetpay = { ...data, description: `${data.description || 'IP non autorisée'} — IP de sortie du serveur : ${ip}` };
+    }
+    return err;
+}
+
 // ── Jeton d'accès (mis en cache jusqu'à expiration) ──────────────────────────
 let _token = null;
 let _tokenExpiresAt = 0;
@@ -41,21 +101,15 @@ async function getAccessToken(force = false) {
     if (!force && _token && Date.now() < _tokenExpiresAt) return _token;
     if (!isCinetpayConfigured()) throw new Error('CinetPay non configuré (CINETPAY_API_KEY / CINETPAY_API_PASSWORD manquants)');
 
-    const response = await fetch(`${API_URL}/v1/oauth/login`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body:    JSON.stringify({
+    const { status, ok, data } = await httpsJson('POST', `${API_URL}/v1/oauth/login`, {
+        body: {
             api_key:      process.env.CINETPAY_API_KEY,
             api_password: process.env.CINETPAY_API_PASSWORD,
-        }),
+        },
     });
-    let data = {};
-    try { data = await response.json(); } catch { /* réponse vide */ }
 
-    if (!response.ok || !data.access_token) {
-        const err = new Error(data.message || `Authentification CinetPay refusée (${response.status})`);
-        err.cinetpay = data;
-        throw err;
+    if (!ok || !data.access_token) {
+        throw await cinetpayError(`Authentification CinetPay refusée (${status})`, data);
     }
     _token = data.access_token;
     // Marge de 60 s pour ne jamais envoyer un jeton qui expire en route.
@@ -65,30 +119,18 @@ async function getAccessToken(force = false) {
 
 async function cinetpayRequest(method, path, body, retried = false) {
     const token = await getAccessToken();
-    const response = await fetch(`${API_URL}${path}`, {
-        method,
-        headers: {
-            Authorization:  `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            Accept:         'application/json',
-        },
-        body: body ? JSON.stringify(body) : undefined,
+    const { status, ok, data } = await httpsJson(method, `${API_URL}${path}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        body,
     });
 
     // Jeton révoqué / expiré plus tôt que prévu → on en redemande un, une seule fois.
-    if (response.status === 401 && !retried) {
+    if (status === 401 && !retried) {
         _token = null;
         return cinetpayRequest(method, path, body, true);
     }
 
-    let data = {};
-    try { data = await response.json(); } catch { /* réponse vide */ }
-
-    if (!response.ok) {
-        const err = new Error(data.message || `Erreur CinetPay (${response.status})`);
-        err.cinetpay = data;
-        throw err;
-    }
+    if (!ok) throw await cinetpayError(`Erreur CinetPay (${status})`, data);
     return data;
 }
 

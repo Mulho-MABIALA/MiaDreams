@@ -69,6 +69,10 @@ router.post('/', async (req, res) => {
                 calculatedSubtotal += product.price * item.quantity;
 
             } else {
+                // Paiement en ligne : uniquement des articles du catalogue (prix lu en base).
+                // Sinon un client pourrait fixer lui-même le prix et payer ce montant.
+                if (payment_method === 'cinetpay')
+                    return res.status(400).json({ message: 'Article invalide pour le paiement en ligne.' });
                 // Article sans product_id (ex: POS admin) — prix fourni par le client
                 if (!item.price || item.price <= 0)
                     return res.status(400).json({ message: 'Prix invalide' });

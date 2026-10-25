@@ -8,10 +8,10 @@ import { useLanguage } from '../context/LanguageContext';
 
 const GOLD = '#C9A84C';
 
-/* ── Logo CinetPay ── */
-function CinetPayLogo({ size = 36 }) {
+/* ── Logo paiement en ligne (CinetPay) ── */
+function OnlinePayLogo({ size = 36 }) {
     return (
-        <div style={{ width: size, height: size, background: 'linear-gradient(135deg,#FF6B00,#FF9A00)', borderRadius: 8 }}
+        <div style={{ width: size, height: size, background: 'linear-gradient(135deg,#2D9CDB,#56CCF2)', borderRadius: 8 }}
              className="flex items-center justify-center flex-shrink-0">
             <svg width={size * 0.56} height={size * 0.56} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                 <rect x="1" y="4" width="22" height="16" rx="2"/>
@@ -25,8 +25,8 @@ const PAYMENT_METHODS_KEYS = [
     {
         id: 'cinetpay',
         labelKey: 'order_pay_online',
-        desc: 'Wave CI · Orange Money · MTN · Moov · Free Money · Carte bancaire',
-        logo: <CinetPayLogo size={36} />,
+        desc: 'Wave · Orange Money · MTN · Moov · Carte bancaire',
+        logo: <OnlinePayLogo size={36} />,
     },
     {
         id: 'cash',
@@ -104,15 +104,17 @@ export default function Commande() {
                 clearCart(); navigate(`/commande/succes/${order._id}`); return;
             }
 
-            // CinetPay — redirige vers la page de paiement (Wave, OM, MTN, Moov, Free, Carte…)
+            // CinetPay — redirection vers la page de paiement (Wave, Orange Money, MTN, Moov, carte).
+            // Le montant est recalculé côté serveur à partir de la commande en base.
+            // Retour sur /paiement/retour, qui vérifie le paiement puis vide le panier.
             const { data: payment } = await axios.post('/api/payment/cinetpay/init', { orderId: order._id });
-
-            if (payment.payment_url) {
-                clearCart(); window.location.href = payment.payment_url;
-            }
+            if (!payment?.payment_url) throw new Error('URL de paiement manquante');
+            window.location.href = payment.payment_url;
+            // On laisse le bouton en chargement pendant la redirection.
         } catch (err) {
             setError(err.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer.');
-        } finally { setLoading(false); }
+            setLoading(false);
+        }
     };
 
     return (

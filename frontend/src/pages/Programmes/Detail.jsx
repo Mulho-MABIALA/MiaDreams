@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { imgSrc } from '../../utils/imgSrc';
@@ -17,12 +17,21 @@ export default function ProgrammeDetail() {
     const [sent, setSent] = useState(false);
     const [error, setError] = useState('');
 
+    const [searchParams] = useSearchParams();
+
     useEffect(() => {
         axios.get(`/api/programmes/${slug}`)
             .then(r => { setProgramme(r.data.programme); setInscCount(r.data.inscriptions_count || 0); })
             .catch(() => {})
             .finally(() => setLoading(false));
     }, [slug]);
+
+    // Retour après annulation du paiement (?paiement=annule)
+    useEffect(() => {
+        if (searchParams.get('paiement') === 'annule') {
+            setError('Le paiement a été annulé. Vous pouvez réessayer quand vous voulez.');
+        }
+    }, [searchParams]);
 
     const placesLeft = programme?.max_places > 0 ? programme.max_places - inscCount : null;
     const isFull = placesLeft !== null && placesLeft <= 0;
@@ -33,11 +42,24 @@ export default function ProgrammeDetail() {
         if (!form.nom.trim() || !form.email.trim()) { setError('Nom et email requis.'); return; }
         setSending(true);
         try {
-            await axios.post(`/api/programmes/${slug}/inscriptions`, form);
-            setSent(true);
+            const { data } = await axios.post(`/api/programmes/${slug}/inscriptions`, form);
+
+            if (!data.needs_payment) {
+                setSent(true);
+                setSending(false);
+                return;
+            }
+
+            // Formation payante : redirection vers la page de paiement CinetPay
+            // (Wave, Orange Money, MTN, Moov, carte). Le montant est fixé côté serveur.
+            // L'inscription n'est confirmée — et le reçu envoyé — qu'après vérification
+            // du paiement sur la page /paiement/retour.
+            const { data: payment } = await axios.post(`/api/programmes/${slug}/inscriptions/${data.inscription._id}/pay`);
+            if (!payment?.payment_url) throw new Error('URL de paiement manquante');
+            window.location.href = payment.payment_url;
+            // Le bouton reste en chargement pendant la redirection.
         } catch (err) {
             setError(err.response?.data?.message || 'Erreur lors de l\'envoi. Réessayez.');
-        } finally {
             setSending(false);
         }
     };
@@ -182,28 +204,76 @@ export default function ProgrammeDetail() {
 
             {/* MODULES */}
             {programme.modules && programme.modules.length > 0 && (
-                <section className="bg-texture py-24 lg:py-32">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-10">
-                        <div className="text-center mb-16 reveal">
+                <section className="bg-texture py-24 lg:py-32 relative overflow-hidden">
+                    {/* Halo doré d'ambiance */}
+                    <div className="absolute pointer-events-none" style={{ top: '-15%', left: '50%', width: 900, height: 900, transform: 'translateX(-50%)', background: 'radial-gradient(circle, rgba(196,162,103,0.10) 0%, transparent 60%)' }} />
+
+                    <div className="max-w-7xl mx-auto px-6 lg:px-10 relative">
+                        <div className="text-center mb-14 reveal">
                             <span className="eyebrow justify-center">{t('prog_curriculum_label')}</span>
-                            <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('prog_curriculum')}</h2>
+                            <h2 className="display-title text-3xl lg:text-5xl text-white mt-4 mb-5">{t('prog_curriculum')}</h2>
                             <div className="gold-line-center" />
+                            <p className="font-glacial text-sm sm:text-base text-white/60 leading-relaxed max-w-xl mx-auto mt-6">
+                                {t('prog_modules_intro')}
+                            </p>
+                            {/* Chiffres clés */}
+                            <div className="flex flex-wrap justify-center gap-3 mt-8">
+                                <StatPill strong={programme.modules.length} label={t('prog_modules_unit')} />
+                                {programme.duration && <StatPill icon={<IcoClock />} label={programme.duration} />}
+                                {programme.level    && <StatPill icon={<IcoLevel />} label={programme.level} />}
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px">
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
                             {programme.modules.map((m, i) => (
-                                <div key={i} className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 p-10 transition-colors" style={{ transitionDelay: `${i * 0.08}s` }}>
-                                    <div className="flex items-start gap-6">
-                                        <span className="font-lastica text-[12px] tracking-[4px] text-gold/40 flex-shrink-0 mt-1">
+                                <div key={i} className="reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
+                                    <article className="group relative h-full overflow-hidden border border-gold/15 p-8 lg:p-9 transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/50 hover:shadow-[0_20px_60px_-20px_rgba(196,162,103,0.35)]"
+                                             style={{ background: 'linear-gradient(160deg, #151310 0%, #0c0c0c 55%)' }}>
+                                        {/* Barre dorée qui se déploie au survol */}
+                                        <span className="absolute top-0 left-0 h-[3px] w-full origin-left scale-x-[0.18] group-hover:scale-x-100 transition-transform duration-700"
+                                              style={{ background: 'linear-gradient(90deg, #C4A267, #E8D3A0, #C4A267)' }} />
+                                        {/* Grand numéro en filigrane */}
+                                        <span aria-hidden="true"
+                                              className="absolute -right-2 -bottom-6 font-lastica leading-none select-none pointer-events-none transition-all duration-700 group-hover:-translate-y-2 opacity-60 group-hover:opacity-100"
+                                              style={{ fontSize: '8rem', color: 'transparent', WebkitTextStroke: '1px rgba(196,162,103,0.28)' }}>
                                             {String(i + 1).padStart(2, '0')}
                                         </span>
-                                        <div>
-                                            <h3 className="font-glacial text-base text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{m.title}</h3>
-                                            {m.description && <p className="font-glacial text-sm text-white/60 leading-relaxed">{m.description}</p>}
+
+                                        <div className="relative">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <span className="w-10 h-10 flex items-center justify-center border border-gold/40 text-gold font-lastica text-[11px] tracking-[1px] group-hover:bg-gold group-hover:text-[#0c0c0c] transition-colors duration-500">
+                                                    {String(i + 1).padStart(2, '0')}
+                                                </span>
+                                                <span className="font-lastica text-[9px] tracking-[3px] text-gold/70 uppercase">
+                                                    {t('prog_module')} {i + 1}/{programme.modules.length}
+                                                </span>
+                                            </div>
+                                            <h3 className="font-glacial text-lg text-white uppercase tracking-[2px] leading-snug mb-4 group-hover:text-gold transition-colors duration-500">
+                                                {m.title}
+                                            </h3>
+                                            {m.description && (
+                                                <p className="font-glacial text-sm text-white/65 leading-relaxed">{m.description}</p>
+                                            )}
                                         </div>
-                                    </div>
+                                    </article>
                                 </div>
                             ))}
                         </div>
+
+                        {/* Appel à l'action sous le programme */}
+                        {programme.is_open && !isFull && (
+                            <div className="reveal mt-14 border border-gold/25 p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left"
+                                 style={{ background: 'linear-gradient(90deg, rgba(196,162,103,0.12) 0%, rgba(196,162,103,0.02) 100%)' }}>
+                                <div>
+                                    <h3 className="display-title text-xl lg:text-2xl text-white">{t('prog_modules_cta_title')}</h3>
+                                    <p className="font-glacial text-sm text-white/60 mt-2">
+                                        {t('prog_modules_cta_text')}
+                                        {placesLeft !== null && <span className="text-gold"> — {placesLeft} place{placesLeft > 1 ? 's' : ''} restante{placesLeft > 1 ? 's' : ''}</span>}
+                                    </p>
+                                </div>
+                                <a href="#inscription" className="btn btn-gold flex-shrink-0">{t('prog_enroll_cta')}</a>
+                            </div>
+                        )}
                     </div>
                 </section>
             )}
@@ -216,6 +286,11 @@ export default function ProgrammeDetail() {
                         <h2 className="display-title text-3xl text-white mt-4 mb-4">{t('prog_form_title')}</h2>
                         {programme.max_places > 0 && !isFull && (
                             <p className="font-glacial text-sm text-gold/70">{placesLeft} place{placesLeft > 1 ? 's' : ''} restante{placesLeft > 1 ? 's' : ''}</p>
+                        )}
+                        {programme.is_paid && programme.price_amount > 0 && !isFull && programme.is_open && (
+                            <p className="font-glacial text-sm text-white/50 mt-2">
+                                Formation payante — {programme.price_amount.toLocaleString('fr-FR')} FCFA, à régler en ligne juste après l'inscription (Wave, Orange Money, MTN, Moov ou carte).
+                            </p>
                         )}
                     </div>
 
@@ -306,6 +381,16 @@ function InfoItem({ icon, label, value }) {
             <p className="font-lastica text-[9px] tracking-[2px] text-[#999] uppercase mb-1">{label}</p>
             <p className="font-glacial text-sm text-[#1a1a1a] font-medium">{value}</p>
         </div>
+    );
+}
+
+function StatPill({ icon, strong, label }) {
+    return (
+        <span className="inline-flex items-center gap-2 border border-gold/25 bg-white/[0.03] px-4 py-2 font-glacial text-xs tracking-[1.5px] uppercase text-white/75">
+            {icon && <span className="text-gold">{icon}</span>}
+            {strong !== undefined && <span className="font-lastica text-gold text-sm">{strong}</span>}
+            {label}
+        </span>
     );
 }
 

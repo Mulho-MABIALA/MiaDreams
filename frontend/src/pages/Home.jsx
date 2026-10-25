@@ -105,6 +105,8 @@ function TestimonialsSection({ testimonials }) {
     const { t } = useLanguage();
     const [current, setCurrent] = useState(0);
     const [animating, setAnimating] = useState(false);
+    const [paused, setPaused] = useState(false);
+    const [cycle, setCycle] = useState(0); // relance le minuteur après un clic manuel
     const timerRef = useRef(null);
     const n = testimonials?.length || 0;
 
@@ -113,15 +115,20 @@ function TestimonialsSection({ testimonials }) {
         setAnimating(true);
         setTimeout(() => { setCurrent((idx + n) % n); setAnimating(false); }, 300);
     };
-    const startAuto = () => {
-        clearInterval(timerRef.current);
-        if (n <= 1) return;
-        timerRef.current = setInterval(() => {
+    const startAuto = () => setCycle(c => c + 1);
+
+    // Durée d'affichage selon la longueur du témoignage (temps de lecture) :
+    // 10 s minimum, ~70 ms par caractère, 30 s maximum. Pause au survol / toucher.
+    const readingMs = Math.min(30000, Math.max(10000, (testimonials?.[current]?.content?.length || 0) * 70));
+    useEffect(() => {
+        clearTimeout(timerRef.current);
+        if (n <= 1 || paused) return;
+        timerRef.current = setTimeout(() => {
             setAnimating(true);
             setTimeout(() => { setCurrent(c => (c + 1) % n); setAnimating(false); }, 300);
-        }, 6000);
-    };
-    useEffect(() => { startAuto(); return () => clearInterval(timerRef.current); }, [n]);
+        }, readingMs);
+        return () => clearTimeout(timerRef.current);
+    }, [n, current, paused, readingMs, cycle]);
     if (!testimonials || n === 0) return null;
 
     const item = testimonials[current];
@@ -137,7 +144,9 @@ function TestimonialsSection({ testimonials }) {
                     </h2>
                     <div className="gold-line-center" />
                 </div>
-                <div className="relative">
+                <div className="relative"
+                     onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
+                     onTouchStart={() => setPaused(true)} onTouchEnd={() => setPaused(false)}>
                     {n > 1 && (
                         <button onClick={() => { goTo(current - 1); startAuto(); }}
                             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-12 z-10 w-10 h-10 border border-gold/20 flex items-center justify-center text-gold/40 hover:text-gold hover:border-gold/50 transition-all"

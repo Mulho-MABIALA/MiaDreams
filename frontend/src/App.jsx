@@ -46,6 +46,7 @@ import CommandeSucces from './pages/CommandeSucces';
 import CommandeErreur from './pages/CommandeErreur';
 import MesCommandes from './pages/MesCommandes';
 import CommandeSuivi from './pages/CommandeSuivi';
+import PaiementRetour from './pages/PaiementRetour';
 import ProgrammesIndex from './pages/Programmes/Index';
 import ProgrammeDetail from './pages/Programmes/Detail';
 import NotFound from './pages/NotFound';
@@ -88,6 +89,7 @@ export default function App() {
                 <Route path="/commande"          element={<Commande />} />
                 <Route path="/commande/succes/:id"  element={<CommandeSucces />} />
                 <Route path="/commande/erreur/:id"  element={<CommandeErreur />} />
+                <Route path="/paiement/retour"   element={<PaiementRetour />} />
                 <Route path="/mes-commandes"     element={<MesCommandes />} />
                 <Route path="/commande/suivi"           element={<CommandeSuivi />} />
                 <Route path="/commande/suivi/:number"   element={<CommandeSuivi />} />

@@ -11,6 +11,7 @@ const empty = {
     format: 'présentiel', level: 'tous niveaux',
     start_date: '', end_date: '', max_places: 0, is_open: true, is_active: true, order: 0,
     youtube_id: '', modules: [],
+    is_paid: false, price_amount: 0,
 };
 
 export default function AdminProgrammes() {
@@ -48,6 +49,7 @@ export default function AdminProgrammes() {
             is_open: p.is_open !== false, is_active: p.is_active !== false,
             order: p.order || 0, youtube_id: p.youtube_id || '',
             modules: p.modules || [],
+            is_paid: !!p.is_paid, price_amount: p.price_amount || 0,
         });
         setImageFile(null);
         setError('');
@@ -138,6 +140,7 @@ export default function AdminProgrammes() {
                                         {p.is_open ? 'Inscriptions ouvertes' : 'Fermé'}
                                     </span>
                                     {!p.is_active && <span style={{ fontSize: '10px', background: '#FEF2F2', color: '#DC2626', borderRadius: '4px', padding: '2px 8px' }}>Inactif</span>}
+                                    {p.is_paid && <span style={{ fontSize: '10px', background: '#FEF3C7', color: '#92400E', borderRadius: '4px', padding: '2px 8px' }}>💳 Payant — {(p.price_amount || 0).toLocaleString('fr-FR')} FCFA</span>}
                                 </div>
                                 <div style={{ fontSize: '12px', color: '#9E8272', marginTop: '4px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                                     {p.duration && <span>⏱ {p.duration}</span>}
@@ -196,6 +199,25 @@ export default function AdminProgrammes() {
                             <div style={{ display: 'flex', gap: '24px' }}>
                                 <Toggle label="Inscriptions ouvertes" checked={form.is_open} onChange={v => setForm(f => ({ ...f, is_open: v }))} />
                                 <Toggle label="Programme actif" checked={form.is_active} onChange={v => setForm(f => ({ ...f, is_active: v }))} />
+                            </div>
+
+                            {/* Paiement en ligne */}
+                            <div style={{ background: '#F9F5F0', borderRadius: '8px', padding: '14px' }}>
+                                <Toggle label="Formation payante (paiement en ligne requis à l'inscription)" checked={form.is_paid} onChange={v => setForm(f => ({ ...f, is_paid: v }))} />
+                                {form.is_paid && (
+                                    <div style={{ marginTop: '12px', maxWidth: '260px' }}>
+                                        <Field
+                                            label="Montant à payer (FCFA)"
+                                            type="number"
+                                            placeholder="ex: 150000"
+                                            value={form.price_amount}
+                                            onChange={v => setForm(f => ({ ...f, price_amount: Number(v) }))}
+                                        />
+                                        <p style={{ fontSize: '11px', color: '#9E8272', marginTop: '4px' }}>
+                                            Montant exact débité en ligne (CinetPay : Wave, Orange Money, MTN, Moov, carte). Le champ "Prix" ci-dessus reste un texte affiché librement au client (ex: "150 000 FCFA").
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Image */}

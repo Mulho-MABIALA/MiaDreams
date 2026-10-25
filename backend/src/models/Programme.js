@@ -13,7 +13,9 @@ const programmeSchema = new mongoose.Schema({
     image:        String,
     youtube_id:   String,
     duration:     String,   // ex: "6 semaines"
-    price:        String,   // ex: "150 000 FCFA"
+    price:        String,   // ex: "150 000 FCFA" — affichage libre
+    is_paid:      { type: Boolean, default: false }, // formation payante : paiement CinetPay requis à l'inscription
+    price_amount: { type: Number, default: 0 },      // montant exact en FCFA débité par CinetPay (utilisé seulement si is_paid)
     format:       { type: String, enum: ['présentiel', 'en ligne', 'hybride'], default: 'présentiel' },
     level:        { type: String, enum: ['débutant', 'intermédiaire', 'avancé', 'tous niveaux'], default: 'tous niveaux' },
     start_date:   String,   // ex: "15 janvier 2025"

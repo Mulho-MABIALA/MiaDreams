@@ -12,6 +12,12 @@ const STATUS_OPTS = [
 ];
 const statusStyle = (s) => STATUS_OPTS.find(o => o.value === s) || { bg: '#F3F4F6', color: '#6B7280' };
 
+const PAYMENT_STYLES = {
+    pending: { bg: '#FEF3C7', color: '#92400E', label: 'En attente' },
+    paid:    { bg: '#DCFCE7', color: '#15803D', label: 'Payé' },
+    failed:  { bg: '#FEF2F2', color: '#DC2626', label: 'Échoué' },
+};
+
 const EMPTY_FORM = { programme: '', nom: '', email: '', telephone: '', message: '', status: 'en attente' };
 
 /* ── Badge statut ── */
@@ -20,6 +26,18 @@ function StatusBadge({ status }) {
     return (
         <span style={{ fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '20px', background: s.bg, color: s.color, whiteSpace: 'nowrap' }}>
             {STATUS_OPTS.find(o => o.value === status)?.label || status}
+        </span>
+    );
+}
+
+/* ── Badge paiement (formations payantes uniquement) ── */
+function PaymentBadge({ insc }) {
+    const status = insc.payment_status || 'not_required';
+    if (status === 'not_required') return <span style={{ fontSize: '11px', color: '#D1C4B8' }}>—</span>;
+    const s = PAYMENT_STYLES[status] || { bg: '#F3F4F6', color: '#6B7280', label: status };
+    return (
+        <span style={{ fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '20px', background: s.bg, color: s.color, whiteSpace: 'nowrap' }} title={status === 'paid' && insc.amount_paid ? `${insc.amount_paid.toLocaleString('fr-FR')} FCFA` : undefined}>
+            💳 {s.label}{status === 'paid' && insc.amount_paid ? ` · ${insc.amount_paid.toLocaleString('fr-FR')} F` : ''}
         </span>
     );
 }
@@ -175,7 +193,7 @@ export default function AdminInscriptions() {
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid #E5E7EB', background: '#F9FAFB' }}>
-                                {['Participant', 'Programme', 'Téléphone', 'Date', 'Statut', 'Actions'].map(h => (
+                                {['Participant', 'Programme', 'Téléphone', 'Date', 'Paiement', 'Statut', 'Actions'].map(h => (
                                     <th key={h} style={{ padding: '11px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</th>
                                 ))}
                             </tr>
@@ -199,6 +217,9 @@ export default function AdminInscriptions() {
                                     <td style={{ padding: '12px 16px', color: '#6B7280' }}>{insc.telephone || '—'}</td>
                                     <td style={{ padding: '12px 16px', color: '#9E8272', whiteSpace: 'nowrap', fontSize: '12px' }}>
                                         {new Date(insc.createdAt).toLocaleDateString('fr-FR')}
+                                    </td>
+                                    <td style={{ padding: '12px 16px' }}>
+                                        <PaymentBadge insc={insc} />
                                     </td>
                                     <td style={{ padding: '12px 16px' }}>
                                         <select value={insc.status} onChange={e => changeStatus(insc._id, e.target.value)}
@@ -263,6 +284,28 @@ export default function AdminInscriptions() {
                                     </div>
                                 ))}
                             </div>
+
+                            {/* Paiement (formations payantes uniquement) */}
+                            {showFiche.payment_status && showFiche.payment_status !== 'not_required' && (
+                                <div style={{
+                                    margin: 0, padding: '16px 24px', borderBottom: '1px solid #F3F4F6',
+                                    background: showFiche.payment_status === 'paid' ? '#F0FDF4' : showFiche.payment_status === 'failed' ? '#FEF2F2' : '#FFFBEB',
+                                }}>
+                                    <p style={{ margin: '0 0 8px', fontSize: '10px', fontWeight: 600, color: '#9E8272', textTransform: 'uppercase', letterSpacing: '1px' }}>💳 Paiement de la formation</p>
+                                    <PaymentBadge insc={showFiche} />
+                                    {showFiche.payment_status === 'paid' && (
+                                        <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#374151' }}>
+                                            Réf. paiement : {showFiche.payment_ref || '—'}
+                                            {showFiche.paid_at && ` · payé le ${new Date(showFiche.paid_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`}
+                                        </p>
+                                    )}
+                                    {showFiche.payment_status === 'failed' && (
+                                        <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#374151' }}>
+                                            Le paiement n'a pas abouti. Le candidat peut réessayer depuis la page du programme.
+                                        </p>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Message motivation */}
                             {showFiche.message && (

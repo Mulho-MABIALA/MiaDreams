@@ -86,6 +86,8 @@ const PAYMENT_LABELS = {
     orange_money: '🟠 Orange Money',
     free_money:   '💜 Free Money',
     cinetpay:     '💳 Paiement en ligne',
+    kkiapay:      '💳 Paiement en ligne',
+    paystack:     '💳 Paiement en ligne',
     cash:         '💵 Paiement à la livraison',
 };
 
@@ -394,4 +396,106 @@ async function notifyStatusUpdate(order) {
     });
 }
 
-module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, pushNewOrder, pushAdminNewOrder, pushStatusUpdate, pushAdminNotify, sendEmail, getTransporter };
+// Échappe les champs saisis par le client avant de les injecter dans le HTML des emails.
+const escHtml = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+function escapeFields(doc, fields) {
+    const o = doc && typeof doc.toObject === 'function' ? doc.toObject() : { ...(doc || {}) };
+    fields.forEach(f => { if (o[f] != null) o[f] = escHtml(o[f]); });
+    return o;
+}
+
+const INSCRIPTION_PAY_LABELS = {
+    cinetpay: '💳 Paiement en ligne (CinetPay)',
+    paystack: '💳 Paiement en ligne (Paystack)',
+    kkiapay:  '💳 Paiement en ligne (Kkiapay)',
+};
+
+// ── EMAIL REÇU DE PAIEMENT INSCRIPTION (→ client, formation payante) ──────────
+async function sendInscriptionReceipt(inscription, programme) {
+    if (!inscription.email) return;
+    const to = inscription.email;
+    const programmeName = programme.name;
+    inscription = escapeFields(inscription, ['nom', 'telephone', 'payment_ref']);
+    programme   = escapeFields(programme, ['name', 'start_date']);
+    const dateStr = new Date(inscription.paid_at || Date.now()).toLocaleDateString('fr-FR', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+    const montant = (inscription.amount_paid ?? programme.price_amount ?? 0).toLocaleString('fr-FR');
+
+    const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F0E8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(45,27,14,.10);">
+  <div style="background:linear-gradient(135deg,#1a0f07 0%,#2D1B0E 60%,#4A2C18 100%);padding:36px;text-align:center;">
+    <p style="margin:0 0 6px;font-size:10px;letter-spacing:5px;color:rgba(201,168,76,.6);text-transform:uppercase;">MIA DREAMS & CO</p>
+    <p style="margin:0 0 4px;font-size:32px;">✅</p>
+    <h1 style="margin:0 0 6px;font-size:24px;font-weight:600;color:#C9A84C;letter-spacing:1px;">Paiement confirmé</h1>
+    <p style="margin:0;font-size:13px;color:rgba(255,255,255,.4);">Reçu de votre inscription</p>
+  </div>
+  <div style="padding:32px 36px;">
+    <p style="margin:0 0 24px;font-size:15px;color:#3D2214;line-height:1.7;">Bonjour <strong>${inscription.nom}</strong>,<br><br>
+    Nous confirmons la réception de votre paiement pour la formation ci-dessous. Voici votre reçu.</p>
+
+    <div style="background:#FDF8F2;border-left:4px solid #C9A84C;padding:16px 20px;border-radius:0 8px 8px 0;margin-bottom:24px;">
+      <p style="margin:0 0 3px;font-size:10px;letter-spacing:2px;color:#9E8272;text-transform:uppercase;">Formation</p>
+      <p style="margin:0;font-size:18px;font-weight:700;color:#C9A84C;">${programme.name}</p>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+      <tr><td style="padding:6px 0;color:#6B4F3A;font-size:13px;width:140px;">Montant payé</td><td style="padding:6px 0;color:#1E110A;font-size:15px;font-weight:700;">${montant} FCFA</td></tr>
+      <tr><td style="padding:6px 0;color:#6B4F3A;font-size:13px;">Mode de paiement</td><td style="padding:6px 0;color:#1E110A;font-size:14px;">${INSCRIPTION_PAY_LABELS[inscription.payment_method] || escHtml(inscription.payment_method || '—')}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B4F3A;font-size:13px;">Référence</td><td style="padding:6px 0;color:#1E110A;font-size:13px;font-family:monospace;">${inscription.payment_ref || '—'}</td></tr>
+      <tr><td style="padding:6px 0;color:#6B4F3A;font-size:13px;">Date</td><td style="padding:6px 0;color:#1E110A;font-size:14px;">${dateStr}</td></tr>
+      ${inscription.telephone ? `<tr><td style="padding:6px 0;color:#6B4F3A;font-size:13px;">Téléphone</td><td style="padding:6px 0;color:#1E110A;font-size:14px;">${inscription.telephone}</td></tr>` : ''}
+    </table>
+
+    <p style="margin:0 0 8px;font-size:14px;color:#6B4F3A;">Votre place est désormais confirmée pour <strong>${programme.name}</strong>${programme.start_date ? ` (début : ${programme.start_date})` : ''}. Nous reviendrons vers vous avec les prochaines étapes.</p>
+  </div>
+  <div style="padding:20px 36px;border-top:1px solid #F0E8D8;text-align:center;">
+    <p style="margin:0 0 4px;font-size:11px;color:#B8A090;">Des questions ? Contactez-nous sur WhatsApp</p>
+    <p style="margin:0;font-size:10px;color:#C8B8A0;">MIA DREAMS & CO · Mode Africaine d'Excellence</p>
+  </div>
+</div></body></html>`;
+
+    await sendEmail({
+        to,
+        subject: `✅ Reçu de paiement — ${programmeName} — MIA DREAMS`,
+        html,
+    });
+}
+
+// ── EMAIL CONFIRMATION INSCRIPTION (→ client, formation gratuite) ────────────
+async function sendInscriptionConfirmation(inscription, programme) {
+    if (!inscription.email) return;
+    const to = inscription.email;
+    const programmeName = programme.name;
+    inscription = escapeFields(inscription, ['nom']);
+    programme   = escapeFields(programme, ['name']);
+    const dateStr = new Date(inscription.createdAt || Date.now()).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F0E8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(45,27,14,.10);">
+  <div style="background:linear-gradient(135deg,#1a0f07 0%,#2D1B0E 60%,#4A2C18 100%);padding:36px;text-align:center;">
+    <p style="margin:0 0 6px;font-size:10px;letter-spacing:5px;color:rgba(201,168,76,.6);text-transform:uppercase;">MIA DREAMS & CO</p>
+    <h1 style="margin:0 0 6px;font-size:24px;font-weight:300;color:#C9A84C;letter-spacing:3px;text-transform:uppercase;">Inscription reçue</h1>
+    <p style="margin:0;font-size:13px;color:rgba(255,255,255,.4);">${dateStr}</p>
+  </div>
+  <div style="padding:32px 36px;">
+    <p style="margin:0 0 24px;font-size:15px;color:#3D2214;line-height:1.7;">Bonjour <strong>${inscription.nom}</strong>,<br><br>
+    Nous avons bien reçu votre inscription à la formation <strong>${programme.name}</strong>. Aucun paiement n'est requis pour cette formation.</p>
+    <p style="margin:0;font-size:14px;color:#6B4F3A;">Nous reviendrons vers vous rapidement pour la suite.</p>
+  </div>
+  <div style="padding:20px 36px;border-top:1px solid #F0E8D8;text-align:center;">
+    <p style="margin:0 0 4px;font-size:11px;color:#B8A090;">Des questions ? Contactez-nous sur WhatsApp</p>
+    <p style="margin:0;font-size:10px;color:#C8B8A0;">MIA DREAMS & CO · Mode Africaine d'Excellence</p>
+  </div>
+</div></body></html>`;
+
+    await sendEmail({
+        to,
+        subject: `Inscription reçue — ${programmeName} — MIA DREAMS`,
+        html,
+    });
+}
+
+module.exports = { notifyNewOrder, notifyOrderConfirmation, notifyStatusUpdate, pushNewOrder, pushAdminNewOrder, pushStatusUpdate, pushAdminNotify, sendEmail, getTransporter, sendInscriptionReceipt, sendInscriptionConfirmation };

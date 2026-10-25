@@ -25,6 +25,9 @@ const PAYMENT_METHOD_LABELS = {
     wave:         'Wave',
     orange_money: 'Orange Money',
     free_money:   'Free Money',
+    paystack:     'En ligne (Paystack)',
+    kkiapay:      'En ligne (Kkiapay)',
+    cinetpay:     'En ligne (CinetPay)',
     cash:         'À la livraison',
 };
 

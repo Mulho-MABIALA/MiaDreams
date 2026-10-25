@@ -11,6 +11,7 @@
     "test:coverage": "c8 --include=src/**/*.js --exclude=src/tests/**/*.js node --test src/tests/**/*.test.js"
   },
   "dependencies": {
+    "@kkiapay-org/nodejs-sdk": "^1.0.7",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.10.0",
     "compression": "^1.8.1",

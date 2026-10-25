@@ -362,6 +362,11 @@ export default {
     prog_contact: 'NOUS CONTACTER',
     prog_back: 'Voir tous les programmes',
     prog_curriculum_label: 'Curriculum',
+    prog_modules_intro: 'Un parcours pensé étape par étape pour vous faire progresser, du premier module jusqu\'à la maîtrise.',
+    prog_module: 'Module',
+    prog_modules_unit: 'modules',
+    prog_modules_cta_title: 'Prêt(e) à commencer ?',
+    prog_modules_cta_text: 'Réservez votre place et suivez l\'ensemble du programme.',
 
     // Blog
     blog_title: 'BLOG & PODCAST',

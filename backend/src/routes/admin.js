@@ -582,7 +582,7 @@ router.post('/orders/:id/send-invoice', async (req, res) => {
 
         const fmt     = (n) => Number(n || 0).toLocaleString('fr-FR') + ' FCFA';
         const fmtDate = (d) => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-        const PAYMENT_LABELS = { wave: 'Wave', orange_money: 'Orange Money', free_money: 'Free Money', cash: 'Espèces / Livraison', cinetpay: 'Paiement en ligne' };
+        const PAYMENT_LABELS = { wave: 'Wave', orange_money: 'Orange Money', free_money: 'Free Money', cash: 'Espèces / Livraison', cinetpay: 'Paiement en ligne', kkiapay: 'Paiement en ligne', paystack: 'Paiement en ligne (Paystack)' };
         const STATUS_LABELS  = { pending: 'En attente', confirmed: 'Confirmée', processing: 'En préparation', shipped: 'En livraison', delivered: 'Livrée', cancelled: 'Annulée' };
 
         const payLabel  = PAYMENT_LABELS[order.payment_method] || order.payment_method;

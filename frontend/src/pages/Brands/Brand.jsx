@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
+import BrandCatalogues from '../../components/BrandCatalogues';
 import { imgSrc } from '../../utils/imgSrc';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -173,6 +174,8 @@ export default function Brand() {
             <div className="bg-[#080808] py-12 text-center border-t border-gold/8">
                 <Link to="/reservation" className="btn btn-gold">{t('brand_consult_btn')}</Link>
             </div>
+            {/* CATALOGUES TÉLÉCHARGEABLES */}
+            <BrandCatalogues brandSlug={data.brand.slug} />
         </Layout>
     );
 }

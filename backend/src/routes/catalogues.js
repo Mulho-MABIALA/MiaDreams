@@ -5,12 +5,20 @@ const fs = require('fs');
 const https = require('https');
 const Catalogue = require('../models/Catalogue');
 const CatalogueDownload = require('../models/CatalogueDownload');
+const Brand = require('../models/Brand');
 
-// GET /api/catalogues
+// GET /api/catalogues            → tous les catalogues actifs
+// GET /api/catalogues?brand=slug → uniquement ceux rattachés à cette marque
 router.get('/', async (req, res) => {
     try {
         res.set('Cache-Control', 'no-cache');
-        const catalogues = await Catalogue.find({ is_active: { $ne: false } }).sort('order');
+        const filter = { is_active: { $ne: false } };
+        if (req.query.brand) {
+            const brand = await Brand.findOne({ slug: String(req.query.brand) }).select('_id');
+            if (!brand) return res.json([]);
+            filter.brand = brand._id;
+        }
+        const catalogues = await Catalogue.find(filter).sort('order').populate('brand', 'name slug');
         res.json(catalogues);
     } catch (err) {
         res.status(500).json({ message: err.message });

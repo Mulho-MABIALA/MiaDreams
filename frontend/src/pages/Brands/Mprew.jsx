@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
+import BrandCatalogues from '../../components/BrandCatalogues';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
@@ -132,6 +133,9 @@ export default function Mprew() {
 
             {/* COLLECTIONS DYNAMIQUES */}
             <BrandCollections brandSlug="mprew" />
+
+            {/* CATALOGUES TÉLÉCHARGEABLES */}
+            <BrandCatalogues brandSlug="mprew" />
 
             <div className="bg-[#080808] py-14 text-center border-t border-gold/8">
                 <Link to="/contact" className="btn btn-gold">{t('brand_beta')}</Link>

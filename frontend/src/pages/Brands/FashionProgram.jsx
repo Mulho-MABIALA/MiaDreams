@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
+import BrandCatalogues from '../../components/BrandCatalogues';
+import ProgramSteps from '../../components/ProgramSteps';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
@@ -104,38 +106,27 @@ export default function FashionProgram() {
             </section>
 
             {/* MODULES */}
-            <section className="bg-texture py-24 lg:py-32">
-                <div className="max-w-7xl mx-auto px-6 lg:px-10">
-                    <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">{t('prog_curriculum_label')}</span>
-                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('brand_fp_modules').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('brand_fp_modules').split(' ').slice(1).join(' ')}</span></h2>
-                        <div className="gold-line-center" />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-px">
-                        {[
-                            { num: '01', title: 'Design & Création', desc: "Techniques de design, patronage, coupe et confection de vêtements africains." },
-                            { num: '02', title: 'Textile & Matières', desc: "Découverte des tissus africains (wax, kente, bazin), leur histoire et leur utilisation." },
-                            { num: '03', title: 'Gestion d\'Atelier', desc: "Organisation de la production, gestion des artisans et contrôle qualité." },
-                            { num: '04', title: 'Marketing & Vente', desc: "Stratégies de vente, présence digitale et développement de clientèle." },
-                            { num: '05', title: 'Personal Branding', desc: "Construction de votre identité de créateur et positionnement sur le marché." },
-                            { num: '06', title: 'Entrepreneuriat', desc: "Business plan, financement, juridique et lancement de votre maison de mode." },
-                        ].map((m, i) => (
-                            <div key={i} className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 p-10 transition-colors" style={{ transitionDelay: `${i * 0.08}s` }}>
-                                <div className="flex items-start gap-6">
-                                    <span className="font-lastica text-[12px] tracking-[4px] text-gold/40 flex-shrink-0 mt-1">{m.num}</span>
-                                    <div>
-                                        <h3 className="font-glacial text-base text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{m.title}</h3>
-                                        <p className="font-glacial text-sm text-white/60 leading-relaxed">{m.desc}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <ProgramSteps
+                eyebrow={t('prog_curriculum_label')}
+                title={<>{t('brand_fp_modules').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('brand_fp_modules').split(' ').slice(1).join(' ')}</span></>}
+                intro={t('prog_modules_intro')}
+                label={t('prog_module')}
+                items={[
+                    { title: 'Design & Création', description: "Techniques de design, patronage, coupe et confection de vêtements africains." },
+                    { title: 'Textile & Matières', description: "Découverte des tissus africains (wax, kente, bazin), leur histoire et leur utilisation." },
+                    { title: "Gestion d'Atelier", description: "Organisation de la production, gestion des artisans et contrôle qualité." },
+                    { title: 'Marketing & Vente', description: "Stratégies de vente, présence digitale et développement de clientèle." },
+                    { title: 'Personal Branding', description: "Construction de votre identité de créateur et positionnement sur le marché." },
+                    { title: 'Entrepreneuriat', description: "Business plan, financement, juridique et lancement de votre maison de mode." },
+                ]}
+                cta={{ title: t('prog_modules_cta_title'), text: t('prog_modules_cta_text'), href: '/reservation', label: t('brand_fp_apply_btn') }}
+            />
 
             {/* COLLECTIONS DYNAMIQUES */}
             <BrandCollections brandSlug="fashion-program" />
+
+            {/* CATALOGUES TÉLÉCHARGEABLES */}
+            <BrandCatalogues brandSlug="fashion-program" />
 
             {/* CTA */}
             <section className="bg-[#080808] py-24 text-center border-t border-gold/8">

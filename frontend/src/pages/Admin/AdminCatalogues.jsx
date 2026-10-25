@@ -3,9 +3,11 @@ import axios from 'axios';
 import CrudPage from './_CrudPage';
 import { imgSrc } from '../../utils/imgSrc';
 
-const fields = [
+const baseFields = [
     { name: 'name',        label: 'Nom *',              type: 'text', required: true },
     { name: 'description', label: 'Description',         type: 'textarea' },
+    // Les options (marques) sont chargées depuis l'API — voir AdminCatalogues
+    { name: 'brand',       label: 'Marque (vide = catalogue général, page Catalogues uniquement)', type: 'select', defaultValue: '', options: [] },
     { name: 'cover_image', label: 'Image de couverture', type: 'file', accept: 'image/*' },
     { name: 'pdf_path',    label: 'Fichier PDF',         type: 'file', accept: '.pdf,application/pdf', isPdf: true },
 ];
@@ -166,6 +168,15 @@ function StatsPanel() {
 }
 
 export default function AdminCatalogues() {
+    const [brands, setBrands] = useState([]);
+    useEffect(() => {
+        axios.get('/api/admin/brands').then(r => setBrands(Array.isArray(r.data) ? r.data : [])).catch(() => {});
+    }, []);
+    // Le catalogue rattaché à une marque s'affiche (et se télécharge) sur la page de cette marque.
+    const fields = baseFields.map(f => f.name === 'brand'
+        ? { ...f, options: brands.map(b => ({ value: b._id, label: b.name })) }
+        : f);
+
     return (
         <div>
             <StatsPanel />

@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
+import BrandCatalogues from '../../components/BrandCatalogues';
+import ProgramSteps from '../../components/ProgramSteps';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
@@ -104,33 +106,25 @@ export default function PersonalBranding() {
             </section>
 
             {/* PROGRAMME */}
-            <section className="bg-texture py-24 lg:py-32">
-                <div className="max-w-7xl mx-auto px-6 lg:px-10">
-                    <div className="text-center mb-16 reveal">
-                        <span className="eyebrow justify-center">{t('brand_method')}</span>
-                        <h2 className="display-title text-3xl lg:text-4xl text-white mt-4 mb-5">{t('brand_program').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('brand_program').split(' ').slice(1).join(' ')}</span></h2>
-                        <div className="gold-line-center" />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px">
-                        {[
-                            { num: '01', title: 'Audit de Style', desc: 'Analyse de votre image actuelle, de vos objectifs et de votre personnalité.' },
-                            { num: '02', title: 'Identité Visuelle', desc: 'Définition de vos codes couleurs, matières et coupes signature.' },
-                            { num: '03', title: 'Garde-robe Capsule', desc: 'Constitution d\'une garde-robe cohérente et polyvalente pour toutes occasions.' },
-                            { num: '04', title: 'Suivi & Coaching', desc: 'Accompagnement continu pour ancrer votre nouveau style dans la durée.' },
-                        ].map((s, i) => (
-                            <div key={i} className="reveal group border border-gold/8 bg-[#0f0f0f] hover:border-gold/20 p-8 transition-colors" style={{ transitionDelay: `${i * 0.08}s` }}>
-                                <span className="font-lastica text-[10px] tracking-[4px] text-gold/60 block mb-5">{s.num}</span>
-                                <h3 className="font-glacial text-sm text-white uppercase tracking-[2px] mb-3 group-hover:text-gold transition-colors">{s.title}</h3>
-                                <div className="w-5 h-px bg-gold/30 mb-4" />
-                                <p className="font-glacial text-sm text-white/60 leading-relaxed">{s.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <ProgramSteps
+                eyebrow={t('brand_method')}
+                title={<>{t('brand_program').split(' ').slice(0,1).join(' ')} <span className="text-gold">{t('brand_program').split(' ').slice(1).join(' ')}</span></>}
+                intro="Un accompagnement en 4 étapes pour révéler votre style et affirmer votre image, à votre rythme."
+                columns={4}
+                items={[
+                    { title: 'Audit de Style', description: 'Analyse de votre image actuelle, de vos objectifs et de votre personnalité.' },
+                    { title: 'Identité Visuelle', description: 'Définition de vos codes couleurs, matières et coupes signature.' },
+                    { title: 'Garde-robe Capsule', description: "Constitution d'une garde-robe cohérente et polyvalente pour toutes occasions." },
+                    { title: 'Suivi & Coaching', description: 'Accompagnement continu pour ancrer votre nouveau style dans la durée.' },
+                ]}
+                cta={{ title: 'Prêt(e) à révéler votre style ?', text: t('brand_free_consult'), href: '/reservation', label: t('brand_pb_start') }}
+            />
 
             {/* COLLECTIONS DYNAMIQUES */}
             <BrandCollections brandSlug="personal-branding" />
+
+            {/* CATALOGUES TÉLÉCHARGEABLES */}
+            <BrandCatalogues brandSlug="personal-branding" />
 
             {/* CTA */}
             <section className="bg-[#080808] py-24 text-center border-t border-gold/8">

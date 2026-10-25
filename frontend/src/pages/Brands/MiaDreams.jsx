@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import BrandCollections from '../../components/BrandCollections';
+import BrandCatalogues from '../../components/BrandCatalogues';
 import { imgSrc } from '../../utils/imgSrc';
 import { extractYoutubeId } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
@@ -98,6 +99,9 @@ export default function MiaDreams() {
 
             {/* COLLECTIONS DYNAMIQUES */}
             <BrandCollections brandSlug="mia-dreams" />
+
+            {/* CATALOGUES TÉLÉCHARGEABLES */}
+            <BrandCatalogues brandSlug="mia-dreams" />
 
             <div className="gold-strip py-9 text-center">
                 <p className="relative z-10 font-glacial text-[#080808] text-sm tracking-[5px] uppercase">{t('brand_strip_mia')}</p>

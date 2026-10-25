@@ -194,6 +194,10 @@ function castData(Model, raw) {
             if (data[key] === 'true'  || data[key] === '1') data[key] = true;
             if (data[key] === 'false' || data[key] === '0') data[key] = false;
         }
+        // Référence facultative laissée vide dans un formulaire (ex. marque d'un catalogue)
+        if (schemaPaths[key] && schemaPaths[key].instance === 'ObjectId' && ['', 'null', 'undefined'].includes(data[key])) {
+            data[key] = null;
+        }
     });
     return data;
 }

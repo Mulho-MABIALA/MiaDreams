@@ -2,8 +2,6 @@
 
 > Full-stack web platform for an ethical African fashion house based in Dakar: brand showcase, online shop with Mobile Money payments, training programmes with paid enrolment, and a complete back-office.
 
-**Live:** [mia-dreams.vercel.app](https://mia-dreams.vercel.app)
-
 ---
 
 ## Overview

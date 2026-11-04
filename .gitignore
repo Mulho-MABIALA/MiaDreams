@@ -18,3 +18,7 @@ npm-debug.log
 
 # Claude
 .claude/
+
+# Base SQLite locale
+*.sqlite
+*.sqlite-journal

@@ -8,6 +8,9 @@ const companyInfoSchema = new mongoose.Schema({
     whatsapp: String,
     address:  String,
     logo:     String,
+    // Textes affichés aux clients dans la boutique (fiche produit + page boutique)
+    shop_delivery: String,   // ex : "Livraison à domicile à Abidjan et environs"
+    shop_payment:  String,   // ex : "Paiement sécurisé — Wave · Orange Money · MTN · Carte"
 }, { timestamps: true });
 
 module.exports = mongoose.model('CompanyInfo', companyInfoSchema);

@@ -5,6 +5,7 @@ import Layout from '../components/Layout';
 import { useCart } from '../context/CartContext';
 import { imgSrc } from '../utils/imgSrc';
 import { useLanguage } from '../context/LanguageContext';
+import PaymentLogos from '../components/PaymentLogos';
 
 const GOLD = '#C9A84C';
 
@@ -199,6 +200,7 @@ export default function Commande() {
                                                         {m.label}
                                                     </p>
                                                     <p className="font-glacial text-sm text-white/55 leading-relaxed">{m.desc}</p>
+                                                    {m.id === 'paystack' && <PaymentLogos height={24} className="mt-2" />}
                                                 </div>
 
                                                 {/* Radio */}

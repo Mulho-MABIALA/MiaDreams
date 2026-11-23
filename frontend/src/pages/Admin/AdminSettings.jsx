@@ -30,7 +30,7 @@ const PLATFORMS = ['Instagram', 'Facebook', 'TikTok', 'YouTube', 'LinkedIn', 'Tw
 
 export default function AdminSettings() {
     const { refetchSettings } = useApp();
-    const [company, setCompany]     = useState({ name: '', tagline: '', email: '', phone: '', whatsapp: '', address: '' });
+    const [company, setCompany]     = useState({ name: '', tagline: '', email: '', phone: '', whatsapp: '', address: '', shop_delivery: '', shop_payment: '' });
     const [social, setSocial]       = useState([]);
     const [logoFile, setLogoFile]   = useState(null);
     const [logoPreview, setLogoPreview] = useState(null);
@@ -78,7 +78,7 @@ export default function AdminSettings() {
         try {
             const fd = new FormData();
             // Envoyer tous les champs non vides
-            ['name', 'tagline', 'email', 'phone', 'whatsapp', 'address'].forEach(k => {
+            ['name', 'tagline', 'email', 'phone', 'whatsapp', 'address', 'shop_delivery', 'shop_payment'].forEach(k => {
                 if (company[k] !== undefined && company[k] !== null) fd.append(k, company[k]);
             });
             if (logoFile) fd.append('logo', logoFile);
@@ -200,6 +200,24 @@ export default function AdminSettings() {
                                 onChange={e => setCompany(p => ({ ...p, address: e.target.value }))}
                                 placeholder="Abidjan, Côte d'Ivoire" />
                         </Field>
+                    </div>
+
+                    {/* Boutique — textes affichés aux clients */}
+                    <div className="pt-1">
+                        <p className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-widest mb-3">Boutique — infos affichées aux clients</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Field label="Livraison" hint="Affiché sur la page Boutique et sur chaque fiche produit">
+                                <input className={inp} value={company.shop_delivery || ''}
+                                    onChange={e => setCompany(p => ({ ...p, shop_delivery: e.target.value }))}
+                                    placeholder="Livraison à domicile à Abidjan et environs" />
+                            </Field>
+                            <Field label="Moyens de paiement" hint="Affiché sur la page Boutique et sur chaque fiche produit">
+                                <input className={inp} value={company.shop_payment || ''}
+                                    onChange={e => setCompany(p => ({ ...p, shop_payment: e.target.value }))}
+                                    placeholder="Paiement sécurisé — Wave · Orange Money · MTN · Carte" />
+                            </Field>
+                        </div>
+                        <p className="text-[11px] text-[#9CA3AF] mt-2">Le numéro WhatsApp affiché dans la boutique est celui du champ « WhatsApp » ci-dessus.</p>
                     </div>
 
                     {/* Logo */}

@@ -148,7 +148,7 @@ export default {
     product_see_all: 'Voir tout',
     product_share: 'Partager',
     product_delivery: 'Livraison à domicile à Abidjan et environs',
-    product_payment: 'Paiement sécurisé — Wave · Orange Money · Espèces',
+    product_payment: 'Paiement sécurisé — Wave · Orange Money · MTN · Carte · Espèces à la livraison',
     product_not_found: 'Produit introuvable',
 
     // Panier
